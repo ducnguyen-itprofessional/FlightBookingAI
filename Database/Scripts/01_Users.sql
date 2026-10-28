@@ -1,0 +1,21 @@
+USE FlightBookingAI;
+GO
+
+CREATE TABLE Users
+(
+    UserID INT IDENTITY(1,1) PRIMARY KEY,
+
+    FullName NVARCHAR(100) NOT NULL,
+
+    Email VARCHAR(255) NOT NULL UNIQUE,
+
+    PasswordHash NVARCHAR(255) NOT NULL,
+
+    Phone VARCHAR(20) NULL,
+
+    Role VARCHAR(20) NOT NULL
+        DEFAULT 'Customer',
+
+    CreatedAt DATETIME2 NOT NULL
+        DEFAULT SYSDATETIME()
+);
