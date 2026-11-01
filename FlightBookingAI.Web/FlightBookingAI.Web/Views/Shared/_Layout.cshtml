@@ -1,36 +1,132 @@
-﻿<!DOCTYPE html>
-<html>
+﻿
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+
+    <title>@ViewBag.Title - FlightBookingAI</title>
+
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark"
+         style="background-color: #123B72;">
         <div class="container">
-            @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
+
+            @Html.ActionLink("✈ FlightBookingAI", "Index", "Home",
+                new { area = "" },
+                new { @class = "navbar-brand fw-bold" })
+
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#flightNavbar"
+                    aria-controls="flightNavbar"
+                    aria-expanded="false"
+                    aria-label="Mở menu">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+
+            <div class="collapse navbar-collapse" id="flightNavbar">
+                <ul class="navbar-nav ms-auto">
+
+                    <li class="nav-item">
+                        @Html.ActionLink("Trang chủ", "Index", "Home",
+                            new { area = "" },
+                            new { @class = "nav-link" })
+                    </li>
+
+                    <li class="nav-item">
+                        @Html.ActionLink("Chuyến bay", "Index", "Flights",
+                            new { area = "" },
+                            new { @class = "nav-link" })
+                    </li>
+
+                    <li class="nav-item">
+                        <span class="nav-link text-white-50"
+                              title="Sắp ra mắt">
+                            Khám phá
+                        </span>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           href="@Url.Action("Index", "AITravel")">
+                            Lịch trình AI
+                        </a>
+                    </li>
+
+
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
-        </footer>
-    </div>
+
+    <!-- NỘI DUNG TRANG -->
+
+    @if (ViewContext.RouteData.Values["controller"].ToString() == "Home"
+        && ViewContext.RouteData.Values["action"].ToString() == "Index")
+    {
+        <main>
+            @RenderBody()
+        </main>
+    }
+    else
+    {
+        <main class="container body-content py-4">
+            @RenderBody()
+        </main>
+    }
+
+
+    <!-- FOOTER -->
+    <footer class="text-white py-4"
+            style="background-color: #0B2545;">
+        <div class="container">
+            <div class="row gy-3">
+
+                <div class="col-md-5">
+                    <h5 class="fw-bold">✈ FlightBookingAI</h5>
+                    <p class="mb-0">
+                        Nền tảng đặt vé máy bay và tư vấn
+                        lịch trình du lịch thông minh bằng AI.
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <h5>Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li>
+                            @Html.ActionLink("Trang chủ", "Index", "Home",
+                                null,
+                                new { @class = "text-white" })
+                        </li>
+                        <li>
+                            @Html.ActionLink("Chuyến bay", "Index", "Flights",
+                                null,
+                                new { @class = "text-white" })
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col-md-3">
+                    <h5>Thông tin</h5>
+                    <p class="mb-0">Đồ án FlightBookingAI</p>
+                    <p class="mb-0">ASP.NET MVC 5</p>
+                </div>
+
+            </div>
+
+            <hr class="border-light" />
+
+            <p class="text-center mb-0">
+                &copy; @DateTime.Now.Year FlightBookingAI.
+                All rights reserved.
+            </p>
+        </div>
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

@@ -1,33 +1,289 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿
+@{
+    ViewBag.Title = "Trang chủ";
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
+<!-- HERO BANNER -->
+<section class="hero-banner">
+    <div class="hero-overlay">
+        <div class="container">
+            <div class="hero-content">
 
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+                <h1>
+                    Khám phá thế giới
+                    <br />
+                    cùng <span>FlightBookingAI</span>
+                </h1>
+
+                <p>
+                    Đặt vé máy bay nhanh chóng và nhận tư vấn
+                    <br />
+                    lịch trình du lịch thông minh bằng AI.
+                </p>
+
+                <a href="@Url.Action("Index", "Flights")"
+                   class="btn btn-primary hero-button">
+                    ✈ Tìm chuyến bay
+                </a>
+
+            </div>
+        </div>
     </div>
-</main>
+</section>
+
+<!-- FLIGHT SEARCH SECTION -->
+<section class="flight-search-section">
+    <div class="container">
+        <div class="flight-search-box">
+
+            <h3 class="search-heading">
+                ✈ Tìm chuyến bay
+            </h3>
+
+            <form id="flightSearchForm">
+                <div class="flight-search-grid">
+
+                    <!-- NƠI ĐI -->
+                    <div class="search-field">
+                        <label for="departureAirport">
+                            ✈ Nơi đi
+                        </label>
+                        <input type="text"
+                               id="departureAirport"
+                               name="departureAirport"
+                               class="form-control"
+                               placeholder="Chọn sân bay đi" />
+                    </div>
+
+                    <!-- NÚT HOÁN ĐỔI -->
+                    <button type="button"
+                            id="swapAirports"
+                            class="swap-airports"
+                            title="Hoán đổi nơi đi và nơi đến"
+                            aria-label="Hoán đổi nơi đi và nơi đến">
+                        ⇄
+                    </button>
+
+                    <!-- NƠI ĐẾN -->
+                    <div class="search-field">
+                        <label for="arrivalAirport">
+                            ✈ Nơi đến
+                        </label>
+                        <input type="text"
+                               id="arrivalAirport"
+                               name="arrivalAirport"
+                               class="form-control"
+                               placeholder="Chọn sân bay đến" />
+                    </div>
+
+                    <!-- NGÀY ĐI -->
+                    <div class="search-field">
+                        <label for="departureDate">
+                            📅 Ngày đi
+                        </label>
+                        <input type="date"
+                               id="departureDate"
+                               name="departureDate"
+                               class="form-control" />
+                    </div>
+
+                    <!-- SỐ HÀNH KHÁCH -->
+                    <div class="search-field">
+                        <label for="passengers">
+                            👥 Số hành khách
+                        </label>
+                        <select id="passengers"
+                                name="passengers"
+                                class="form-select">
+                            <option value="1">1 hành khách</option>
+                            <option value="2">2 hành khách</option>
+                            <option value="3">3 hành khách</option>
+                            <option value="4">4 hành khách</option>
+                            <option value="5">5 hành khách</option>
+                        </select>
+                    </div>
+
+                    <!-- NÚT TÌM KIẾM -->
+                    <button type="button"
+                            class="btn btn-primary search-button">
+                        🔍 Tìm chuyến bay
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+</section>
+
+<!-- POPULAR DESTINATIONS -->
+<section class="destinations-section">
+    <div class="container">
+
+        <div class="destinations-header">
+            <h2 class="section-title">
+                ✈ Điểm đến nổi bật
+            </h2>
+            <p>
+                Khám phá những điểm đến tuyệt đẹp
+                cho hành trình tiếp theo của bạn.
+            </p>
+        </div>
+
+        <div class="destinations-grid">
+
+            <!-- ĐÀ NẴNG -->
+            <div class="destination-card">
+                <img src="@Url.Content("~/Images/Destinations/danang.jpg")"
+                     alt="Du lịch Đà Nẵng" />
+
+                <div class="destination-info">
+                    <h3>Đà Nẵng</h3>
+                    <p>Thành phố biển xinh đẹp</p>
+                </div>
+
+                <span class="destination-arrow" aria-hidden="true">
+                    ›
+                </span>
+            </div>
+
+            <!-- PHÚ QUỐC -->
+            <div class="destination-card">
+                <img src="@Url.Content("~/Images/Destinations/phuquoc.jpg")"
+                     alt="Du lịch Phú Quốc" />
+
+                <div class="destination-info">
+                    <h3>Phú Quốc</h3>
+                    <p>Thiên đường nghỉ dưỡng</p>
+                </div>
+
+                <span class="destination-arrow" aria-hidden="true">
+                    ›
+                </span>
+            </div>
+
+            <!-- HỘI AN -->
+            <div class="destination-card">
+                <img src="@Url.Content("~/Images/Destinations/hoian.jpg")"
+                     alt="Du lịch Hội An" />
+
+                <div class="destination-info">
+                    <h3>Hội An</h3>
+                    <p>Phố cổ thơ mộng</p>
+                </div>
+
+                <span class="destination-arrow" aria-hidden="true">
+                    ›
+                </span>
+            </div>
+
+            <!-- ĐÀ LẠT -->
+            <div class="destination-card">
+                <img src="@Url.Content("~/Images/Destinations/dalat.jpg")"
+                     alt="Du lịch Đà Lạt" />
+
+                <div class="destination-info">
+                    <h3>Đà Lạt</h3>
+                    <p>Thành phố ngàn hoa</p>
+                </div>
+
+                <span class="destination-arrow" aria-hidden="true">
+                    ›
+                </span>
+            </div>
+
+            <!-- HẠ LONG -->
+            <div class="destination-card">
+                <img src="@Url.Content("~/Images/Destinations/halong.jpg")"
+                     alt="Du lịch Hạ Long" />
+
+                <div class="destination-info">
+                    <h3>Hạ Long</h3>
+                    <p>Kỳ quan thiên nhiên thế giới</p>
+                </div>
+
+                <span class="destination-arrow" aria-hidden="true">
+                    ›
+                </span>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- WHY CHOOSE FLIGHTBOOKINGAI -->
+<section class="features-section">
+    <div class="container">
+
+        <h2 class="section-title">
+            ⭐ Tại sao chọn FlightBookingAI?
+        </h2>
+
+        <div class="features-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon">✈️</div>
+                <div>
+                    <h3>Đặt vé nhanh chóng</h3>
+                    <p>
+                        Tìm và đặt vé máy bay dễ dàng
+                        với nhiều hãng hàng không.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <div>
+                    <h3>Tư vấn lịch trình AI</h3>
+                    <p>
+                        Gợi ý lịch trình du lịch phù hợp
+                        ngân sách và thời gian.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📍</div>
+                <div>
+                    <h3>Bản đồ tương tác</h3>
+                    <p>
+                        Khám phá điểm đến và hành trình
+                        trên bản đồ thông minh.
+                    </p>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🌤️</div>
+                <div>
+                    <h3>Cập nhật thời tiết</h3>
+                    <p>
+                        Theo dõi thông tin thời tiết
+                        tại điểm đến của bạn.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+        document.getElementById("swapAirports")
+            .addEventListener("click", function () {
+
+                var departure =
+                    document.getElementById("departureAirport");
+
+                var arrival =
+                    document.getElementById("arrivalAirport");
+
+                var temp = departure.value;
+                departure.value = arrival.value;
+                arrival.value = temp;
+            });
+    </script>
+}

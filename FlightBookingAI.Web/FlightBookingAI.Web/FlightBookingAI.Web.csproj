@@ -129,6 +129,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AITravelController.cs" />
     <Compile Include="Controllers\FlightsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
@@ -204,6 +205,12 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\Banners\hero-halong.jpg" />
+    <Content Include="Images\Destinations\dalat.jpg" />
+    <Content Include="Images\Destinations\danang.jpg" />
+    <Content Include="Images\Destinations\halong.jpg" />
+    <Content Include="Images\Destinations\hoian.jpg" />
+    <Content Include="Images\Destinations\phuquoc.jpg" />
     <Content Include="Models\FlightBookingAIModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>FlightBookingAIModel.edmx</DependentUpon>
@@ -253,6 +260,7 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Flights\Index.cshtml" />
+    <Content Include="Views\AITravel\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
