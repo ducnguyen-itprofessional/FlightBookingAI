@@ -18,3 +18,988 @@ select,
 textarea {
     max-width: 280px;
 }
+
+/* ===================================
+   FLIGHTBOOKINGAI - GLOBAL STYLES
+   =================================== */
+
+:root {
+    --primary-color: #087CFF;
+    --primary-dark: #123B72;
+    --navy-color: #0B2545;
+    --accent-color: #00C9E8;
+    --background-color: #F5F8FC;
+    --text-color: #183153;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: var(--text-color);
+    background-color: #FFFFFF;
+}
+
+/* Navbar */
+.navbar {
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.navbar-brand {
+    font-size: 23px;
+    font-weight: 700;
+}
+
+.navbar .nav-link {
+    font-size: 15px;
+    margin-left: 12px;
+    transition: color 0.3s ease;
+}
+
+    .navbar .nav-link:hover {
+        color: var(--accent-color) !important;
+    }
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: 9px;
+    padding: 10px 22px;
+    font-weight: 600;
+}
+
+    .btn-primary:hover {
+        background-color: #0065D1;
+        border-color: #0065D1;
+    }
+
+/* Reusable cards */
+.travel-card {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+    .travel-card:hover {
+        transform: translateY(-5px);
+    }
+
+/* Section headings */
+.section-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--navy-color);
+    margin-bottom: 24px;
+}
+
+/* Footer */
+footer a {
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+    footer a:hover {
+        color: var(--accent-color) !important;
+    }
+
+/* Mobile */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 20px;
+    }
+
+    .section-title {
+        font-size: 23px;
+    }
+}
+
+/* ===================================
+   FLIGHTBOOKINGAI - HERO BANNER
+   =================================== */
+
+.hero-banner {
+    min-height: 520px;
+    background-image: linear-gradient( 90deg, rgba(5, 30, 65, 0.75) 0%, rgba(5, 30, 65, 0.35) 55%, rgba(5, 30, 65, 0.05) 100% ), url('/Images/Banners/hero-halong.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hero-overlay {
+    min-height: 520px;
+    display: flex;
+    align-items: center;
+}
+
+.hero-content {
+    color: white;
+    max-width: 720px;
+}
+
+    .hero-content h1 {
+        font-size: 52px;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 22px;
+    }
+
+        .hero-content h1 span {
+            color: #00D5F5;
+        }
+
+    .hero-content p {
+        font-size: 19px;
+        line-height: 1.7;
+        margin-bottom: 28px;
+    }
+
+.hero-button {
+    padding: 14px 30px;
+    font-size: 17px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-banner,
+    .hero-overlay {
+        min-height: 440px;
+    }
+
+    .hero-content h1 {
+        font-size: 34px;
+    }
+
+    .hero-content p {
+        font-size: 16px;
+    }
+
+        .hero-content p br {
+            display: none;
+        }
+}
+
+/* ===================================
+   FLIGHT SEARCH SECTION
+   =================================== */
+
+.flight-search-section {
+    position: relative;
+    margin-top: -55px;
+    padding-bottom: 45px;
+    z-index: 2;
+}
+
+.flight-search-box {
+    background: #FFFFFF;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+}
+
+.search-heading {
+    color: var(--navy-color);
+    font-size: 23px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.flight-search-box .form-label {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.flight-search-box .form-control,
+.flight-search-box .form-select {
+    min-height: 50px;
+    border: 1px solid #D7E1EE;
+    border-radius: 10px;
+}
+
+    .flight-search-box .form-control:focus,
+    .flight-search-box .form-select:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(8, 124, 255, 0.12);
+    }
+
+.search-button {
+    min-width: 220px;
+    min-height: 50px;
+}
+
+@media (max-width: 768px) {
+    .flight-search-section {
+        margin-top: -25px;
+    }
+
+    .flight-search-box {
+        padding: 20px;
+    }
+}
+
+/* ===================================
+   HORIZONTAL FLIGHT SEARCH
+   =================================== */
+
+.flight-search-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 38px minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 12px;
+}
+
+.flight-search-box {
+    padding: 25px;
+}
+
+.search-heading {
+    margin-bottom: 18px;
+}
+
+.search-field {
+    min-width: 0;
+}
+
+    .search-field label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--navy-color);
+    }
+
+    .search-field .form-control,
+    .search-field .form-select {
+        height: 52px;
+        min-width: 0;
+        font-size: 14px;
+    }
+
+.swap-airports {
+    width: 38px;
+    height: 52px;
+    border: none;
+    background: #EAF4FF;
+    color: #087CFF;
+    border-radius: 10px;
+    font-size: 25px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .swap-airports:hover {
+        background: #087CFF;
+        color: white;
+    }
+
+.flight-search-grid .search-button {
+    min-width: 165px;
+    height: 52px;
+    padding: 8px 14px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+@media (max-width: 1199px) {
+    .flight-search-grid {
+        grid-template-columns: 1fr 38px 1fr;
+    }
+
+        .flight-search-grid .search-button {
+            grid-column: 1 / -1;
+            width: 100%;
+        }
+}
+
+@media (max-width: 575px) {
+    .flight-search-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .swap-airports {
+        justify-self: center;
+        height: 38px;
+    }
+
+    .flight-search-grid .search-button {
+        grid-column: 1;
+    }
+}
+
+/* ===================================
+   POPULAR DESTINATIONS
+   =================================== */
+
+.destinations-section {
+    padding: 20px 0 55px;
+    background-color: #F5F8FC;
+}
+
+.destinations-header {
+    margin-bottom: 28px;
+}
+
+    .destinations-header .section-title {
+        margin-bottom: 8px;
+    }
+
+    .destinations-header p {
+        color: #64748B;
+        margin-bottom: 0;
+    }
+
+.destinations-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.destination-card {
+    position: relative;
+    height: 195px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.10);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .destination-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .destination-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( to top, rgba(4, 23, 46, 0.85), transparent 65% );
+        pointer-events: none;
+    }
+
+.destination-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    padding: 18px;
+    color: white;
+}
+
+    .destination-info h3 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+
+    .destination-info p {
+        font-size: 13px;
+        margin-bottom: 0;
+    }
+
+.destination-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+}
+
+    .destination-card:hover img {
+        transform: scale(1.08);
+    }
+
+/* Tablet */
+@media (max-width: 991px) {
+    .destinations-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Mobile */
+@media (max-width: 575px) {
+    .destinations-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .destination-card {
+        height: 240px;
+    }
+}
+
+/* ===================================
+   DESTINATION CARDS - REFINEMENT
+   =================================== */
+
+/* Tạo khoảng trống cho nút mũi tên */
+.destination-info {
+    padding-right: 55px;
+}
+
+/* Nút mũi tên tròn */
+.destination-arrow {
+    position: absolute;
+    right: 14px;
+    bottom: 17px;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    font-size: 23px;
+    line-height: 1;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+/* Hiệu ứng khi rê chuột vào thẻ */
+.destination-card:hover .destination-arrow {
+    background: #087CFF;
+    transform: translateX(3px);
+}
+
+/* Điều chỉnh mô tả */
+.destination-info p {
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* Responsive trên điện thoại */
+@media (max-width: 575px) {
+    .destination-card {
+        height: 220px;
+    }
+}
+
+/* ===================================
+   FLIGHTBOOKINGAI - FEATURES SECTION
+   =================================== */
+
+.features-section {
+    padding: 45px 0 65px;
+    background: #F0F5FB;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.feature-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 24px 18px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+}
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+.feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 55px;
+    height: 55px;
+    background: #EAF4FF;
+    border-radius: 50%;
+    font-size: 28px;
+}
+
+.feature-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0B2545;
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #64748B;
+    margin-bottom: 0;
+}
+
+@media (max-width: 991px) {
+    .features-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 575px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================
+   FLIGHTBOOKINGAI - AI TRAVEL ASSISTANT
+   ========================================== */
+
+/* Nền trang AI */
+.ai-travel-page {
+    background: #F5F8FC;
+    padding: 45px 0 70px;
+    min-height: 650px;
+}
+
+/* Tiêu đề trang */
+.ai-page-header {
+    margin-bottom: 35px;
+}
+
+    .ai-page-header h1 {
+        font-size: 36px;
+        font-weight: 800;
+        color: #0B2545;
+        margin-bottom: 12px;
+    }
+
+    .ai-page-header p {
+        font-size: 17px;
+        color: #64748B;
+    }
+
+/* Bố cục hai cột */
+.ai-workspace {
+    display: grid;
+    grid-template-columns: minmax(280px, 1fr) minmax(0, 1.7fr);
+    gap: 25px;
+    align-items: stretch;
+}
+
+/* Khung nhập thông tin */
+.ai-preferences {
+    background: #FFFFFF;
+    padding: 28px;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+    .ai-preferences h3 {
+        font-size: 21px;
+        font-weight: 700;
+        color: #0B2545;
+        margin-bottom: 25px;
+    }
+
+    .ai-preferences .form-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #183153;
+    }
+
+    .ai-preferences .form-control,
+    .ai-preferences .form-select {
+        min-height: 48px;
+        border-radius: 10px;
+        border: 1px solid #D7E1EE;
+    }
+
+        .ai-preferences .form-control:focus,
+        .ai-preferences .form-select:focus {
+            border-color: #087CFF;
+            box-shadow: 0 0 0 3px rgba(8, 124, 255, 0.12);
+        }
+
+    .ai-preferences .btn-primary {
+        min-height: 50px;
+        margin-top: 10px;
+    }
+
+/* Khung chatbot */
+.ai-chat-panel {
+    display: flex;
+    flex-direction: column;
+    background: #FFFFFF;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+    min-height: 520px;
+}
+
+/* Thanh tiêu đề chatbot */
+.ai-chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #0B2545;
+    color: #FFFFFF;
+    padding: 20px 24px;
+}
+
+    .ai-chat-header h3 {
+        font-size: 19px;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .ai-chat-header span {
+        font-size: 12px;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+/* Khu vực tin nhắn */
+.ai-chat-messages {
+    flex: 1;
+    padding: 25px;
+    background: #FAFCFF;
+    overflow-y: auto;
+}
+
+/* Bong bóng tin nhắn AI */
+.ai-message {
+    max-width: 85%;
+    padding: 15px 18px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.ai-message-bot {
+    background: #EAF4FF;
+    color: #183153;
+    border-bottom-left-radius: 5px;
+}
+
+/* Thanh nhập tin nhắn */
+.ai-chat-input {
+    display: flex;
+    gap: 12px;
+    padding: 18px;
+    border-top: 1px solid #E5EDF5;
+    background: #FFFFFF;
+}
+
+    .ai-chat-input .form-control {
+        flex: 1;
+        min-width: 0;
+        min-height: 48px;
+        border-radius: 10px;
+    }
+
+    .ai-chat-input .btn {
+        min-width: 75px;
+        border-radius: 10px;
+    }
+
+/* Responsive cho tablet */
+@media (max-width: 991px) {
+    .ai-workspace {
+        grid-template-columns: 1fr;
+    }
+
+    .ai-chat-panel {
+        min-height: 450px;
+    }
+}
+
+/* Responsive cho điện thoại */
+@media (max-width: 575px) {
+    .ai-travel-page {
+        padding: 30px 0 45px;
+    }
+
+    .ai-page-header h1 {
+        font-size: 27px;
+    }
+
+    .ai-preferences {
+        padding: 20px;
+    }
+
+    .ai-chat-header {
+        padding: 16px;
+    }
+
+        .ai-chat-header h3 {
+            font-size: 16px;
+        }
+
+    .ai-chat-messages {
+        padding: 16px;
+    }
+}
+
+/* ==========================================
+   AI TRAVEL - FORM WIDTH REFINEMENT
+   ========================================== */
+
+/* Form bên trái chiếm toàn bộ chiều rộng */
+.ai-preferences form {
+    width: 100%;
+}
+
+/* Các nhóm nhập liệu */
+.ai-preferences .mb-3 {
+    width: 100%;
+}
+
+/* Kéo dài các ô nhập */
+.ai-preferences .form-control,
+.ai-preferences .form-select {
+    display: block;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+}
+
+/* Nút tạo lịch trình */
+.ai-preferences .btn-primary {
+    width: 100%;
+    max-width: none;
+}
+
+/* Thanh nhập chatbot */
+.ai-chat-input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+    /* Ô nhập câu hỏi tự mở rộng */
+    .ai-chat-input .form-control {
+        flex: 1 1 0%;
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+    }
+
+    /* Nút gửi giữ kích thước cố định */
+    .ai-chat-input .btn {
+        flex: 0 0 auto;
+    }
+
+/* ==========================================
+   AI TRAVEL - ITINERARY, MAP & WEATHER
+   ========================================== */
+
+/* Khu vực lịch trình */
+.ai-itinerary-section {
+    margin-top: 40px;
+}
+
+.ai-itinerary-heading {
+    margin-bottom: 25px;
+}
+
+    .ai-itinerary-heading h2 {
+        font-size: 28px;
+        font-weight: 800;
+        color: #0B2545;
+        margin-bottom: 10px;
+    }
+
+    .ai-itinerary-heading p {
+        color: #64748B;
+        font-size: 15px;
+        margin-bottom: 0;
+    }
+
+/* Bố cục hai cột */
+.ai-itinerary-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 25px;
+    align-items: stretch;
+}
+
+/* Các thẻ nội dung */
+.ai-itinerary-card,
+.ai-map-card,
+.ai-weather-card {
+    background: #FFFFFF;
+    border-radius: 18px;
+    padding: 25px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+    .ai-itinerary-card h3,
+    .ai-map-card h3,
+    .ai-weather-card h3 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0B2545;
+        margin-bottom: 20px;
+    }
+
+/* Nhãn dữ liệu minh họa */
+.ai-demo-label {
+    font-size: 13px;
+    color: #64748B;
+    background: #F0F6FF;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 25px;
+}
+
+/* Timeline từng ngày */
+.ai-day-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    position: relative;
+    padding-bottom: 28px;
+}
+
+    .ai-day-item:not(:last-child)::before {
+        content: "";
+        position: absolute;
+        left: 19px;
+        top: 42px;
+        bottom: 0;
+        width: 2px;
+        background: #D7E8FC;
+    }
+
+    .ai-day-item:last-child {
+        padding-bottom: 0;
+    }
+
+.ai-day-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #087CFF;
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+}
+
+.ai-day-item h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #183153;
+    margin: 4px 0 8px;
+}
+
+.ai-day-item p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #64748B;
+    margin-bottom: 0;
+}
+
+/* Cột bản đồ và thời tiết */
+.ai-travel-widgets {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+/* Khung bản đồ */
+.ai-map-placeholder {
+    min-height: 190px;
+    border: 2px dashed #C8DDF5;
+    border-radius: 14px;
+    background: #F0F7FF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
+
+    .ai-map-placeholder > span {
+        font-size: 42px;
+        margin-bottom: 10px;
+    }
+
+    .ai-map-placeholder h4 {
+        font-size: 17px;
+        font-weight: 700;
+        color: #183153;
+        margin-bottom: 8px;
+    }
+
+    .ai-map-placeholder p {
+        font-size: 13px;
+        color: #64748B;
+        max-width: 260px;
+        margin-bottom: 0;
+    }
+
+/* Khung thời tiết */
+.ai-weather-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    background: #F0F7FF;
+    padding: 20px;
+    border-radius: 14px;
+}
+
+    .ai-weather-placeholder > span {
+        font-size: 40px;
+        flex-shrink: 0;
+    }
+
+    .ai-weather-placeholder h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #183153;
+        margin-bottom: 8px;
+    }
+
+    .ai-weather-placeholder p {
+        font-size: 13px;
+        line-height: 1.6;
+        color: #64748B;
+        margin-bottom: 0;
+    }
+
+/* Tablet */
+@media (max-width: 991px) {
+    .ai-itinerary-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Mobile */
+@media (max-width: 575px) {
+    .ai-itinerary-section {
+        margin-top: 30px;
+    }
+
+    .ai-itinerary-heading h2 {
+        font-size: 23px;
+    }
+
+    .ai-itinerary-card,
+    .ai-map-card,
+    .ai-weather-card {
+        padding: 20px;
+    }
+
+    .ai-day-item {
+        gap: 12px;
+    }
+
+        .ai-day-item h4 {
+            font-size: 15px;
+        }
+}

@@ -1,0 +1,225 @@
+﻿
+@{
+    ViewBag.Title = "AI Travel Assistant";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="ai-travel-page">
+    <div class="container">
+
+        <!-- PAGE HEADER -->
+        <div class="ai-page-header text-center">
+            <h1>🤖 AI Travel Assistant</h1>
+            <p>
+                Lên kế hoạch du lịch thông minh cùng FlightBookingAI
+            </p>
+        </div>
+
+        <div class="ai-workspace">
+
+            <!-- LEFT: TRIP PREFERENCES -->
+            <div class="ai-preferences">
+                <h3>✈ Thông tin chuyến đi</h3>
+
+                <form id="aiTripForm">
+
+                    <div class="mb-3">
+                        <label for="aiDestination"
+                               class="form-label">
+                            Điểm đến
+                        </label>
+                        <input type="text"
+                               id="aiDestination"
+                               class="form-control"
+                               placeholder="Ví dụ: Đà Nẵng" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="aiDays"
+                               class="form-label">
+                            Số ngày du lịch
+                        </label>
+                        <input type="number"
+                               id="aiDays"
+                               class="form-control"
+                               min="1"
+                               max="30"
+                               value="3" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="aiBudget"
+                               class="form-label">
+                            Ngân sách (VNĐ)
+                        </label>
+                        <input type="number"
+                               id="aiBudget"
+                               class="form-control"
+                               min="0"
+                               step="100000"
+                               placeholder="Ví dụ: 5000000" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="aiInterests"
+                               class="form-label">
+                            Sở thích du lịch
+                        </label>
+                        <select id="aiInterests"
+                                class="form-select">
+                            <option value="">Chọn sở thích</option>
+                            <option value="beach">Biển và nghỉ dưỡng</option>
+                            <option value="food">Ẩm thực</option>
+                            <option value="nature">Thiên nhiên</option>
+                            <option value="culture">Văn hóa và lịch sử</option>
+                            <option value="adventure">Khám phá, phiêu lưu</option>
+                        </select>
+                    </div>
+
+                    <button type="button"
+                            class="btn btn-primary w-100">
+                        ✨ Tạo lịch trình AI
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- RIGHT: AI CHATBOT -->
+            <div class="ai-chat-panel">
+
+                <div class="ai-chat-header">
+                    <h3>🤖 Trợ lý du lịch AI</h3>
+                    <span>Giao diện thử nghiệm</span>
+                </div>
+
+                <div class="ai-chat-messages">
+                    <div class="ai-message ai-message-bot">
+                        Xin chào! 👋
+                        Tôi là trợ lý du lịch của FlightBookingAI.
+                        Hãy cho tôi biết bạn muốn đi đâu
+                        và ngân sách dự kiến nhé!
+                    </div>
+                </div>
+
+                <div class="ai-chat-input">
+                    <input type="text"
+                           id="aiChatInput"
+                           class="form-control"
+                           placeholder="Nhập câu hỏi của bạn..."
+                           aria-label="Nhập câu hỏi cho trợ lý AI" />
+
+                    <button type="button"
+                            class="btn btn-primary">
+                        Gửi
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- AI TRAVEL ITINERARY PREVIEW -->
+        <section class="ai-itinerary-section">
+
+            <div class="ai-itinerary-heading">
+                <h2>🗺️ Lịch trình du lịch của bạn</h2>
+                <p>
+                    Xem lịch trình, bản đồ và thời tiết
+                    cho hành trình du lịch của bạn.
+                </p>
+            </div>
+
+            <div class="ai-itinerary-layout">
+
+                <!-- LỊCH TRÌNH -->
+                <div class="ai-itinerary-card">
+
+                    <h3>📅 Lịch trình gợi ý</h3>
+
+                    <p class="ai-demo-label">
+                        Ví dụ minh họa: Đà Nẵng 3 ngày 2 đêm
+                    </p>
+
+                    <div class="ai-day-item">
+                        <span class="ai-day-number">1</span>
+                        <div>
+                            <h4>Ngày 1 – Khám phá Đà Nẵng</h4>
+                            <p>
+                                Tham quan biển Mỹ Khê,
+                                cầu Rồng và thưởng thức
+                                ẩm thực địa phương.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="ai-day-item">
+                        <span class="ai-day-number">2</span>
+                        <div>
+                            <h4>Ngày 2 – Bà Nà Hills</h4>
+                            <p>
+                                Khám phá Cầu Vàng,
+                                làng Pháp và các điểm
+                                tham quan tại Bà Nà Hills.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="ai-day-item">
+                        <span class="ai-day-number">3</span>
+                        <div>
+                            <h4>Ngày 3 – Ngũ Hành Sơn</h4>
+                            <p>
+                                Tham quan Ngũ Hành Sơn,
+                                mua quà lưu niệm và
+                                kết thúc hành trình.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- MAP AND WEATHER -->
+                <div class="ai-travel-widgets">
+
+                    <!-- BẢN ĐỒ -->
+                    <div class="ai-map-card">
+
+                        <h3>📍 Bản đồ hành trình</h3>
+
+                        <div class="ai-map-placeholder">
+                            <span>🗺️</span>
+                            <h4>Bản đồ tương tác</h4>
+                            <p>
+                                Vị trí các điểm tham quan
+                                sẽ được hiển thị tại đây.
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <!-- THỜI TIẾT -->
+                    <div class="ai-weather-card">
+
+                        <h3>🌤️ Thời tiết điểm đến</h3>
+
+                        <div class="ai-weather-placeholder">
+                            <span>☀️</span>
+                            <div>
+                                <h4>Thông tin thời tiết</h4>
+                                <p>
+                                    Dữ liệu dự báo sẽ được
+                                    cập nhật khi tích hợp API.
+                                </p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+</section>
