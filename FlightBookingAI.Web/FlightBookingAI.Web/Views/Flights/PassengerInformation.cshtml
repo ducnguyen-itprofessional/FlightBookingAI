@@ -1,0 +1,473 @@
+﻿@using System.Web.Mvc
+@model FlightBookingAI.Web.ViewModels.PassengerBookingViewModel
+
+@{
+    ViewBag.Title = "Thông tin hành khách";
+}
+
+
+<style>
+    .passenger-page {
+        padding: 35px 0 60px;
+        color: #17365D;
+    }
+
+    .passenger-title {
+        color: #123B72;
+        font-weight: 750;
+        margin-bottom: 8px;
+    }
+
+    .passenger-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(290px, 1fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .passenger-card {
+        background: #FFFFFF;
+        border: 1px solid #DCE8F5;
+        border-radius: 18px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 24px rgba(20, 55, 95, .06);
+    }
+
+    .passenger-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .passenger-card-title {
+        color: #123B72;
+        font-weight: 750;
+        margin: 0;
+    }
+
+    .passenger-seat-badge {
+        background: #E5F3FF;
+        color: #1769D2;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .passenger-label {
+        font-weight: 650;
+        color: #385575;
+        margin-bottom: 7px;
+        display: block;
+    }
+
+    .passenger-input {
+        width: 100%;
+        padding: 11px 13px;
+        border: 1px solid #CEDDED;
+        border-radius: 10px;
+        background: #FFFFFF;
+        color: #17365D;
+    }
+
+        .passenger-input:focus {
+            outline: none;
+            border-color: #1769D2;
+            box-shadow: 0 0 0 3px rgba(23, 105, 210, .1);
+        }
+
+    .passenger-summary {
+        position: sticky;
+        top: 20px;
+        background: #FFFFFF;
+        border: 1px solid #DCE8F5;
+        border-radius: 18px;
+        padding: 25px;
+        box-shadow: 0 10px 24px rgba(20, 55, 95, .09);
+    }
+
+        .passenger-summary h4 {
+            color: #123B72;
+            font-weight: 750;
+            margin-bottom: 20px;
+        }
+
+    .passenger-summary-route {
+        background: #F0F7FF;
+        border-radius: 12px;
+        padding: 17px;
+        margin-bottom: 20px;
+    }
+
+    .passenger-total {
+        font-size: 27px;
+        font-weight: 750;
+        color: #1769D2;
+    }
+
+    .passenger-submit {
+        width: 100%;
+        border: 0;
+        border-radius: 10px;
+        padding: 13px;
+        background: #1769D2;
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+        .passenger-submit:disabled {
+            background: #A5B8CD;
+            cursor: not-allowed;
+        }
+
+    .passenger-note {
+        color: #718096;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    @@media (max-width: 991px) {
+        .passenger-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .passenger-summary {
+            position: static;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .passenger-card,
+        .passenger-summary {
+            padding: 18px;
+        }
+    }
+
+    /* KHUNG LƯU Ý THÔNG TIN HÀNH KHÁCH */
+    .passenger-warning {
+        display: flex !important;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 12px;
+        background: #FFF8E7;
+        border: 1px solid #F0D58B;
+        border-left: 4px solid #E5A52B;
+        border-radius: 12px;
+        padding: 16px 18px;
+        margin: 12px 0 24px;
+    }
+
+    .passenger-warning-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 26px;
+        width: 26px;
+        height: 26px;
+        font-size: 22px;
+        line-height: 1;
+    }
+
+    .passenger-warning > div {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .passenger-warning-title {
+        color: #8A5A13;
+        font-weight: 750;
+        margin-bottom: 5px;
+    }
+
+    .passenger-warning-text {
+        color: #76551E;
+        font-size: 14px;
+        line-height: 1.7;
+        margin: 0;
+    }
+
+    /* HIỂN THỊ LỖI VALIDATION */
+    .field-validation-error {
+        display: block;
+        margin-top: 6px;
+        color: #DC3545;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .input-validation-error {
+        border-color: #DC3545 !important;
+        background-color: #FFF8F8;
+    }
+
+    .input-validation-error:focus {
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, .12);
+    }
+</style>
+
+<div class="container passenger-page">
+
+    <div class="mb-4">
+        <h2 class="passenger-title">
+            ✈ Thông tin hành khách
+        </h2>
+        <p class="text-muted">
+            Vui lòng nhập thông tin chính xác cho từng hành khách.
+        </p>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            @Html.ValidationSummary(false,
+                                    "Vui lòng kiểm tra lại thông tin hành khách:")
+        </div>
+    }
+
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <div class="alert alert-success">
+            @ViewBag.SuccessMessage
+        </div>
+    }
+
+    @using (Html.BeginForm("PassengerInformation", "Flights", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(m => m.FlightID)
+        @Html.HiddenFor(m => m.BookingRequestId)
+        @Html.HiddenFor(m => m.PassengerCount)
+
+        <div class="passenger-layout">
+
+            <!-- BÊN TRÁI: BIỂU MẪU HÀNH KHÁCH -->
+            <div>
+
+                @for (int i = 0; i < Model.Passengers.Count; i++)
+                {
+                    <div class="passenger-card">
+
+                        <div class="passenger-card-header">
+                            <h4 class="passenger-card-title">
+                                Hành khách @(i + 1)
+                            </h4>
+
+                            <span class="passenger-seat-badge">
+                                Ghế @Model.Passengers[i].SeatNumber
+                            </span>
+                        </div>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-12">
+                                <label class="passenger-label">
+                                    Họ và tên *
+                                </label>
+
+                                @Html.TextBoxFor(
+                                                        m => m.Passengers[i].FullName,
+                                                        new
+                                                        {
+                                                            @class = "passenger-input",
+                                                            placeholder = "Nhập họ và tên đầy đủ",
+                                                            maxlength = "200",
+                                                            required = "required"
+                                                        })
+
+                                @Html.ValidationMessageFor(
+                                                        m => m.Passengers[i].FullName,
+                                                        "",
+                                                        new { @class = "text-danger small" })
+
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="passenger-label">
+                                    Ngày sinh *
+                                </label>
+
+                                @Html.TextBoxFor(
+                                                        m => m.Passengers[i].DateOfBirth,
+                                                        "{0:yyyy-MM-dd}",
+                                                        new
+                                                        {
+                                                            @class = "passenger-input",
+                                                            type = "date",
+                                                            max = DateTime.Today.ToString("yyyy-MM-dd"),
+                                                            required = "required"
+                                                        })
+
+                                @Html.ValidationMessageFor(
+                                                        m => m.Passengers[i].DateOfBirth,
+                                                        "",
+                                                        new { @class = "text-danger small" })
+
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="passenger-label">
+                                    Giới tính
+                                </label>
+
+                                @Html.DropDownListFor(
+                                                        m => m.Passengers[i].Gender,
+                                                        new List<SelectListItem>
+                                                        {
+        new SelectListItem { Text = "-- Chọn giới tính --", Value = "" },
+        new SelectListItem { Text = "Nam", Value = "Nam" },
+        new SelectListItem { Text = "Nữ", Value = "Nữ" },
+        new SelectListItem { Text = "Khác", Value = "Khác" }
+},
+                                                        new { @class = "passenger-input" })
+
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="passenger-label">
+                                    CCCD / Hộ chiếu
+                                </label>
+
+                                @Html.TextBoxFor(
+                                                   m => m.Passengers[i].IdentityNumber,
+                                                   new
+                                                   {
+                                                       @class = "passenger-input",
+                                                       maxlength = "30",
+                                                       placeholder = "Nhập số giấy tờ"
+                                                   })
+
+                                @Html.ValidationMessageFor(
+                                                   m => m.Passengers[i].IdentityNumber,
+                                                   "",
+                                                   new { @class = "text-danger small" })
+
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="passenger-label">
+                                    Loại hành khách *
+                                </label>
+
+                                @Html.DropDownListFor(
+                                                   m => m.Passengers[i].PassengerType,
+                                                   new List<SelectListItem>
+                                                   {
+        new SelectListItem { Text = "Người lớn", Value = "Adult" },
+        new SelectListItem { Text = "Trẻ em", Value = "Child" }
+   },
+                                                   new
+                                                   {
+                                                       @class = "passenger-input",
+                                                       required = "required"
+                                                   })
+
+                                @Html.ValidationMessageFor(
+                                                   m => m.Passengers[i].PassengerType,
+                                                   "",
+                                                   new { @class = "text-danger small" })
+
+                            </div>
+
+                            @Html.HiddenFor(m => m.Passengers[i].SeatNumber)
+                            @Html.ValidationMessageFor(m => m.Passengers[i].SeatNumber, "",
+                                new { @class = "text-danger small" })
+                        </div>
+                    </div>
+                }
+
+                <div class="passenger-warning" role="note">
+
+                    <span class="passenger-warning-icon"
+                          aria-hidden="true">⚠️</span>
+
+                    <div>
+                        <div class="passenger-warning-title">
+                            Lưu ý quan trọng
+                        </div>
+
+                        <p class="passenger-warning-text">
+                            Thông tin hành khách cần trùng khớp với
+                            giấy tờ tùy thân khi làm thủ tục tại sân bay.
+                            Vui lòng kiểm tra kỹ trước khi tiếp tục.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- BÊN PHẢI: TÓM TẮT ĐẶT VÉ -->
+            <aside class="passenger-summary">
+
+                <h4>Thông tin đặt vé</h4>
+
+                <div class="passenger-summary-route">
+
+                    <strong>@Model.AirlineName</strong>
+
+                    <div class="text-muted small mt-1">
+                        Chuyến bay @Model.FlightNumber
+                    </div>
+
+                    <h5 class="mt-3 fw-bold" style="color:#1769D2;">
+                        @Model.DepartureAirport
+                        →
+                        @Model.ArrivalAirport
+                    </h5>
+
+                </div>
+
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Số hành khách</span>
+                    <strong>@Model.PassengerCount</strong>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Danh sách ghế</strong>
+
+                    <div class="mt-2">
+                        @string.Join(", ",
+                                                         Model.Passengers.Select(p => p.SeatNumber))
+                    </div>
+                </div>
+
+                <hr />
+
+                <div class="text-muted mb-1">
+                    Tổng tiền dự kiến
+                </div>
+
+                <div class="passenger-total">
+                    @Model.TotalAmount.ToString("N0") ₫
+                </div>
+
+                <p class="passenger-note mt-3">
+                    Giá vé tạm tính theo số lượng hành khách.
+                    Chưa bao gồm các khoản phí phát sinh.
+                </p>
+
+                <button type="submit"
+                        class="passenger-submit">
+                    Kiểm tra thông tin hành khách →
+                </button>
+
+
+                <a href="@Url.Action("SeatSelection", "Flights",
+         new
+         {
+             id = Model.FlightID,
+             passengers = Model.PassengerCount
+         })"
+                   class="btn btn-outline-secondary w-100 mt-3">
+                    ← Quay lại chọn ghế
+                </a>
+
+            </aside>
+
+        </div> <!-- Đóng passenger-layout -->
+    }
+</div>

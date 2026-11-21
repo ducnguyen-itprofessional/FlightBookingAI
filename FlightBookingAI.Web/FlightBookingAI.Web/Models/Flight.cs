@@ -18,6 +18,7 @@ namespace FlightBookingAI.Web.Models
         public Flight()
         {
             this.Bookings = new HashSet<Booking>();
+            this.FlightSeats = new HashSet<FlightSeat>();
         }
     
         public int FlightID { get; set; }
@@ -37,5 +38,7 @@ namespace FlightBookingAI.Web.Models
         public virtual Airport Airport1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Booking> Bookings { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<FlightSeat> FlightSeats { get; set; }
     }
 }

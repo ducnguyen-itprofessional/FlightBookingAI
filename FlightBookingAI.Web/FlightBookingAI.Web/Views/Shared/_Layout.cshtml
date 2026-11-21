@@ -1,4 +1,4 @@
-﻿
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -9,10 +9,12 @@
 
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="@Url.Content("~/Content/navbar.css")" />
 </head>
 <body>
+
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark"
+    <nav class="navbar navbar-expand-lg navbar-dark flight-navbar"
          style="background-color: #123B72;">
         <div class="container">
 
@@ -30,7 +32,7 @@
             </button>
 
             <div class="collapse navbar-collapse" id="flightNavbar">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-lg-center">
 
                     <li class="nav-item">
                         @Html.ActionLink("Trang chủ", "Index", "Home",
@@ -59,10 +61,93 @@
                     </li>
 
 
+                    @if (Request.IsAuthenticated)
+                    {
+                        <li class="nav-item dropdown flight-account-nav">
+                            <button class="btn flight-account-btn dropdown-toggle"
+                                    type="button"
+                                    id="accountDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                <svg class="flight-account-icon"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     width="20"
+                                     height="20"
+                                     viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="1.8"
+                                     stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <circle cx="12" cy="8" r="3"></circle>
+                                    <path d="M6.5 19a6 6 0 0 1 11 0"></path>
+                                </svg>
+                                Tài khoản
+                            </button>
+
+                            <ul class="dropdown-menu dropdown-menu-end flight-account-menu"
+                                aria-labelledby="accountDropdown">
+
+                                <li>
+                                    <span class="dropdown-item-text flight-account-label">
+                                        Đã đăng nhập
+                                    </span>
+                                </li>
+
+                                <li><hr class="dropdown-divider" /></li>
+
+                                <li>
+                                    @using (Html.BeginForm("Logout", "Account",
+                                        FormMethod.Post,
+                                        new { @class = "m-0" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="dropdown-item flight-logout-btn">
+                                            Đăng xuất
+                                        </button>
+                                    }
+                                </li>
+                            </ul>
+                        </li>
+                    }
+
+                    else
+                    {
+                        <li class="nav-item flight-account-nav">
+                            <a class="btn flight-account-btn"
+                               href="@Url.Action("Login", "Account")">
+
+                                <svg class="flight-account-icon"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     width="20"
+                                     height="20"
+                                     viewBox="0 0 24 24"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="1.8"
+                                     stroke-linecap="round"
+                                     stroke-linejoin="round"
+                                     aria-hidden="true">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <circle cx="12" cy="8" r="3"></circle>
+                                    <path d="M6.5 19a6 6 0 0 1 11 0"></path>
+                                </svg>
+
+                                Tài khoản
+                            </a>
+                        </li>
+                    }
+
+
                 </ul>
             </div>
         </div>
     </nav>
+
 
     <!-- NỘI DUNG TRANG -->
 
@@ -129,7 +214,7 @@
     </footer>
 
     @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    <script src="@Url.Content("~/Scripts/bootstrap.bundle.min.js")"></script>
     @RenderSection("scripts", required: false)
 </body>
 </html>

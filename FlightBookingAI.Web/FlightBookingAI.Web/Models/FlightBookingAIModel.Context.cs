@@ -36,5 +36,6 @@ namespace FlightBookingAI.Web.Models
         public virtual DbSet<ItineraryItem> ItineraryItems { get; set; }
         public virtual DbSet<Payment> Payments { get; set; }
         public virtual DbSet<User> Users { get; set; }
+        public virtual DbSet<FlightSeat> FlightSeats { get; set; }
     }
 }

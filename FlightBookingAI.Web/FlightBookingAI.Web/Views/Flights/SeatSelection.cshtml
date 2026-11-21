@@ -1,0 +1,789 @@
+﻿
+@model FlightBookingAI.Web.Models.Flight
+
+@{
+    ViewBag.Title = "Chọn ghế máy bay";
+
+    // Số lượng hành khách từ Controller
+    int passengers = ViewBag.Passengers != null
+        ? (int)ViewBag.Passengers
+        : 1;
+
+    if (passengers < 1)
+    {
+        passengers = 1;
+    }
+
+    // Tổng tiền vé dự kiến
+    decimal totalPrice = Model.Price * passengers;
+
+
+    // Giao diện mô phỏng 30 hàng, mỗi hàng 6 ghế
+    int totalRows = 30;
+
+    var occupiedSeats = new HashSet<string>(
+    (ViewBag.OccupiedSeats as IEnumerable<string>)
+        ?? Enumerable.Empty<string>(),
+    StringComparer.OrdinalIgnoreCase
+);
+}
+
+<style>
+    .seat-page {
+        padding: 30px 0 55px;
+        color: #17365D;
+    }
+
+    .seat-page-title {
+        color: #123B72;
+        font-weight: 750;
+    }
+
+    .seat-legend {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
+        color: #52657A;
+    }
+
+    .legend-color {
+        width: 18px;
+        height: 18px;
+        border-radius: 5px;
+        background: #BCECE5;
+        border: 1px solid #7BCFC3;
+    }
+
+        .legend-color.selected {
+            background: #1769D2;
+            border-color: #1769D2;
+        }
+
+        .legend-color.occupied {
+            background: #A0AFC0;
+            border-color: #8798AA;
+        }
+    /* BỐ CỤC MÁY BAY THEO MẪU 2.5D */
+    .seat-layout {
+        display: grid;
+        grid-template-columns: minmax(0,1.75fr) minmax(290px,1fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .seat-panel {
+        background: linear-gradient(155deg,#F7FBFF,#EAF4FD);
+        border: 1px solid #DFEAF5;
+        border-radius: 22px;
+        padding: 26px 8px 36px;
+        overflow: hidden;
+    }
+
+    .seat-panel-title {
+        text-align: center;
+        color: #123B72;
+        font-weight: 750;
+        margin-bottom: 18px;
+    }
+
+    .aircraft-stage {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .aircraft {
+        position: relative;
+        width: 100%;
+        min-width: 570px;
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 0 0 45px;
+    }
+
+    .aircraft-shape {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        filter: drop-shadow(0 16px 16px rgba(22,72,123,.18));
+    }
+
+    .aircraft-cabin {
+        position: relative;
+        z-index: 1;
+        width: 34%;
+        max-width: none;
+        margin: 0 auto;
+        padding: 24px 5px 52px;
+        box-sizing: border-box;
+    }
+
+    .cockpit {
+        height: 125px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+    }
+
+    .cockpit-window {
+        width: 120px;
+        height: 48px;
+        border: 5px solid #F5FBFF;
+        border-radius: 65% 65% 28% 28%;
+        background: linear-gradient(145deg,#C6EDFF,#2C659D);
+        box-shadow: 0 3px 9px #84B4D6,inset 0 4px 10px rgba(0,36,74,.2);
+        display: flex;
+        gap: 4px;
+        padding: 4px 6px;
+        overflow: hidden;
+        transform: perspective(150px) rotateX(8deg);
+    }
+
+        .cockpit-window span {
+            display: block;
+            flex: 1;
+            background: linear-gradient(140deg,#C8EDFF 0%,#5699C8 45%,#174E84 100%);
+            border: 1px solid rgba(255,255,255,.65);
+            border-radius: 50% 50% 12% 12%;
+        }
+
+            .cockpit-window span:first-child {
+                transform: skewY(-7deg);
+            }
+
+            .cockpit-window span:last-child {
+                transform: skewY(7deg);
+            }
+
+    .summary-airline {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .summary-airline-logo {
+        width: 68px;
+        height: 54px;
+        padding: 6px;
+        border: 1px solid #DCE8F5;
+        border-radius: 11px;
+        background: white;
+        object-fit: contain;
+        flex-shrink: 0;
+    }
+
+    .summary-meta {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin-top: 14px;
+    }
+
+        .summary-meta svg {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            color: #1769D2;
+        }
+
+    .summary-meta-label {
+        font-size: 12px;
+        color: #718096;
+    }
+
+    .summary-meta-value {
+        font-size: 14px;
+        font-weight: 700;
+        color: #123B72;
+    }
+
+    .cockpit-label {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        font-weight: 750;
+        color: #5E7E9E;
+    }
+
+    .seat-columns, .seat-row {
+        display: grid;
+        grid-template-columns: repeat(3,minmax(0,1fr)) 20px repeat(3,minmax(0,1fr));
+        gap: 2px;
+        align-items: center;
+    }
+
+    .seat-columns {
+        margin-bottom: 10px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 750;
+        color: #4C7297;
+    }
+
+    .seat-row {
+        margin-bottom: 5px;
+    }
+
+    .aircraft-seat {
+        position: relative;
+        width: 100%;
+        height: 28px;
+        border: 1px solid #5BBFB2;
+        border-radius: 7px 7px 5px 5px;
+        background: linear-gradient(165deg,#DFFCF6,#66CDBE);
+        color: #134E60;
+        font-size: 9px;
+        font-weight: 750;
+        cursor: pointer;
+        box-shadow: inset 0 4px 0 rgba(255,255,255,.7),0 3px 0 #3D9E95,0 5px 6px rgba(20,65,85,.13);
+        transition: transform .15s,background .15s;
+    }
+
+        .aircraft-seat:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: linear-gradient(160deg,#C5F6ED,#38BDAE);
+        }
+
+        .aircraft-seat.is-selected {
+            background: linear-gradient(160deg,#67B0FF,#1769D2);
+            border-color: #1059B5;
+            color: #FFF;
+            box-shadow: inset 0 4px 0 rgba(255,255,255,.25),0 3px 0 #0C4A99,0 5px 7px rgba(23,105,210,.25);
+        }
+
+        .aircraft-seat.is-occupied {
+            background: linear-gradient(160deg,#D2DAE3,#94A3B8);
+            border-color: #8798AA;
+            color: #FFF;
+            box-shadow: 0 3px 0 #78899C;
+            cursor: not-allowed;
+        }
+
+    .aisle-number {
+        text-align: center;
+        font-size: 9px;
+        font-weight: 750;
+        color: #7991A7;
+    }
+
+    .cabin-end {
+        text-align: center;
+        padding-top: 20px;
+        font-size: 10px;
+        color: #6F8AA5;
+    }
+
+    .selection-summary {
+        position: sticky;
+        top: 20px;
+        background: #FFF;
+        border: 1px solid #DCE8F5;
+        border-radius: 19px;
+        padding: 25px;
+        box-shadow: 0 10px 24px rgba(20,55,95,.09);
+    }
+
+    .summary-heading {
+        color: #123B72;
+        font-weight: 750;
+        margin-bottom: 22px;
+    }
+
+    .summary-route {
+        padding: 17px;
+        background: #F0F7FF;
+        border-radius: 13px;
+        margin-bottom: 20px;
+    }
+
+    .summary-price {
+        font-size: 28px;
+        color: #1769D2;
+        font-weight: 750;
+    }
+
+    .selected-seat-box {
+        padding: 16px;
+        background: #EAF6FF;
+        border: 1px solid #CDE5FA;
+        border-radius: 13px;
+        margin: 18px 0;
+    }
+
+    .seat-continue {
+        width: 100%;
+        padding: 13px;
+        background: #1769D2;
+        border: 0;
+        border-radius: 10px;
+        color: #FFF;
+        font-weight: 700;
+    }
+
+        .seat-continue:disabled {
+            background: #A5B8CD;
+            cursor: not-allowed;
+        }
+
+    @@media (max-width: 991px) {
+        .seat-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .selection-summary {
+            position: static;
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .seat-panel {
+            padding: 18px 4px 25px;
+        }
+
+        .aircraft-stage {
+            padding-bottom: 8px;
+        }
+    }
+</style>
+
+<div class="container seat-page">
+
+    <div class="mb-4">
+        <h2 class="seat-page-title">✈ Chọn ghế máy bay</h2>
+        <p class="text-muted">
+            Chọn vị trí yêu thích cho hành trình của bạn.
+        </p>
+    </div>
+
+    <div class="seat-layout">
+
+        <!-- BÊN TRÁI: SƠ ĐỒ MÁY BAY -->
+        <div class="seat-panel">
+
+            <h4 class="seat-panel-title">Sơ đồ khoang hành khách</h4>
+
+            <div class="seat-legend">
+                <div class="legend-item">
+                    <span class="legend-color"></span> Ghế trống
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color selected"></span> Đang chọn
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color occupied"></span> Đã đặt (mô phỏng)
+                </div>
+            </div>
+
+            <div class="aircraft-stage">
+                <div class="aircraft">
+
+                    <!-- SVG 2.5D: MŨI, CÁNH DÀI, ĐỘNG CƠ VÀ ĐUÔI -->
+                    <svg class="aircraft-shape" viewBox="0 0 900 1500"
+                         preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"
+                         aria-hidden="true">
+                        <defs>
+                            <linearGradient id="planeBody" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#8DB6D5" />
+                                <stop offset="13%" stop-color="#D6EAF7" />
+                                <stop offset="35%" stop-color="#FFFFFF" />
+                                <stop offset="65%" stop-color="#FFFFFF" />
+                                <stop offset="88%" stop-color="#D5E9F6" />
+                                <stop offset="100%" stop-color="#82ACCB" />
+                            </linearGradient>
+                            <linearGradient id="planeWing" x1="0%" y1="0%" x2="80%" y2="100%">
+                                <stop offset="0%" stop-color="#FFFFFF" />
+                                <stop offset="55%" stop-color="#E7F2FC" />
+                                <stop offset="100%" stop-color="#A9CBE5" />
+                            </linearGradient>
+                            <linearGradient id="enginePaint" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#0C4B93" />
+                                <stop offset="45%" stop-color="#2F89D2" />
+                                <stop offset="100%" stop-color="#073D79" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Cánh chính vươn dài về hai bên -->
+                        <path d="M300 520 L10 944 Q0 976 20 977 L300 805 Z"
+                              fill="url(#planeWing)" stroke="#9DBED8" stroke-width="4" />
+                        <path d="M600 520 L890 944 Q900 976 880 977 L600 805 Z"
+                              fill="url(#planeWing)" stroke="#9DBED8" stroke-width="4" />
+                        <path d="M300 555 L38 941 M600 555 L862 941"
+                              fill="none" stroke="#C0D7E9" stroke-width="3" />
+                        <path d="M300 755 L25 966 M600 755 L875 966"
+                              fill="none" stroke="#BCD4E7" stroke-width="2" />
+
+                        <!-- Hai động cơ phía trên cánh -->
+                        <rect x="174" y="596" width="57" height="112" rx="25"
+                              fill="url(#enginePaint)" stroke="#7DA9D1" stroke-width="4" />
+                        <rect x="669" y="596" width="57" height="112" rx="25"
+                              fill="url(#enginePaint)" stroke="#7DA9D1" stroke-width="4" />
+                        <path d="M187 605 Q202 589 218 605" fill="none"
+                              stroke="#C6E6FF" stroke-width="7" />
+                        <path d="M682 605 Q697 589 713 605" fill="none"
+                              stroke="#C6E6FF" stroke-width="7" />
+
+                        <!-- Cánh đuôi -->
+                        <path d="M318 1280 L140 1433 L140 1450 L369 1378 Z"
+                              fill="url(#planeWing)" stroke="#9DBED8" stroke-width="4" />
+                        <path d="M582 1280 L760 1433 L760 1450 L531 1378 Z"
+                              fill="url(#planeWing)" stroke="#9DBED8" stroke-width="4" />
+
+                        <!-- Thân máy bay và khoang trong -->
+                        <path d="M450 2 C398 12 295 85 295 170
+                             L295 1270 Q295 1400 450 1485
+                             Q605 1400 605 1270 L605 170
+                             C605 85 502 12 450 2 Z"
+                              fill="url(#planeBody)" stroke="#8CB5D3" stroke-width="5" />
+                        <path d="M450 43 C405 48 312 110 312 179
+                             L312 1263 Q312 1370 450 1442
+                             Q588 1370 588 1263 L588 179
+                             C588 110 495 48 450 43 Z"
+                              fill="#F8FCFF" stroke="#D4E5F1" stroke-width="3" />
+
+                        <!-- Cửa sổ dọc hai bên thân -->
+                        <path d="M303 210 L303 1250 M597 210 L597 1250"
+                              stroke="#8ABEDD" stroke-width="7"
+                              stroke-dasharray="13 20" opacity="0.7" />
+
+                        <!-- Đường viền thân và chi tiết đuôi -->
+                        <path d="M450 1390 L450 1480" stroke="#347EC0"
+                              stroke-width="12" stroke-linecap="round" />
+                        <path d="M420 1435 L450 1480 L480 1435" fill="none"
+                              stroke="#9BC4E3" stroke-width="3" />
+                    </svg>
+
+                    <!-- CÁC GHẾ HTML NẰM TRONG THÂN -->
+                    <div class="aircraft-cabin">
+
+                        <div class="cockpit">
+                            <div class="cockpit-window"><span></span><span></span><span></span></div>
+                            <div class="cockpit-label">COCKPIT</div>
+                        </div>
+
+                        <div class="seat-columns">
+                            <span>A</span><span>B</span><span>C</span>
+                            <span></span>
+                            <span>D</span><span>E</span><span>F</span>
+                        </div>
+
+                        @for (int row = 1; row <= totalRows; row++)
+                        {
+                            <div class="seat-row">
+
+                                @foreach (char letter in "ABC")
+                                {
+                                    string seat = row.ToString() + letter;
+                                    bool occupied = occupiedSeats.Contains(seat);
+
+                                    <button type="button"
+                                            class="aircraft-seat @(occupied ? "is-occupied" : "")"
+                                            data-seat="@seat"
+                                            disabled="@occupied"
+                                            aria-pressed="false"
+                                            title="Ghế @seat">
+                                        @seat
+                                    </button>
+                                }
+
+                                <span class="aisle-number">@row</span>
+
+                                @foreach (char letter in "DEF")
+                                {
+                                    string seat = row.ToString() + letter;
+                                    bool occupied = occupiedSeats.Contains(seat);
+
+                                    <button type="button"
+                                            class="aircraft-seat @(occupied ? "is-occupied" : "")"
+                                            data-seat="@seat"
+                                            disabled="@occupied"
+                                            aria-pressed="false"
+                                            title="Ghế @seat">
+                                        @seat
+                                    </button>
+                                }
+
+                            </div>
+                        }
+
+                        <div class="cabin-end">
+                            KHU VỰC CUỐI MÁY BAY
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BÊN PHẢI: THÔNG TIN CHỌN GHẾ -->
+        <aside class="selection-summary">
+
+            <h4 class="summary-heading">Thông tin hành trình</h4>
+
+            <div class="summary-route">
+                <div class="summary-airline">
+                    @if (Model.Airline != null && !string.IsNullOrEmpty(Model.Airline.LogoURL))
+                    {
+                        <img class="summary-airline-logo"
+                             src="@Url.Content("~" + Model.Airline.LogoURL)"
+                             alt="@Model.Airline.AirlineName" />
+                    }
+                    else
+                    {
+                        <span style="font-size:30px;color:#1769D2;">✈</span>
+                    }
+                    <div>
+                        <strong>@(Model.Airline != null ? Model.Airline.AirlineName : "Hãng hàng không")</strong>
+                        <div class="text-muted small">Chuyến bay @Model.FlightNumber</div>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold mt-3" style="color:#1769D2;">
+                    @(Model.Airport1 != null ? Model.Airport1.AirportCode : "---")
+                    →
+                    @(Model.Airport != null ? Model.Airport.AirportCode : "---")
+                </h5>
+
+                <div class="summary-meta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="5" width="18" height="16" rx="2" />
+                        <path d="M7 3v4M17 3v4M3 10h18" />
+                    </svg>
+                    <div>
+                        <div class="summary-meta-label">Ngày và giờ khởi hành</div>
+                        <div class="summary-meta-value">@Model.DepartureTime.ToString("dd/MM/yyyy HH:mm")</div>
+                    </div>
+                </div>
+
+                <div class="summary-meta">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 7v5l3 2" />
+                    </svg>
+                    <div>
+                        <div class="summary-meta-label">Thời gian bay dự kiến</div>
+                        <div class="summary-meta-value">@((int)(Model.ArrivalTime - Model.DepartureTime).TotalHours) giờ @((Model.ArrivalTime - Model.DepartureTime).Minutes) phút</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-muted mb-1">Giá vé mỗi hành khách</div>
+            <div class="summary-price">
+                @Model.Price.ToString("N0") ₫
+            </div>
+
+
+            <!-- THÔNG TIN HÀNH KHÁCH VÀ GHẾ -->
+            <div class="selected-seat-box">
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <strong>Ghế đang chọn</strong>
+
+                    <span id="seatCounter" class="badge bg-primary">
+                        0/@passengers ghế
+                    </span>
+                </div>
+
+                <div id="selectedSeatText" class="mt-3">
+                    Chưa chọn ghế
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-between">
+                    <span>Số hành khách</span>
+                    <strong>@passengers</strong>
+                </div>
+
+                <div class="d-flex justify-content-between mt-2">
+                    <span>Tổng tiền dự kiến</span>
+                    <strong id="totalPriceText" style="color:#1769D2;">
+                        @totalPrice.ToString("N0") ₫
+                    </strong>
+                </div>
+
+                <div id="seatSelectionMessage"
+                     class="small text-muted mt-3"
+                     role="status"
+                     aria-live="polite">
+                    Vui lòng chọn đủ @passengers ghế.
+                </div>
+
+            </div>
+
+
+            <p class="text-muted small">
+                Đây là bản mô phỏng giao diện.
+                Trạng thái ghế chưa được đồng bộ với database.
+            </p>
+
+            <button id="continueSeatButton"
+                    type="button"
+                    class="seat-continue"
+                    disabled>
+                Tiếp tục →
+            </button>
+
+            <a href="@Url.Action("Details", "Flights",
+         new { id = Model.FlightID, passengers = passengers })"
+               class="btn btn-outline-secondary w-100 mt-3">
+                ← Quay lại chi tiết chuyến bay
+            </a>
+
+        </aside>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        // Số hành khách lấy từ Razor
+        var maxSeats = @passengers;
+
+        // Danh sách ghế đang chọn
+        var selectedSeats = [];
+
+        var seatButtons = document.querySelectorAll(
+            ".aircraft-seat:not(:disabled)"
+        );
+
+        var selectedSeatText = document.getElementById(
+            "selectedSeatText"
+        );
+
+        var seatCounter = document.getElementById(
+            "seatCounter"
+        );
+
+        var selectionMessage = document.getElementById(
+            "seatSelectionMessage"
+        );
+
+        var continueButton = document.getElementById(
+            "continueSeatButton"
+        );
+
+        function updateSelection() {
+
+            var count = selectedSeats.length;
+
+            // Cập nhật số lượng ghế
+            seatCounter.textContent =
+                count + "/" + maxSeats + " ghế";
+
+            // Hiển thị danh sách ghế
+            selectedSeatText.textContent =
+                count > 0
+                    ? selectedSeats.join(", ")
+                    : "Chưa chọn ghế";
+
+            // Thông báo trạng thái
+            if (count === maxSeats) {
+                selectionMessage.textContent =
+                    "Đã chọn đủ " + maxSeats + " ghế.";
+                selectionMessage.className =
+                    "small text-success mt-3";
+            }
+            else {
+                selectionMessage.textContent =
+                    "Vui lòng chọn thêm " +
+                    (maxSeats - count) + " ghế.";
+
+                selectionMessage.className =
+                    "small text-muted mt-3";
+            }
+
+            // Chỉ cho phép tiếp tục khi chọn đủ số ghế
+            continueButton.disabled =
+                selectedSeats.length !== maxSeats;
+
+        }
+
+        seatButtons.forEach(function (button) {
+
+            button.addEventListener("click", function () {
+
+                var seatNumber = button.dataset.seat;
+
+                var index = selectedSeats.indexOf(seatNumber);
+
+                if (index !== -1) {
+
+                    // Bỏ chọn ghế
+                    selectedSeats.splice(index, 1);
+
+                    button.classList.remove("is-selected");
+
+                    button.setAttribute(
+                        "aria-pressed", "false"
+                    );
+                }
+                else {
+
+                    // Không cho chọn vượt số hành khách
+                    if (selectedSeats.length >= maxSeats) {
+                        selectionMessage.textContent =
+                            "Bạn chỉ được chọn tối đa " +
+                            maxSeats + " ghế.";
+
+                        selectionMessage.className =
+                            "small text-danger mt-3";
+
+                        return;
+                    }
+
+                    // Thêm ghế mới
+                    selectedSeats.push(seatNumber);
+
+                    button.classList.add("is-selected");
+
+                    button.setAttribute(
+                        "aria-pressed", "true"
+                    );
+                }
+
+        // Chuyển sang trang nhập thông tin hành khách
+        continueButton.addEventListener("click", function () {
+
+            // Không cho chuyển trang nếu chưa chọn đủ ghế
+            if (selectedSeats.length !== maxSeats) {
+                return;
+            }
+
+            // Đường dẫn Action PassengerInformation
+            var url = '@Url.Action("PassengerInformation", "Flights",
+                           new { id = Model.FlightID })';
+
+            // Truyền số hành khách và danh sách ghế
+            var query =
+                "passengers=" + encodeURIComponent(maxSeats) +
+                "&seats=" + encodeURIComponent(
+                    selectedSeats.join(",")
+                );
+
+            window.location.href = url + "?" + query;
+        });
+                updateSelection();
+            });
+
+        });
+
+        updateSelection();
+
+    });
+</script>
+

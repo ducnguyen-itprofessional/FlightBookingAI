@@ -21,7 +21,9 @@ namespace FlightBookingAI.Web.Models
         public string Gender { get; set; }
         public string IdentityNumber { get; set; }
         public string PassengerType { get; set; }
+        public Nullable<int> FlightSeatID { get; set; }
     
         public virtual Booking Booking { get; set; }
+        public virtual FlightSeat FlightSeat { get; set; }
     }
 }

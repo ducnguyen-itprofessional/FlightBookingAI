@@ -29,6 +29,7 @@ namespace FlightBookingAI.Web.Models
         public int PassengerCount { get; set; }
         public decimal TotalAmount { get; set; }
         public string Status { get; set; }
+        public Nullable<System.Guid> BookingRequestId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BookingPassenger> BookingPassengers { get; set; }

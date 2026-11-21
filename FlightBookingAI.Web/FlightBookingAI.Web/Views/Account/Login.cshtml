@@ -1,0 +1,197 @@
+﻿
+@model FlightBookingAI.Web.ViewModels.LoginViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>Đăng nhập - FlightBookingAI</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com" />
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="@Url.Content("~/Content/auth.css")" />
+</head>
+
+<body>
+    <main class="auth-page">
+
+        <section class="auth-card">
+
+            <div class="auth-brand">
+                FlightBooking<span class="auth-brand-accent">AI</span>
+            </div>
+
+            <p class="auth-subtitle">
+                Chào mừng bạn quay trở lại!
+                Đăng nhập để tiếp tục hành trình.
+            </p>
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="auth-success">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Hidden("returnUrl", (string)ViewBag.ReturnUrl)
+                <div class="auth-validation">
+                    @Html.ValidationSummary(true, "")
+                </div>
+
+                <div class="auth-form-group">
+                    @Html.LabelFor(m => m.Email, "Email",
+                                            new { @class = "auth-label" })
+
+                    @Html.TextBoxFor(m => m.Email,
+                                            new
+                                            {
+                                                @class = "auth-input",
+                                                type = "email",
+                                                placeholder = "Nhập email của bạn",
+                                                autocomplete = "email"
+                                            })
+
+                    <div class="auth-validation">
+                        @Html.ValidationMessageFor(m => m.Email)
+                    </div>
+                </div>
+
+
+                <!-- MẬT KHẨU -->
+                <div class="auth-form-group">
+                    @Html.LabelFor(m => m.Password, "Mật khẩu",
+                                      new { @class = "auth-label" })
+
+                    <div class="auth-password-wrapper">
+                        @Html.PasswordFor(m => m.Password,
+                                           new
+                                           {
+                                               @class = "auth-input",
+                                               placeholder = "Nhập mật khẩu",
+                                               autocomplete = "current-password"
+                                           })
+
+                        <button type="button"
+                                class="auth-password-toggle"
+                                data-target="Password"
+                                aria-label="Hiện mật khẩu"
+                                aria-pressed="false">
+
+                            <svg class="auth-eye-icon"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="1.8"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true">
+
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                                <circle cx="12" cy="12" r="3" />
+
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="auth-validation">
+                        @Html.ValidationMessageFor(m => m.Password)
+                    </div>
+                </div>
+
+
+                <div class="auth-check">
+                    @Html.CheckBoxFor(m => m.RememberMe)
+
+                    @Html.LabelFor(m => m.RememberMe,
+                                            "Ghi nhớ đăng nhập")
+                </div>
+
+                <button type="submit" class="auth-btn">
+                    Đăng nhập
+                </button>
+            }
+
+            <div class="auth-footer">
+                Chưa có tài khoản?
+                <a href="@Url.Action("Register", "Account")"
+                   class="auth-link">
+                    Đăng ký ngay
+                </a>
+            </div>
+
+            <div class="auth-footer">
+                <a href="@Url.Action("Welcome", "Account")"
+                   class="auth-link">
+                    ← Quay lại
+                </a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>document.addEventListener("DOMContentLoaded", function () {
+
+        const eyeOpen = `
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+        `;
+
+        const eyeClosed = `
+            <path d="M3 3l18 18" />
+            <path d="M10.6 5.1A11 11 0 0 1 12 5c6.5 0 10 7 10 7a14 14 0 0 1-3.1 3.8" />
+            <path d="M6.3 6.3C3.5 8.1 2 12 2 12s3.5 7 10 7a10.8 10.8 0 0 0 4.1-.8" />
+            <path d="M10 10a3 3 0 0 0 4 4" />
+        `;
+
+        document.querySelectorAll(".auth-password-toggle")
+            .forEach(function (button) {
+
+                button.addEventListener("click", function () {
+
+                    const input = document.getElementById(
+                        button.getAttribute("data-target")
+                    );
+
+                    if (!input) return;
+
+                    const showPassword = input.type === "password";
+
+                    input.type = showPassword ? "text" : "password";
+
+                    button.querySelector("svg").innerHTML =
+                        showPassword ? eyeClosed : eyeOpen;
+
+                    button.setAttribute(
+                        "aria-label",
+                        showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+                    );
+
+                    button.setAttribute(
+                        "aria-pressed",
+                        String(showPassword)
+                    );
+                });
+            });
+    });</script>
+
+</body>
+</html>

@@ -28,6 +28,9 @@
         <AssociationConnector Association="FlightBookingAIModel.FK_Itineraries_Destinations" ManuallyRouted="false" />
         <AssociationConnector Association="FlightBookingAIModel.FK_Itineraries_Users" ManuallyRouted="false" />
         <AssociationConnector Association="FlightBookingAIModel.FK_ItineraryItems_Itineraries" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="FlightBookingAIModel.FlightSeat" Width="1.5" PointX="5.25" PointY="7.75" />
+        <AssociationConnector Association="FlightBookingAIModel.FK_BookingPassengers_FlightSeats" />
+        <AssociationConnector Association="FlightBookingAIModel.FK_FlightSeats_Flights" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="FlightBookingAIModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="FlightBookingAIModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Airlines">
           <Key>
             <PropertyRef Name="AirlineID" />
@@ -49,6 +49,7 @@
           <Property Name="Gender" Type="nvarchar" MaxLength="10" />
           <Property Name="IdentityNumber" Type="varchar" MaxLength="30" />
           <Property Name="PassengerType" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="FlightSeatID" Type="int" />
         </EntityType>
         <EntityType Name="Bookings">
           <Key>
@@ -62,6 +63,7 @@
           <Property Name="PassengerCount" Type="int" Nullable="false" />
           <Property Name="TotalAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="Status" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="BookingRequestId" Type="uniqueidentifier" />
         </EntityType>
         <EntityType Name="Destinations">
           <Key>
@@ -90,6 +92,15 @@
           <Property Name="Price" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="TotalSeats" Type="int" Nullable="false" />
           <Property Name="AvailableSeats" Type="int" Nullable="false" />
+          <Property Name="Status" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="FlightSeats">
+          <Key>
+            <PropertyRef Name="FlightSeatID" />
+          </Key>
+          <Property Name="FlightSeatID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FlightID" Type="int" Nullable="false" />
+          <Property Name="SeatNumber" Type="varchar" MaxLength="5" Nullable="false" />
           <Property Name="Status" Type="varchar" MaxLength="20" Nullable="false" />
         </EntityType>
         <EntityType Name="Itineraries">
@@ -173,6 +184,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_BookingPassengers_FlightSeats">
+          <End Role="FlightSeats" Type="Self.FlightSeats" Multiplicity="0..1" />
+          <End Role="BookingPassengers" Type="Self.BookingPassengers" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FlightSeats">
+              <PropertyRef Name="FlightSeatID" />
+            </Principal>
+            <Dependent Role="BookingPassengers">
+              <PropertyRef Name="FlightSeatID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Bookings_Flights">
           <End Role="Flights" Type="Self.Flights" Multiplicity="1" />
           <End Role="Bookings" Type="Self.Bookings" Multiplicity="*" />
@@ -230,6 +253,18 @@
             </Principal>
             <Dependent Role="Flights">
               <PropertyRef Name="DepartureAirportID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FlightSeats_Flights">
+          <End Role="Flights" Type="Self.Flights" Multiplicity="1" />
+          <End Role="FlightSeats" Type="Self.FlightSeats" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Flights">
+              <PropertyRef Name="FlightID" />
+            </Principal>
+            <Dependent Role="FlightSeats">
+              <PropertyRef Name="FlightID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -301,6 +336,7 @@
           <EntitySet Name="Bookings" EntityType="Self.Bookings" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Destinations" EntityType="Self.Destinations" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Flights" EntityType="Self.Flights" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FlightSeats" EntityType="Self.FlightSeats" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Itineraries" EntityType="Self.Itineraries" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ItineraryItems" EntityType="Self.ItineraryItems" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Payments" EntityType="Self.Payments" Schema="dbo" store:Type="Tables" />
@@ -311,6 +347,10 @@
           </AssociationSet>
           <AssociationSet Name="FK_BookingPassengers_Bookings" Association="Self.FK_BookingPassengers_Bookings">
             <End Role="Bookings" EntitySet="Bookings" />
+            <End Role="BookingPassengers" EntitySet="BookingPassengers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BookingPassengers_FlightSeats" Association="Self.FK_BookingPassengers_FlightSeats">
+            <End Role="FlightSeats" EntitySet="FlightSeats" />
             <End Role="BookingPassengers" EntitySet="BookingPassengers" />
           </AssociationSet>
           <AssociationSet Name="FK_Bookings_Flights" Association="Self.FK_Bookings_Flights">
@@ -333,6 +373,10 @@
             <End Role="Airports" EntitySet="Airports" />
             <End Role="Flights" EntitySet="Flights" />
           </AssociationSet>
+          <AssociationSet Name="FK_FlightSeats_Flights" Association="Self.FK_FlightSeats_Flights">
+            <End Role="Flights" EntitySet="Flights" />
+            <End Role="FlightSeats" EntitySet="FlightSeats" />
+          </AssociationSet>
           <AssociationSet Name="FK_Itineraries_Destinations" Association="Self.FK_Itineraries_Destinations">
             <End Role="Destinations" EntitySet="Destinations" />
             <End Role="Itineraries" EntitySet="Itineraries" />
@@ -354,8 +398,7 @@
             <End Role="Payments" EntitySet="Payments" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="FlightBookingAIModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -409,6 +452,8 @@
           <Property Name="IdentityNumber" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="PassengerType" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Booking" Relationship="Self.FK_BookingPassengers_Bookings" FromRole="BookingPassengers" ToRole="Bookings" />
+          <Property Name="FlightSeatID" Type="Int32" />
+          <NavigationProperty Name="FlightSeat" Relationship="FlightBookingAIModel.FK_BookingPassengers_FlightSeats" FromRole="BookingPassenger" ToRole="FlightSeat" />
         </EntityType>
         <EntityType Name="Booking">
           <Key>
@@ -426,6 +471,7 @@
           <NavigationProperty Name="Flight" Relationship="Self.FK_Bookings_Flights" FromRole="Bookings" ToRole="Flights" />
           <NavigationProperty Name="User" Relationship="Self.FK_Bookings_Users" FromRole="Bookings" ToRole="Users" />
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payments_Bookings" FromRole="Bookings" ToRole="Payments" />
+          <Property Name="BookingRequestId" Type="Guid" />
         </EntityType>
         <EntityType Name="Destination">
           <Key>
@@ -461,6 +507,7 @@
           <NavigationProperty Name="Airport" Relationship="Self.FK_Flights_ArrivalAirport" FromRole="Flights" ToRole="Airports" />
           <NavigationProperty Name="Airport1" Relationship="Self.FK_Flights_DepartureAirport" FromRole="Flights" ToRole="Airports" />
           <NavigationProperty Name="Bookings" Relationship="Self.FK_Bookings_Flights" FromRole="Flights" ToRole="Bookings" />
+          <NavigationProperty Name="FlightSeats" Relationship="FlightBookingAIModel.FK_FlightSeats_Flights" FromRole="Flight" ToRole="FlightSeat" />
         </EntityType>
         <EntityType Name="Itinerary">
           <Key>
@@ -731,7 +778,51 @@
             <End Role="Itineraries" EntitySet="Itineraries" />
             <End Role="ItineraryItems" EntitySet="ItineraryItems" />
           </AssociationSet>
+          <EntitySet Name="FlightSeats" EntityType="FlightBookingAIModel.FlightSeat" />
+          <AssociationSet Name="FK_BookingPassengers_FlightSeats" Association="FlightBookingAIModel.FK_BookingPassengers_FlightSeats">
+            <End Role="FlightSeat" EntitySet="FlightSeats" />
+            <End Role="BookingPassenger" EntitySet="BookingPassengers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_FlightSeats_Flights" Association="FlightBookingAIModel.FK_FlightSeats_Flights">
+            <End Role="Flight" EntitySet="Flights" />
+            <End Role="FlightSeat" EntitySet="FlightSeats" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="FlightSeat">
+          <Key>
+            <PropertyRef Name="FlightSeatID" />
+          </Key>
+          <Property Name="FlightSeatID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FlightID" Type="Int32" Nullable="false" />
+          <Property Name="SeatNumber" Type="String" Nullable="false" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BookingPassengers" Relationship="FlightBookingAIModel.FK_BookingPassengers_FlightSeats" FromRole="FlightSeat" ToRole="BookingPassenger" />
+          <NavigationProperty Name="Flight" Relationship="FlightBookingAIModel.FK_FlightSeats_Flights" FromRole="FlightSeat" ToRole="Flight" />
+        </EntityType>
+        <Association Name="FK_BookingPassengers_FlightSeats">
+          <End Type="FlightBookingAIModel.FlightSeat" Role="FlightSeat" Multiplicity="0..1" />
+          <End Type="FlightBookingAIModel.BookingPassenger" Role="BookingPassenger" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FlightSeat">
+              <PropertyRef Name="FlightSeatID" />
+            </Principal>
+            <Dependent Role="BookingPassenger">
+              <PropertyRef Name="FlightSeatID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_FlightSeats_Flights">
+          <End Type="FlightBookingAIModel.Flight" Role="Flight" Multiplicity="1" />
+          <End Type="FlightBookingAIModel.FlightSeat" Role="FlightSeat" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Flight">
+              <PropertyRef Name="FlightID" />
+            </Principal>
+            <Dependent Role="FlightSeat">
+              <PropertyRef Name="FlightID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -777,6 +868,7 @@
           <EntitySetMapping Name="BookingPassengers">
             <EntityTypeMapping TypeName="FlightBookingAIModel.BookingPassenger">
               <MappingFragment StoreEntitySet="BookingPassengers">
+                <ScalarProperty Name="FlightSeatID" ColumnName="FlightSeatID" />
                 <ScalarProperty Name="BookingPassengerID" ColumnName="BookingPassengerID" />
                 <ScalarProperty Name="BookingID" ColumnName="BookingID" />
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
@@ -790,6 +882,7 @@
           <EntitySetMapping Name="Bookings">
             <EntityTypeMapping TypeName="FlightBookingAIModel.Booking">
               <MappingFragment StoreEntitySet="Bookings">
+                <ScalarProperty Name="BookingRequestId" ColumnName="BookingRequestId" />
                 <ScalarProperty Name="BookingID" ColumnName="BookingID" />
                 <ScalarProperty Name="BookingCode" ColumnName="BookingCode" />
                 <ScalarProperty Name="UserID" ColumnName="UserID" />
@@ -890,6 +983,16 @@
                 <ScalarProperty Name="Phone" ColumnName="Phone" />
                 <ScalarProperty Name="Role" ColumnName="Role" />
                 <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FlightSeats">
+            <EntityTypeMapping TypeName="FlightBookingAIModel.FlightSeat">
+              <MappingFragment StoreEntitySet="FlightSeats">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="SeatNumber" ColumnName="SeatNumber" />
+                <ScalarProperty Name="FlightID" ColumnName="FlightID" />
+                <ScalarProperty Name="FlightSeatID" ColumnName="FlightSeatID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

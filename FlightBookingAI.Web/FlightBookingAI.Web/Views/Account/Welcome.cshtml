@@ -1,0 +1,68 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>Welcome - FlightBookingAI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet" />
+    <link rel="stylesheet"
+          href="@Url.Content("~/Content/auth.css")" />
+</head>
+
+<body style="margin: 0;">
+
+    <main class="auth-page">
+
+        <div class="auth-card auth-welcome">
+
+            <div class="auth-brand">
+                FlightBooking<span class="auth-brand-accent">AI</span>
+            </div>
+
+            <h1 class="auth-title">
+                Chào mừng hành trình mới!
+            </h1>
+
+            <p class="auth-subtitle">
+                Khám phá thế giới, đặt vé máy bay dễ dàng
+                và lên kế hoạch du lịch thông minh
+                cùng trợ lý AI của bạn.
+            </p>
+
+            <div class="auth-welcome-actions">
+
+                <a href="@Url.Action("Login", "Account")"
+                   class="auth-btn">
+                    Đăng nhập
+                </a>
+
+                <a href="@Url.Action("Register", "Account")"
+                   class="auth-btn">
+                    Đăng ký
+                </a>
+
+            </div>
+
+            <div class="auth-footer">
+                <a href="@Url.Action("Index", "Home")"
+                   class="auth-link">
+                    ← Quay về trang chủ
+                </a>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

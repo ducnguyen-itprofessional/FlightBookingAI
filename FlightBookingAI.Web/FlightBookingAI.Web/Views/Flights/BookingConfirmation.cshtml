@@ -1,0 +1,513 @@
+﻿@using System.Linq
+@model FlightBookingAI.Web.ViewModels.PassengerBookingViewModel
+
+@{
+    ViewBag.Title = "Xác nhận đặt vé";
+
+    int passengerCount = Model.Passengers != null
+        ? Model.Passengers.Count
+        : 0;
+}
+
+<style>
+    .confirmation-page {
+        background: #f4f8fd;
+        padding: 36px 0 60px;
+        min-height: 80vh;
+    }
+
+    .confirmation-container {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .confirmation-heading {
+        margin-bottom: 26px;
+    }
+
+        .confirmation-heading h2 {
+            font-size: 30px;
+            font-weight: 800;
+            color: #153b66;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-heading p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+    .confirmation-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 340px;
+        gap: 24px;
+        align-items: start;
+    }
+
+    .confirmation-card {
+        background: white;
+        border: 1px solid #e3edf7;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 22px;
+        box-shadow: 0 5px 20px rgba(25, 65, 110, 0.05);
+    }
+
+        .confirmation-card h3 {
+            font-size: 19px;
+            font-weight: 700;
+            color: #153b66;
+            margin: 0 0 22px;
+        }
+
+    .confirmation-route {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 18px 0;
+        border-top: 1px solid #edf2f7;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .confirmation-airport {
+        flex: 1;
+        min-width: 0;
+    }
+
+        .confirmation-airport:last-child {
+            text-align: right;
+        }
+
+        .confirmation-airport strong {
+            display: block;
+            font-size: 32px;
+            color: #087bc0;
+            font-weight: 800;
+        }
+
+        .confirmation-airport span {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+    .confirmation-plane {
+        font-size: 30px;
+        color: #0ea5e9;
+    }
+
+    .confirmation-flight-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-top: 22px;
+    }
+
+    .confirmation-label {
+        display: block;
+        font-size: 13px;
+        color: #7b8ca3;
+        margin-bottom: 6px;
+    }
+
+    .confirmation-value {
+        color: #243b53;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    .confirmation-passenger {
+        padding: 17px 0;
+        border-top: 1px solid #edf2f7;
+    }
+
+        .confirmation-passenger:first-of-type {
+            border-top: none;
+        }
+
+    .confirmation-passenger-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 13px;
+    }
+
+        .confirmation-passenger-header strong {
+            font-size: 16px;
+            color: #153b66;
+        }
+
+    .confirmation-seat {
+        background: #e4f5ff;
+        color: #087bc0;
+        padding: 7px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .confirmation-passenger-details {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .confirmation-summary {
+        position: sticky;
+        top: 20px;
+    }
+
+    .confirmation-price {
+        font-size: 29px;
+        font-weight: 800;
+        color: #087bc0;
+        margin: 18px 0;
+    }
+
+    .confirmation-divider {
+        border-top: 1px solid #e5edf5;
+        margin: 18px 0;
+    }
+
+    .confirmation-note {
+        background: #fff8e6;
+        border-left: 4px solid #f59e0b;
+        border-radius: 8px;
+        padding: 13px;
+        color: #8a5a00;
+        font-size: 13px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    .confirmation-button {
+        display: block;
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        padding: 14px 16px;
+        font-size: 15px;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+        background: #087bc0;
+        color: white;
+        cursor: pointer;
+    }
+
+        .confirmation-button:disabled {
+            background: #a6b9ca;
+            cursor: not-allowed;
+        }
+
+    .confirmation-back {
+        display: block;
+        margin-top: 15px;
+        text-align: center;
+        color: #087bc0;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+        .confirmation-back:hover {
+            text-decoration: underline;
+        }
+
+    @@media (max-width: 850px) {
+        .confirmation-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .confirmation-summary {
+            position: static;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .confirmation-flight-info,
+        .confirmation-passenger-details {
+            grid-template-columns: 1fr;
+        }
+
+        .confirmation-card {
+            padding: 18px;
+        }
+
+        .confirmation-heading h2 {
+            font-size: 25px;
+        }
+    }
+
+    /* ĐƯỜNG BAY NỐI HAI SÂN BAY */
+    .confirmation-flight-path {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1.5;
+        min-width: 60px;
+        gap: 8px;
+    }
+
+    .flight-path-line {
+        flex: 1;
+        border-top: 2px dashed #38bdf8;
+    }
+
+    .flight-path-dot {
+        width: 8px;
+        height: 8px;
+        background: #0ea5e9;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .flight-path-plane {
+        font-size: 30px;
+        color: #0284c7;
+        line-height: 1;
+        transform: rotate(0deg);
+        flex-shrink: 0;
+    }
+
+</style>
+
+<div class="confirmation-page">
+    <div class="confirmation-container">
+
+        <div class="confirmation-heading">
+            <h2>✈️ Xác nhận thông tin đặt vé</h2>
+            <p>
+                Vui lòng kiểm tra thông tin chuyến bay
+                và hành khách trước khi tiếp tục.
+            </p>
+        </div>
+
+        <div class="confirmation-layout">
+
+            <!-- CỘT TRÁI -->
+            <main>
+
+                <!-- THÔNG TIN CHUYẾN BAY -->
+                <section class="confirmation-card">
+
+                    <h3>Thông tin chuyến bay</h3>
+
+                    <div class="confirmation-route">
+
+                        <div class="confirmation-airport">
+                            <span>Điểm khởi hành</span>
+                            <strong>@Model.DepartureAirport</strong>
+                        </div>
+
+                        <div class="confirmation-flight-path">
+                            <span class="flight-path-dot"></span>
+                            <span class="flight-path-line"></span>
+                            <span class="flight-path-plane">✈</span>
+                            <span class="flight-path-line"></span>
+                            <span class="flight-path-dot"></span>
+                        </div>
+
+                        <div class="confirmation-airport">
+                            <span>Điểm đến</span>
+                            <strong>@Model.ArrivalAirport</strong>
+                        </div>
+
+                    </div>
+
+                    <div class="confirmation-flight-info">
+
+                        <div>
+                            <span class="confirmation-label">
+                                Mã chuyến bay
+                            </span>
+                            <span class="confirmation-value">
+                                @Model.FlightNumber
+                            </span>
+                        </div>
+
+                        <div>
+                            <span class="confirmation-label">
+                                Hãng hàng không
+                            </span>
+                            <span class="confirmation-value">
+                                @Model.AirlineName
+                            </span>
+                        </div>
+
+                        <div>
+                            <span class="confirmation-label">
+                                Số lượng hành khách
+                            </span>
+                            <span class="confirmation-value">
+                                @passengerCount người
+                            </span>
+                        </div>
+
+                        <div>
+                            <span class="confirmation-label">
+                                Trạng thái
+                            </span>
+                            <span class="confirmation-value">
+                                Chờ xác nhận
+                            </span>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- DANH SÁCH HÀNH KHÁCH -->
+                <section class="confirmation-card">
+
+                    <h3>Danh sách hành khách</h3>
+
+                    @if (Model.Passengers != null)
+                    {
+                        for (int i = 0; i < Model.Passengers.Count; i++)
+                        {
+                            var passenger = Model.Passengers[i];
+
+                            <div class="confirmation-passenger">
+
+                                <div class="confirmation-passenger-header">
+                                    <strong>
+                                        Hành khách @(i + 1):
+                                        @passenger.FullName
+                                    </strong>
+
+                                    <span class="confirmation-seat">
+                                        Ghế @passenger.SeatNumber
+                                    </span>
+                                </div>
+
+                                <div class="confirmation-passenger-details">
+
+                                    <div>
+                                        <span class="confirmation-label">
+                                            Ngày sinh
+                                        </span>
+                                        <span class="confirmation-value">
+                                            @(passenger.DateOfBirth.HasValue
+                                                ? passenger.DateOfBirth.Value.ToString("dd/MM/yyyy")
+                                                : "---")
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <span class="confirmation-label">
+                                            Loại hành khách
+                                        </span>
+                                        <span class="confirmation-value">
+                                            @(passenger.PassengerType == "Adult"
+                                                ? "Người lớn"
+                                                : passenger.PassengerType == "Child"
+                                                    ? "Trẻ em"
+                                                    : "Không xác định")
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <span class="confirmation-label">
+                                            Giới tính
+                                        </span>
+                                        <span class="confirmation-value">
+                                            @(string.IsNullOrWhiteSpace(passenger.Gender)
+                                                ? "Chưa cung cấp"
+                                                : passenger.Gender)
+                                        </span>
+                                    </div>
+
+                                    <div>
+                                        <span class="confirmation-label">
+                                            CCCD / Hộ chiếu
+                                        </span>
+                                        <span class="confirmation-value">
+                                            @(string.IsNullOrWhiteSpace(passenger.IdentityNumber)
+                                                ? "Chưa cung cấp"
+                                                : passenger.IdentityNumber)
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        }
+                    }
+
+                </section>
+
+            </main>
+
+            <!-- CỘT PHẢI -->
+            <aside class="confirmation-summary">
+
+                <div class="confirmation-card">
+
+                    <h3>Chi tiết thanh toán</h3>
+
+                    <div class="confirmation-flight-info">
+
+                        <div>
+                            <span class="confirmation-label">
+                                Số hành khách
+                            </span>
+                            <span class="confirmation-value">
+                                @passengerCount người
+                            </span>
+                        </div>
+
+                        <div>
+                            <span class="confirmation-label">
+                                Mã chuyến bay
+                            </span>
+                            <span class="confirmation-value">
+                                @Model.FlightNumber
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="confirmation-divider"></div>
+
+                    <span class="confirmation-label">
+                        Tổng tiền dự kiến
+                    </span>
+
+                    <div class="confirmation-price">
+                        @Model.TotalAmount.ToString("N0") ₫
+                    </div>
+
+                    <div class="confirmation-note">
+                        ⚠️ Đây là bước kiểm tra thông tin.
+                        Hệ thống chưa tạo đơn đặt vé và
+                        chưa thực hiện thanh toán.
+                    </div>
+
+                    @using (Html.BeginForm("ConfirmBooking", "Flights", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        @Html.HiddenFor(m => m.BookingRequestId)
+
+                        <button type="submit"
+                                class="confirmation-button"
+                                disabled>
+                            Xác nhận đặt vé
+                        </button>
+                    }
+
+                    <a href="@Url.Action("PassengerInformation", "Flights",
+                         new { id = Model.FlightID,
+                               passengers = Model.PassengerCount,
+                               seats = string.Join(",", Model.Passengers.Select(p => p.SeatNumber)) })"
+                       class="confirmation-back">
+                        ← Quay lại chỉnh sửa
+                    </a>
+
+                </div>
+
+            </aside>
+
+        </div>
+    </div>
+</div>

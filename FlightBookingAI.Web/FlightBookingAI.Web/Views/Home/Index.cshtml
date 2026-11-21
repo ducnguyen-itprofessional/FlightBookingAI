@@ -1,4 +1,4 @@
-﻿
+
 @{
     ViewBag.Title = "Trang chủ";
 }
@@ -40,7 +40,9 @@
                 ✈ Tìm chuyến bay
             </h3>
 
-            <form id="flightSearchForm">
+            <form id="flightSearchForm"
+                  action="@Url.Action("Search","Flights")"
+                  method="get">
                 <div class="flight-search-grid">
 
                     <!-- NƠI ĐI -->
@@ -104,7 +106,7 @@
                     </div>
 
                     <!-- NÚT TÌM KIẾM -->
-                    <button type="button"
+                    <button type="submit"
                             class="btn btn-primary search-button">
                         🔍 Tìm chuyến bay
                     </button>

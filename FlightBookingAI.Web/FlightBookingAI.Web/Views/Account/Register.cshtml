@@ -1,0 +1,324 @@
+﻿
+@model FlightBookingAI.Web.ViewModels.RegisterViewModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>Đăng ký - FlightBookingAI</title>
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com" />
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="@Url.Content("~/Content/auth.css")" />
+</head>
+
+<body>
+    <main class="auth-page">
+
+        <section class="auth-card auth-register">
+
+            <div class="auth-brand">
+                FlightBooking<span class="auth-brand-accent">AI</span>
+            </div>
+
+            <p class="auth-subtitle">
+                Tạo tài khoản để bắt đầu hành trình
+                khám phá thế giới cùng chúng tôi.
+            </p>
+
+            @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="auth-validation">
+                    @Html.ValidationSummary(true, "")
+                </div>
+
+                <!-- HỌ VÀ TÊN -->
+                <div class="auth-form-group">
+                    @Html.LabelFor(m => m.FullName, "Họ và tên",
+                                       new { @class = "auth-label" })
+
+                    @Html.TextBoxFor(m => m.FullName,
+                                       new
+                                       {
+                                           @class = "auth-input",
+                                           placeholder = "Nhập họ và tên",
+                                           autocomplete = "name"
+                                       })
+
+                    <div class="auth-validation">
+                        @Html.ValidationMessageFor(m => m.FullName)
+                    </div>
+                </div>
+
+                <!-- EMAIL -->
+                <div class="auth-form-group">
+                    @Html.LabelFor(m => m.Email, "Email",
+                                       new { @class = "auth-label" })
+
+                    @Html.TextBoxFor(m => m.Email,
+                                       new
+                                       {
+                                           @class = "auth-input",
+                                           type = "email",
+                                           placeholder = "Nhập email của bạn",
+                                           autocomplete = "email"
+                                       })
+
+                    <div class="auth-validation">
+                        @Html.ValidationMessageFor(m => m.Email)
+                    </div>
+                </div>
+
+                <!-- SỐ ĐIỆN THOẠI -->
+                <div class="auth-form-group">
+                    @Html.LabelFor(m => m.Phone, "Số điện thoại",
+                                       new { @class = "auth-label" })
+
+                    @Html.TextBoxFor(m => m.Phone,
+                                       new
+                                       {
+                                           @class = "auth-input",
+                                           type = "tel",
+                                           placeholder = "Nhập số điện thoại",
+                                           autocomplete = "tel"
+                                       })
+
+                    <div class="auth-validation">
+                        @Html.ValidationMessageFor(m => m.Phone)
+                    </div>
+                </div>
+
+
+                <!-- MẬT KHẨU -->
+                <div class="auth-form-group">
+                    @Html.LabelFor(m => m.Password, "Mật khẩu",
+                                 new { @class = "auth-label" })
+
+                    <div class="auth-password-wrapper">
+                        @Html.PasswordFor(m => m.Password,
+                                      new
+                                      {
+                                          @class = "auth-input",
+                                          placeholder = "Tạo mật khẩu",
+                                          autocomplete = "new-password"
+                                      })
+
+                        <button type="button"
+                                class="auth-password-toggle"
+                                data-target="Password"
+                                aria-label="Hiện mật khẩu"
+                                aria-pressed="false">
+
+                            <svg class="auth-eye-icon"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="1.8"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true">
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="auth-validation">
+                        @Html.ValidationMessageFor(m => m.Password)
+                    </div>
+                </div>
+
+                <!-- XÁC NHẬN MẬT KHẨU -->
+                <div class="auth-form-group">
+                    @Html.LabelFor(m => m.ConfirmPassword,
+                                 "Xác nhận mật khẩu",
+                                 new { @class = "auth-label" })
+
+                    <div class="auth-password-wrapper">
+                        @Html.PasswordFor(m => m.ConfirmPassword,
+                                      new
+                                      {
+                                          @class = "auth-input",
+                                          placeholder = "Nhập lại mật khẩu",
+                                          autocomplete = "new-password"
+                                      })
+
+                        <button type="button"
+                                class="auth-password-toggle"
+                                data-target="ConfirmPassword"
+                                aria-label="Hiện mật khẩu"
+                                aria-pressed="false">
+
+                            <svg class="auth-eye-icon"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="1.8"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-hidden="true">
+                                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="auth-validation">
+                        @Html.ValidationMessageFor(m => m.ConfirmPassword)
+
+                        <span id="confirm-password-live-error"
+                              class="auth-live-error"
+                              aria-live="polite"></span>
+                    </div>
+                </div>
+
+                <!-- ĐỒNG Ý ĐIỀU KHOẢN -->
+                <div class="auth-check">
+                    @Html.CheckBoxFor(m => m.AgreeToTerms)
+
+                    @Html.LabelFor(m => m.AgreeToTerms,
+                                       "Tôi đồng ý với điều khoản sử dụng")
+                </div>
+
+                <div class="auth-validation">
+                    @Html.ValidationMessageFor(m => m.AgreeToTerms)
+                </div>
+
+                <!-- NÚT ĐĂNG KÝ -->
+                <button type="submit" class="auth-btn">
+                    Tạo tài khoản
+                </button>
+            }
+
+            <div class="auth-footer">
+                Đã có tài khoản?
+                <a href="@Url.Action("Login", "Account")"
+                   class="auth-link">
+                    Đăng nhập ngay
+                </a>
+            </div>
+
+            <div class="auth-footer">
+                <a href="@Url.Action("Welcome", "Account")"
+                   class="auth-link">
+                    ← Quay lại
+                </a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>document.addEventListener("DOMContentLoaded", function () {
+
+        // SVG con mắt đang hiển thị
+        const eyeOpen = `
+            <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
+            <circle cx="12" cy="12" r="3" />
+        `;
+
+        // SVG con mắt có gạch chéo
+        const eyeClosed = `
+            <path d="M3 3l18 18" />
+            <path d="M10.6 5.1A11 11 0 0 1 12 5c6.5 0 10 7 10 7a14 14 0 0 1-3.1 3.8" />
+            <path d="M6.3 6.3C3.5 8.1 2 12 2 12s3.5 7 10 7a10.8 10.8 0 0 0 4.1-.8" />
+            <path d="M10 10a3 3 0 0 0 4 4" />
+        `;
+
+        // HIỆN / ẨN MẬT KHẨU
+        document.querySelectorAll(".auth-password-toggle")
+            .forEach(function (button) {
+
+                button.addEventListener("click", function () {
+
+                    const input = document.getElementById(
+                        button.getAttribute("data-target")
+                    );
+
+                    if (!input) return;
+
+                    const showPassword = input.type === "password";
+
+                    input.type = showPassword ? "text" : "password";
+
+                    button.querySelector("svg").innerHTML =
+                        showPassword ? eyeClosed : eyeOpen;
+
+                    button.setAttribute(
+                        "aria-label",
+                        showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+                    );
+
+                    button.setAttribute(
+                        "aria-pressed",
+                        String(showPassword)
+                    );
+                });
+            });
+
+        // KIỂM TRA XÁC NHẬN MẬT KHẨU
+        const password = document.getElementById("Password");
+        const confirmPassword =
+            document.getElementById("ConfirmPassword");
+        const error = document.getElementById(
+            "confirm-password-live-error"
+        );
+
+        if (!password || !confirmPassword || !error) return;
+
+        function validateConfirmPassword() {
+
+            const mismatch =
+                confirmPassword.value.length > 0 &&
+                password.value !== confirmPassword.value;
+
+            error.textContent = mismatch
+                ? "Mật khẩu xác nhận không khớp."
+                : "";
+
+            confirmPassword.classList.toggle(
+                "input-error",
+                mismatch
+            );
+
+            confirmPassword.setCustomValidity(
+                mismatch ? "Mật khẩu xác nhận không khớp." : ""
+            );
+        }
+
+        password.addEventListener(
+            "input", validateConfirmPassword
+        );
+
+        confirmPassword.addEventListener(
+            "input", validateConfirmPassword
+        );
+
+        const form = confirmPassword.closest("form");
+
+        if (form) {
+            form.addEventListener(
+                "submit", validateConfirmPassword
+            );
+        }
+    });</script>
+
+</body>
+</html>
