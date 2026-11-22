@@ -1,0 +1,366 @@
+﻿
+@using System
+@using System.Linq
+@model IEnumerable<FlightBookingAI.Web.Models.Booking>
+
+@{
+    ViewBag.Title = "Vé của tôi";
+    var bookings = Model.ToList();
+
+    var airports = ViewBag.Airports
+        as System.Collections.Generic.Dictionary<
+            int, FlightBookingAI.Web.Models.Airport>;
+}
+
+<style>
+    .mytickets-page {
+        background: #f4f8fc;
+        padding: 45px 15px 70px;
+        min-height: 75vh;
+    }
+
+    .mytickets-container {
+        max-width: 1050px;
+        margin: auto;
+    }
+
+    .mytickets-heading {
+        margin-bottom: 28px;
+    }
+
+        .mytickets-heading h2 {
+            color: #123b72;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .mytickets-heading p {
+            color: #64748b;
+        }
+
+    .mytickets-card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 6px 22px rgba(18,59,114,.05);
+    }
+
+    .mytickets-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .mytickets-label {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .mytickets-code {
+        color: #123b72;
+        font-size: 17px;
+        font-weight: 800;
+        overflow-wrap: anywhere;
+    }
+
+    .mytickets-status {
+        display: inline-block;
+        padding: 7px 13px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .mytickets-confirmed {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .mytickets-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .mytickets-cancelled {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .mytickets-route {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 22px;
+    }
+
+    .mytickets-airport {
+        flex: 1;
+        min-width: 0;
+    }
+
+        .mytickets-airport:last-child {
+            text-align: right;
+        }
+
+    .mytickets-airport-code {
+        font-size: 26px;
+        font-weight: 800;
+        color: #123b72;
+    }
+
+    .mytickets-route-line {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #14b8a6;
+    }
+
+        .mytickets-route-line span {
+            flex: 1;
+            height: 2px;
+            background: #14b8a6;
+        }
+
+    .mytickets-info {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        padding: 18px 0;
+        border-top: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .mytickets-value {
+        color: #123b72;
+        font-weight: 700;
+    }
+
+    .mytickets-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .mytickets-btn {
+        display: inline-block;
+        padding: 11px 18px;
+        border-radius: 9px;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .mytickets-btn-primary {
+        background: #123b72;
+        color: white;
+    }
+
+    .mytickets-btn-secondary {
+        background: #e2e8f0;
+        color: #123b72;
+    }
+
+    .mytickets-empty {
+        text-align: center;
+        padding: 55px 20px;
+        background: white;
+        border-radius: 16px;
+    }
+
+    @@media (max-width: 650px) {
+        .mytickets-info {
+            grid-template-columns: 1fr;
+        }
+
+        .mytickets-card {
+            padding: 18px;
+        }
+
+        .mytickets-airport-code {
+            font-size: 21px;
+        }
+    }
+</style>
+
+<div class="mytickets-page">
+    <div class="mytickets-container">
+
+        <div class="mytickets-heading">
+            <h2>✈ Vé của tôi</h2>
+            <p>
+                Theo dõi các đơn đặt vé và xem lại vé điện tử.
+            </p>
+        </div>
+
+        @if (!bookings.Any())
+        {
+            <div class="mytickets-empty">
+                <h3>Bạn chưa có đơn đặt vé nào</h3>
+                <p>Hãy tìm chuyến bay phù hợp để bắt đầu.</p>
+
+                <a href="@Url.Action("Index", "Flights")"
+                   class="mytickets-btn mytickets-btn-primary">
+                    Tìm chuyến bay
+                </a>
+            </div>
+        }
+        else
+        {
+            foreach (var booking in bookings)
+            {
+                var departureAirport =
+                    airports != null &&
+                    airports.ContainsKey(booking.Flight.DepartureAirportID)
+                        ? airports[booking.Flight.DepartureAirportID]
+                        : null;
+
+                var arrivalAirport =
+                    airports != null &&
+                    airports.ContainsKey(booking.Flight.ArrivalAirportID)
+                        ? airports[booking.Flight.ArrivalAirportID]
+                        : null;
+
+                var isConfirmed = booking.Status == "Confirmed";
+                var isPending = booking.Status == "Pending";
+                var isExpired = isPending &&
+                    DateTime.Now >= booking.BookingDate.AddMinutes(10);
+
+                var statusClass = isConfirmed
+                    ? "mytickets-confirmed"
+                    : isPending && !isExpired
+                        ? "mytickets-pending"
+                        : "mytickets-cancelled";
+
+                var statusText = isConfirmed
+                    ? "Đã thanh toán"
+                    : isPending && !isExpired
+                        ? "Chờ thanh toán"
+                        : isExpired
+                            ? "Đã hết hạn"
+                            : "Đã hủy";
+
+                <div class="mytickets-card">
+
+                    <div class="mytickets-card-top">
+                        <div>
+                            <div class="mytickets-label">
+                                Mã đặt vé
+                            </div>
+                            <div class="mytickets-code">
+                                @booking.BookingCode
+                            </div>
+                        </div>
+
+                        <span class="mytickets-status @statusClass">
+                            @statusText
+                        </span>
+                    </div>
+
+                    <div class="mytickets-route">
+
+                        <div class="mytickets-airport">
+                            <div class="mytickets-airport-code">
+                                @(departureAirport != null ? departureAirport.AirportCode : "N/A")
+                            </div>
+
+                            <div class="mytickets-label">
+                                @(departureAirport != null ? departureAirport.City : "Chưa xác định")
+                            </div>
+
+                            <div class="mytickets-label">
+                                Điểm khởi hành
+                            </div>
+                        </div>
+
+
+                        <div class="mytickets-route-line">
+                            ✈ <span></span> ●
+                        </div>
+
+                        <div class="mytickets-airport">
+                            <div class="mytickets-airport-code">
+                                @(arrivalAirport != null ? arrivalAirport.AirportCode : "N/A")
+                            </div>
+
+                            <div class="mytickets-label">
+                                @(arrivalAirport != null ? arrivalAirport.City : "Chưa xác định")
+                            </div>
+
+                            <div class="mytickets-label">
+                                Điểm đến
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="mytickets-info">
+                        <div>
+                            <div class="mytickets-label">
+                                Chuyến bay
+                            </div>
+                            <div class="mytickets-value">
+                                @booking.Flight.FlightNumber
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="mytickets-label">
+                                Ngày khởi hành
+                            </div>
+                            <div class="mytickets-value">
+                                @booking.Flight.DepartureTime.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="mytickets-label">
+                                Tổng thanh toán
+                            </div>
+                            <div class="mytickets-value">
+                                @booking.TotalAmount.ToString("N0") VNĐ
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mytickets-actions">
+
+                        @if (isConfirmed)
+                        {
+                            <a href="@Url.Action("Success", "Payment",
+                                     new { bookingId = booking.BookingID })"
+                               class="mytickets-btn mytickets-btn-primary">
+                                Xem vé điện tử
+                            </a>
+                        }
+                        else if (isPending && !isExpired)
+                        {
+                            <a href="@Url.Action("Index", "Payment",
+                                     new { bookingId = booking.BookingID })"
+                               class="mytickets-btn mytickets-btn-primary">
+                                Tiếp tục thanh toán
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="mytickets-label">
+                                Đơn đặt vé không còn khả dụng
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+            }
+        }
+
+    </div>
+</div>

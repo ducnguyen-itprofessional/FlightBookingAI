@@ -921,25 +921,56 @@ namespace FlightBookingAI.Web.Controllers
                         "Đã tạo đơn đặt vé " + bookingCode +
                         ". Vui lòng tiếp tục thanh toán.";
 
-                    return RedirectToAction("Index", "Flights");
+                    return RedirectToAction("Index", "Payment", new { bookingId = booking.BookingID });
                 }
                 catch (Exception)
-                {
-                    // Chỉ rollback khi transaction còn hoạt động
-                    try
-                    {
-                        transaction.Rollback();
-                    }
-                    catch (Exception)
-                    {
-                        // Transaction có thể đã hoàn tất hoặc bị hủy
-                    }
+{
+    // Cố gắng hoàn tác transaction nếu chưa Commit
+    try
+    {
+        transaction.Rollback();
+    }
+    catch (Exception)
+    {
+        // Transaction có thể đã Commit hoặc bị hủy
+    }
 
-                    TempData["BookingError"] =
-                        "Không thể tạo đơn đặt vé. Vui lòng thử lại.";
+    // Kiểm tra lại database bằng một DbContext mới
+    // để xác định đơn đã thực sự được lưu hay chưa
+    try
+    {
+        using (var checkDb = new FlightBookingAIEntities())
+        {
+            var existingBooking = checkDb.Bookings
+                .AsNoTracking()
+                .FirstOrDefault(b =>
+                    b.BookingRequestId == bookingRequestId &&
+                    b.UserID == currentUser.UserID);
 
-                    return RedirectToAction("BookingConfirmation");
-                }
+            if (existingBooking != null)
+            {
+                TempData.Remove("PendingBooking");
+
+                TempData["BookingSuccess"] =
+                    "Yêu cầu đặt vé đã được xử lý. Mã đặt vé: " +
+                    existingBooking.BookingCode +
+                    ". Trạng thái: " + existingBooking.Status + ".";
+
+                return RedirectToAction("Index", "Flights");
+            }
+        }
+    }
+    catch (Exception)
+    {
+        // Không thể kiểm tra trạng thái đơn lúc này
+    }
+
+    TempData["BookingError"] =
+        "Chưa thể xác định kết quả đặt vé. " +
+        "Vui lòng kiểm tra đơn trước khi thử lại.";
+
+    return RedirectToAction("BookingConfirmation");
+}
             }
         }
     

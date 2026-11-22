@@ -17,6 +17,21 @@
         passengers = 1;
     }
 }
+
+@if (TempData["BookingSuccess"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["BookingSuccess"]
+    </div>
+}
+
+@if (TempData["BookingError"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["BookingError"]
+    </div>
+}
+
 <style>
 
 /* BANNER KẾT QUẢ TÌM KIẾM */

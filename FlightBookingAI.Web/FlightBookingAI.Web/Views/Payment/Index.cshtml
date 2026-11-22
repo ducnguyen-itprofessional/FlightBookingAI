@@ -1,0 +1,482 @@
+﻿
+@model FlightBookingAI.Web.Models.Booking
+
+@{
+    ViewBag.Title = "Thanh toán vé máy bay";
+
+    var expiresAt = Model.BookingDate.AddMinutes(10);
+    var serverNow = DateTime.Now;
+    var flight = Model.Flight;
+
+    var passengers = Model.BookingPassengers.ToList();
+}
+
+<style>
+    .payment-page {
+        max-width: 1180px;
+        margin: 35px auto 65px;
+        color: #20334d;
+    }
+
+    .payment-header {
+        background: linear-gradient(120deg, #123b72, #1d568e);
+        border-radius: 20px;
+        padding: 30px;
+        color: white;
+        margin-bottom: 25px;
+    }
+
+    .payment-brand {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+        gap: 15px;
+    }
+
+        .payment-brand strong {
+            font-size: 20px;
+        }
+
+    .payment-header h1 {
+        font-size: 29px;
+        font-weight: 700;
+        margin: 0 0 12px;
+    }
+
+    .payment-header p {
+        margin: 0;
+        opacity: .9;
+    }
+
+    .payment-layout {
+        display: grid;
+        grid-template-columns: 1.1fr .9fr;
+        gap: 24px;
+        align-items: start;
+    }
+
+    .payment-card {
+        background: #fff;
+        border: 1px solid #e3eaf3;
+        border-radius: 18px;
+        padding: 25px;
+        box-shadow: 0 8px 30px rgba(18,59,114,.06);
+        margin-bottom: 20px;
+    }
+
+        .payment-card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #123b72;
+            margin: 0 0 20px;
+        }
+
+    .payment-method {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        padding: 18px;
+        border: 1px solid #dce5ef;
+        border-radius: 13px;
+        margin-bottom: 12px;
+        background: white;
+    }
+
+        .payment-method.active {
+            border: 2px solid #16b6ad;
+            background: #f0fffd;
+        }
+
+    .method-icon {
+        width: 43px;
+        height: 43px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+        .method-icon.simulation {
+            background: #d9faf0;
+            color: #078c69;
+        }
+
+        .method-icon.momo {
+            background: #fff0fa;
+            color: #ad1683;
+        }
+
+        .method-icon.vnpay {
+            background: #eaf4ff;
+            color: #1676c7;
+        }
+
+    .method-content strong {
+        display: block;
+        color: #20334d;
+        margin-bottom: 4px;
+    }
+
+    .method-content span {
+        color: #77869a;
+        font-size: 13px;
+    }
+
+    .payment-method.disabled {
+        opacity: .7;
+        background: #f8fafc;
+    }
+
+    .payment-timer {
+        padding: 18px;
+        background: #fff8e8;
+        border: 1px solid #f5e1ae;
+        border-radius: 13px;
+        margin-top: 20px;
+    }
+
+        .payment-timer strong {
+            color: #9b660d;
+        }
+
+        .payment-timer .time {
+            display: block;
+            font-size: 29px;
+            font-weight: 800;
+            margin: 7px 0;
+            color: #b96b00;
+        }
+
+    .payment-note {
+        color: #77869a;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .booking-code {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 8px;
+        background: #eaf4ff;
+        color: #123b72;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .booking-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        margin: 13px 0;
+    }
+
+        .booking-row span {
+            color: #77869a;
+        }
+
+        .booking-row strong {
+            text-align: right;
+        }
+
+    .booking-divider {
+        border-top: 1px solid #e7edf4;
+        margin: 20px 0;
+    }
+
+    .passenger-item {
+        padding: 12px;
+        border-radius: 10px;
+        background: #f5f8fc;
+        margin-bottom: 10px;
+        font-size: 14px;
+    }
+
+    .total-amount {
+        font-size: 27px;
+        color: #123b72;
+        font-weight: 800;
+        text-align: right;
+    }
+
+    .baggage-option {
+        border: 1px dashed #b9cce0;
+        background: #f8fbff;
+        border-radius: 13px;
+        padding: 20px;
+    }
+
+        .baggage-option strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+    .payment-button {
+        width: 100%;
+        border: 0;
+        border-radius: 13px;
+        padding: 17px;
+        background: #123b72;
+        color: white;
+        font-weight: 700;
+        font-size: 17px;
+        margin-top: 20px;
+    }
+
+        .payment-button:disabled {
+            background: #8ba2bd;
+            cursor: not-allowed;
+        }
+
+    .payment-security {
+        text-align: center;
+        margin-top: 12px;
+        color: #77869a;
+        font-size: 13px;
+    }
+
+    @@media (max-width: 768px) {
+        .payment-page {
+            margin: 20px auto 40px;
+            padding: 0 12px;
+        }
+
+        .payment-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .payment-header {
+            padding: 22px;
+        }
+
+            .payment-header h1 {
+                font-size: 23px;
+            }
+
+        .payment-card {
+            padding: 19px;
+        }
+    }
+</style>
+
+<div class="payment-page">
+
+    <!-- HEADER -->
+    <div class="payment-header">
+        <div class="payment-brand">
+            <strong>✈ FlightBookingAI</strong>
+            <span>🔒 Thanh toán an toàn</span>
+        </div>
+
+        <h1>Thanh toán vé máy bay</h1>
+        <p>Đặt vé → Thanh toán → Vé điện tử</p>
+    </div>
+
+    <div class="payment-layout">
+
+        <!-- CỘT TRÁI -->
+        <div>
+
+            <div class="payment-card">
+                <h2>Phương thức thanh toán</h2>
+
+                <div class="payment-method active">
+                    <div class="method-icon simulation">✓</div>
+                    <div class="method-content">
+                        <strong>Thanh toán mô phỏng</strong>
+                        <span>Chức năng kiểm thử đồ án</span>
+                    </div>
+                </div>
+
+                <!-- Vị trí tích hợp MoMo -->
+                <div class="payment-method disabled">
+                    <div class="method-icon momo">M</div>
+                    <div class="method-content">
+                        <strong>Ví MoMo</strong>
+                        <span>Vị trí tích hợp của nhóm - Chưa khả dụng</span>
+                    </div>
+                </div>
+
+                <!-- Vị trí tích hợp VNPAY -->
+                <div class="payment-method disabled">
+                    <div class="method-icon vnpay">V</div>
+                    <div class="method-content">
+                        <strong>VNPAY</strong>
+                        <span>Vị trí tích hợp của nhóm - Chưa khả dụng</span>
+                    </div>
+                </div>
+
+                <div class="payment-timer">
+                    <strong>Thời hạn thanh toán</strong>
+                    <span class="time" id="paymentCountdown">10:00</span>
+                    <div class="payment-note">
+                        Thời gian còn lại để hoàn tất thanh toán.
+                        Hạn thực tế:
+                        @expiresAt.ToString("dd/MM/yyyy HH:mm:ss")
+                    </div>
+                </div>
+            </div>
+
+            <!-- HÀNH LÝ -->
+            <div class="payment-card">
+                <h2>Hành lý ký gửi</h2>
+
+                <div class="baggage-option">
+                    <strong>🧳 Thêm hành lý cho chuyến bay</strong>
+                    <p class="payment-note">
+                        Khu vực mở rộng cho phép chọn gói
+                        hành lý 15kg, 20kg hoặc 25kg.
+                    </p>
+
+                    <p class="payment-note">
+                        Chức năng đang được phát triển.
+                        Chưa phát sinh phụ phí.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CỘT PHẢI -->
+        <div>
+
+            <div class="payment-card">
+                <h2>Thông tin đặt vé</h2>
+
+                <div class="booking-code">
+                    @Model.BookingCode
+                </div>
+
+                <div class="booking-row">
+                    <span>Chuyến bay</span>
+                    <strong>@flight.FlightNumber</strong>
+                </div>
+
+                <div class="booking-row">
+                    <span>Ngày khởi hành</span>
+                    <strong>
+                        @flight.DepartureTime.ToString("dd/MM/yyyy HH:mm")
+                    </strong>
+                </div>
+
+                <div class="booking-row">
+                    <span>Số hành khách</span>
+                    <strong>@Model.PassengerCount người</strong>
+                </div>
+
+                <div class="booking-divider"></div>
+
+                <h2>Hành khách</h2>
+
+                @foreach (var passenger in passengers)
+                {
+                    <div class="passenger-item">
+                        <strong>@passenger.FullName</strong>
+                        <div class="payment-note">
+                            @passenger.PassengerType
+                        </div>
+                    </div>
+                }
+
+                <div class="booking-divider"></div>
+
+                <div class="booking-row">
+                    <span>Tiền vé</span>
+                    <strong>
+                        @Model.TotalAmount.ToString("N0") VNĐ
+                    </strong>
+                </div>
+
+                <div class="booking-row">
+                    <span>Phụ phí hành lý</span>
+                    <strong>0 VNĐ</strong>
+                </div>
+
+                <div class="booking-divider"></div>
+
+                <div class="booking-row">
+                    <span>Tổng thanh toán</span>
+                </div>
+
+                <div class="total-amount">
+                    @Model.TotalAmount.ToString("N0") VNĐ
+                </div>
+
+
+                <!-- Form xác nhận thanh toán mô phỏng -->
+                @using (Html.BeginForm("ConfirmPayment", "Payment", FormMethod.Post,
+                    new { id = "confirmPaymentForm" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="bookingId"
+                           value="@Model.BookingID" />
+
+                    <button type="submit"
+                            class="payment-button"
+                            id="confirmPaymentButton">
+                        ✓ Xác nhận thanh toán
+                    </button>
+                }
+
+
+                <div class="payment-security">
+                    Thanh toán mô phỏng - Không phát sinh giao dịch thật
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+<!--THỜI GIAN ĐẾM NGƯỢC-->
+<script>
+    (function () {
+        const countdown = document.getElementById("paymentCountdown");
+
+        // Thời gian còn lại được tính từ server
+        const remainingAtLoad =
+            @((long)(expiresAt - serverNow).TotalMilliseconds);
+
+        // Dùng đồng hồ monotonic để tránh lệch do đổi giờ máy
+        const startTime = performance.now();
+
+        function updateCountdown() {
+            const elapsed = performance.now() - startTime;
+
+            const remaining = Math.max(
+                0,
+                remainingAtLoad - elapsed
+            );
+
+            const totalSeconds = Math.ceil(remaining / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+
+            countdown.textContent =
+                String(minutes).padStart(2, "0") + ":" +
+                String(seconds).padStart(2, "0");
+
+            if (remaining <= 0) {
+                countdown.textContent = "00:00";
+                countdown.style.color = "#dc3545";
+                clearInterval(timer);
+
+                const note = document.createElement("div");
+                note.className = "payment-note";
+                note.textContent =
+                    "Đã hết thời hạn thanh toán. Vui lòng đặt vé lại.";
+
+                countdown.parentElement.appendChild(note);
+            }
+        }
+
+        const timer = setInterval(updateCountdown, 1000);
+        updateCountdown();
+    })();
+</script>

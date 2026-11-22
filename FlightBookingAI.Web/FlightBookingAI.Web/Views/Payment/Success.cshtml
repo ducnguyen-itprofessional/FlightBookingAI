@@ -1,0 +1,551 @@
+﻿
+@using System.Linq
+@model FlightBookingAI.Web.Models.Booking
+
+@{
+    ViewBag.Title = "Thanh toán thành công - Vé điện tử";
+
+    var flight = Model.Flight;
+    var passengers = Model.BookingPassengers.ToList();
+    var payment = ViewBag.Payment as FlightBookingAI.Web.Models.Payment;
+
+    var departureAirport =
+    ViewBag.DepartureAirport as FlightBookingAI.Web.Models.Airport;
+
+    var arrivalAirport =
+        ViewBag.ArrivalAirport as FlightBookingAI.Web.Models.Airport;
+
+    var seatNumbers = ViewBag.SeatNumbers
+        as System.Collections.Generic.Dictionary<int, string>;
+
+}
+
+<style>
+    .ticket-page {
+        background: #f4f8fc;
+        padding: 45px 15px 70px;
+    }
+
+    .ticket-container {
+        max-width: 950px;
+        margin: 0 auto;
+    }
+
+    .ticket-success {
+        text-align: center;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 35px 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 8px 25px rgba(18,59,114,.06);
+    }
+
+    .ticket-success-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+    }
+
+    .ticket-success h2 {
+        color: #123b72;
+        font-weight: 800;
+        margin-bottom: 10px;
+    }
+
+    .ticket-success p {
+        color: #64748b;
+        margin: 0;
+    }
+
+    .ticket-card {
+        background: #ffffff;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(18,59,114,.08);
+    }
+
+    .ticket-header {
+        background: #123b72;
+        color: white;
+        padding: 25px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+        .ticket-header h3 {
+            margin: 0 0 5px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .ticket-header small {
+            color: #cbdcf0;
+        }
+
+    .ticket-status {
+        background: #d1fae5;
+        color: #047857;
+        border-radius: 30px;
+        padding: 8px 16px;
+        font-weight: 700;
+    }
+
+    .ticket-body {
+        padding: 30px;
+    }
+
+    .ticket-section {
+        margin-bottom: 25px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .ticket-label {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .ticket-value {
+        color: #123b72;
+        font-weight: 700;
+        font-size: 16px;
+        overflow-wrap: anywhere;
+    }
+
+    .ticket-flight {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin: 25px 0;
+    }
+
+    .ticket-airport {
+        flex: 1;
+    }
+
+        .ticket-airport:last-child {
+            text-align: right;
+        }
+
+    .ticket-airport-code {
+        font-size: 30px;
+        font-weight: 800;
+        color: #123b72;
+    }
+
+
+    .ticket-plane {
+        flex: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        color: #14b8a6;
+        min-width: 80px;
+    }
+
+    .ticket-plane-svg {
+        width: 64px;
+        height: 40px;
+        color: #14b8a6;
+        flex-shrink: 0;
+        transform-origin: center;
+        animation: flying 2s ease-in-out infinite;
+    }
+
+    /* Hiệu ứng máy bay đang bay */
+    @@keyframes flying {
+        0%, 100% {
+            transform: translateY(0px) rotate(0deg);
+        }
+
+        50% {
+            transform: translateY(-5px) rotate(-2deg);
+        }
+    }
+
+    /* Hỗ trợ người dùng muốn giảm chuyển động */
+    @@media (prefers-reduced-motion: reduce) {
+        .ticket-plane-svg {
+            animation: none;
+        }
+    }
+
+    /* Khi in vé, máy bay đứng yên */
+    @@media print {
+        .ticket-plane-svg {
+            animation: none !important;
+        }
+    }
+
+    /* Tắt chuyển động nếu người dùng yêu cầu */
+    @@media (prefers-reduced-motion: reduce) {
+        .ticket-plane-svg {
+            animation: none;
+        }
+    }
+
+
+    .ticket-location-svg {
+        width: 28px;
+        height: 28px;
+        color: #14b8a6;
+        flex-shrink: 0;
+    }
+
+    .ticket-plane-line {
+        height: 2px;
+        background: #14b8a6;
+        flex: 1;
+        border-radius: 2px;
+    }
+
+
+    .ticket-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .ticket-passenger {
+        padding: 15px;
+        background: #f1f5f9;
+        border-radius: 12px;
+        margin-top: 12px;
+    }
+
+    .ticket-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+        .ticket-total strong {
+            color: #123b72;
+            font-size: 26px;
+        }
+
+    .ticket-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 25px;
+    }
+
+    .ticket-btn {
+        display: inline-block;
+        padding: 13px 22px;
+        border-radius: 10px;
+        font-weight: 700;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+    }
+
+    .ticket-btn-primary {
+        background: #123b72;
+        color: white;
+    }
+
+    .ticket-btn-secondary {
+        background: #e2e8f0;
+        color: #123b72;
+    }
+
+    @@media (max-width: 600px) {
+        .ticket-body {
+            padding: 20px;
+        }
+
+        .ticket-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ticket-airport-code {
+            font-size: 23px;
+        }
+    }
+
+    @@media print {
+        .navbar,
+        footer,
+        .ticket-actions {
+            display: none !important;
+        }
+
+        .ticket-page {
+            padding: 0;
+            background: white;
+        }
+
+        .ticket-card,
+        .ticket-success {
+            box-shadow: none;
+        }
+    }
+</style>
+
+<div class="ticket-page">
+    <div class="ticket-container">
+
+        <!-- THÔNG BÁO THANH TOÁN THÀNH CÔNG -->
+        <div class="ticket-success">
+            <div class="ticket-success-icon">✓</div>
+
+            <h2>Thanh toán thành công!</h2>
+
+            <p>
+                Đơn đặt vé của bạn đã được xác nhận.
+                Thông tin vé điện tử được hiển thị bên dưới.
+            </p>
+        </div>
+
+        <!-- VÉ ĐIỆN TỬ -->
+        <div class="ticket-card">
+
+            <div class="ticket-header">
+                <div>
+                    <h3>✈ FlightBookingAI</h3>
+                    <small>VÉ ĐIỆN TỬ - E-TICKET</small>
+                </div>
+
+                <span class="ticket-status">
+                    ✓ Đã xác nhận
+                </span>
+            </div>
+
+            <div class="ticket-body">
+
+                <!-- MÃ ĐẶT VÉ -->
+                <div class="ticket-section">
+                    <div class="ticket-label">Mã đặt vé</div>
+                    <div class="ticket-value">
+                        @Model.BookingCode
+                    </div>
+                </div>
+
+                <!-- THÔNG TIN CHUYẾN BAY -->
+                <div class="ticket-section">
+
+                    <div class="ticket-label">Chuyến bay</div>
+                    <div class="ticket-value">
+                        @flight.FlightNumber
+                    </div>
+
+                    <div class="ticket-flight">
+                        <div class="ticket-airport">
+                            <div class="ticket-airport-code">
+                                @(departureAirport != null ? departureAirport.AirportCode : "N/A")
+                            </div>
+                            <div class="ticket-label">Điểm khởi hành</div>
+                        </div>
+
+
+
+                        <div class="ticket-plane">
+
+
+
+                            <!-- Máy bay nhìn từ trên xuống, hướng sang phải -->
+                            <svg class="ticket-plane-svg"
+                                 viewBox="0 0 64 64"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 aria-label="Máy bay đang bay">
+
+                                <path fill="currentColor"
+                                      d="M60 32
+             C60 29 56 27 50 27
+             L34 27
+             L13 10
+             C11 8 8 8 7 10
+             L19 27
+             L9 27
+             L4 22
+             L1 22
+             L4 32
+             L1 42
+             L4 42
+             L9 37
+             L19 37
+             L7 54
+             C8 56 11 56 13 54
+             L34 37
+             L50 37
+             C56 37 60 35 60 32 Z" />
+                            </svg>
+
+                            <!-- Đường bay -->
+                            <span class="ticket-plane-line"></span>
+
+                            <!-- Biểu tượng định vị điểm đến -->
+                            <svg class="ticket-location-svg"
+                                 viewBox="0 0 24 24"
+                                 fill="none"
+                                 stroke="currentColor"
+                                 stroke-width="2"
+                                 stroke-linecap="round"
+                                 stroke-linejoin="round"
+                                 aria-label="Điểm đến">
+
+                                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                                <circle cx="12" cy="10" r="2.5" />
+
+                            </svg>
+
+                        </div>
+
+
+
+                        <div class="ticket-airport">
+                            <div class="ticket-airport-code">
+                                @(arrivalAirport != null ? arrivalAirport.AirportCode : "N/A")
+                            </div>
+                            <div class="ticket-label">Điểm đến</div>
+                        </div>
+                    </div>
+
+                    <div class="ticket-grid">
+                        <div>
+                            <div class="ticket-label">Ngày khởi hành</div>
+                            <div class="ticket-value">
+                                @flight.DepartureTime.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="ticket-label">Ngày đến</div>
+                            <div class="ticket-value">
+                                @flight.ArrivalTime.ToString("dd/MM/yyyy HH:mm")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DANH SÁCH HÀNH KHÁCH -->
+                <div class="ticket-section">
+                    <h4>Thông tin hành khách</h4>
+
+
+                    @foreach (var passenger in passengers)
+                    {
+                        string seatNumber = "Chưa xác định";
+
+                        if (passenger.FlightSeatID.HasValue &&
+                            seatNumbers != null)
+                        {
+                            seatNumbers.TryGetValue(
+                                passenger.FlightSeatID.Value,
+                                out seatNumber
+                            );
+                        }
+
+                        <div class="ticket-passenger"
+                             style="display:flex;
+                                    justify-content:space-between;
+                                    align-items:center;
+                                    gap:15px;">
+
+                            <div>
+                                <div class="ticket-value">
+                                    @passenger.FullName
+                                </div>
+
+                                <div class="ticket-label">
+                                    @(passenger.PassengerType == "Adult"
+                                        ? "Người lớn"
+                                        : passenger.PassengerType == "Child"
+                                            ? "Trẻ em"
+                                            : "Em bé")
+                                </div>
+                            </div>
+
+                            <div style="text-align:right;">
+                                <div class="ticket-label">
+                                    Số ghế
+                                </div>
+
+                                <div class="ticket-value"
+                                     style="font-size:22px;">
+                                    @(string.IsNullOrEmpty(seatNumber)
+                                        ? "Chưa xác định"
+                                        : seatNumber)
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+
+                <!-- THÔNG TIN THANH TOÁN -->
+                <div class="ticket-section">
+                    <h4>Thông tin thanh toán</h4>
+
+                    <div class="ticket-grid">
+                        <div>
+                            <div class="ticket-label">Phương thức</div>
+                            <div class="ticket-value">
+                                @payment.PaymentMethod
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="ticket-label">Mã giao dịch</div>
+                            <div class="ticket-value">
+                                @payment.TransactionCode
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TỔNG TIỀN -->
+                <div class="ticket-total">
+                    <span>Tổng thanh toán</span>
+
+                    <strong>
+                        @Model.TotalAmount.ToString("N0") VNĐ
+                    </strong>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- NÚT CHỨC NĂNG -->
+        <div class="ticket-actions">
+            <button type="button"
+                    class="ticket-btn ticket-btn-primary"
+                    onclick="window.print()">
+                🖨 In vé điện tử
+            </button>
+
+            <a href="@Url.Action("MyTickets", "Payment")"
+               class="btn btn-outline-primary"
+               style="padding: 12px 24px;
+                      border-radius: 10px;
+                      font-weight: 700;">
+                🎫 Vé của tôi
+            </a>
+
+            <a href="@Url.Action("Index", "Flights")"
+               class="ticket-btn ticket-btn-secondary">
+                ← Quay về danh sách chuyến bay
+            </a>
+        </div>
+
+    </div>
+</div>
