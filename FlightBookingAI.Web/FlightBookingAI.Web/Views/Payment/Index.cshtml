@@ -1,5 +1,4 @@
-﻿
-@model FlightBookingAI.Web.Models.Booking
+﻿@model FlightBookingAI.Web.Models.Booking
 
 @{
     ViewBag.Title = "Thanh toán vé máy bay";
@@ -81,11 +80,22 @@
         border-radius: 13px;
         margin-bottom: 12px;
         background: white;
+        cursor: pointer;
+        transition: all .2s ease;
     }
+
+        .payment-method:hover:not(.disabled) {
+            border-color: #1676c7;
+        }
 
         .payment-method.active {
             border: 2px solid #16b6ad;
             background: #f0fffd;
+        }
+
+        .payment-method.active-vnpay {
+            border: 2px solid #005baa;
+            background: #f0f7ff;
         }
 
     .method-icon {
@@ -112,7 +122,7 @@
 
         .method-icon.vnpay {
             background: #eaf4ff;
-            color: #1676c7;
+            color: #005baa;
         }
 
     .method-content strong {
@@ -127,8 +137,9 @@
     }
 
     .payment-method.disabled {
-        opacity: .7;
+        opacity: .6;
         background: #f8fafc;
+        cursor: not-allowed;
     }
 
     .payment-timer {
@@ -219,12 +230,18 @@
         border: 0;
         border-radius: 13px;
         padding: 17px;
-        background: #123b72;
+        background: #005baa;
         color: white;
         font-weight: 700;
         font-size: 17px;
         margin-top: 20px;
+        cursor: pointer;
+        transition: background .2s ease;
     }
+
+        .payment-button:hover:not(:disabled) {
+            background: #004687;
+        }
 
         .payment-button:disabled {
             background: #8ba2bd;
@@ -275,6 +292,13 @@
         <p>Đặt vé → Thanh toán → Vé điện tử</p>
     </div>
 
+    @if (TempData["BookingError"] != null)
+    {
+        <div class="alert alert-danger" style="border-radius: 12px; margin-bottom: 20px;">
+            @TempData["BookingError"]
+        </div>
+    }
+
     <div class="payment-layout">
 
         <!-- CỘT TRÁI -->
@@ -283,11 +307,21 @@
             <div class="payment-card">
                 <h2>Phương thức thanh toán</h2>
 
-                <div class="payment-method active">
+                <!-- VNPAY (Mặc định chọn sẵn) -->
+                <div class="payment-method active-vnpay" id="methodVnPay" onclick="selectPaymentMethod('vnpay')">
+                    <div class="method-icon vnpay">V</div>
+                    <div class="method-content">
+                        <strong>Cổng thanh toán VNPAY-QR / Thẻ nội địa</strong>
+                        <span>Thanh toán trực tuyến an toàn qua cổng VNPay Sandbox</span>
+                    </div>
+                </div>
+
+                <!-- Thanh toán mô phỏng -->
+                <div class="payment-method" id="methodSimulation" onclick="selectPaymentMethod('simulation')">
                     <div class="method-icon simulation">✓</div>
                     <div class="method-content">
                         <strong>Thanh toán mô phỏng</strong>
-                        <span>Chức năng kiểm thử đồ án</span>
+                        <span>Chức năng kiểm thử đồ án (xác nhận ngay)</span>
                     </div>
                 </div>
 
@@ -296,16 +330,7 @@
                     <div class="method-icon momo">M</div>
                     <div class="method-content">
                         <strong>Ví MoMo</strong>
-                        <span>Vị trí tích hợp của nhóm - Chưa khả dụng</span>
-                    </div>
-                </div>
-
-                <!-- Vị trí tích hợp VNPAY -->
-                <div class="payment-method disabled">
-                    <div class="method-icon vnpay">V</div>
-                    <div class="method-content">
-                        <strong>VNPAY</strong>
-                        <span>Vị trí tích hợp của nhóm - Chưa khả dụng</span>
+                        <span>Chưa khả dụng</span>
                     </div>
                 </div>
 
@@ -405,11 +430,8 @@
                     @Model.TotalAmount.ToString("N0") VNĐ
                 </div>
 
-
-                <!-- Form xác nhận thanh toán mô phỏng -->
-                @using (Html.BeginForm("ConfirmPayment", "Payment", FormMethod.Post,
-                    new { id = "confirmPaymentForm" }))
-                {
+                <!-- Form thanh toán (Mặc định trỏ sang CreateVnPayPayment) -->
+                <form action="@Url.Action("CreateVnPayPayment", "Payment")" method="post" id="paymentSubmitForm">
                     @Html.AntiForgeryToken()
 
                     <input type="hidden"
@@ -419,13 +441,12 @@
                     <button type="submit"
                             class="payment-button"
                             id="confirmPaymentButton">
-                        ✓ Xác nhận thanh toán
+                        Thanh toán qua VNPAY
                     </button>
-                }
+                </form>
 
-
-                <div class="payment-security">
-                    Thanh toán mô phỏng - Không phát sinh giao dịch thật
+                <div class="payment-security" id="paymentSecurityNote">
+                    Bạn sẽ được chuyển hướng sang cổng thanh toán VNPAY Sandbox
                 </div>
 
             </div>
@@ -434,16 +455,39 @@
 
     </div>
 </div>
-<!--THỜI GIAN ĐẾM NGƯỢC-->
+
 <script>
+    function selectPaymentMethod(method) {
+        const form = document.getElementById("paymentSubmitForm");
+        const btn = document.getElementById("confirmPaymentButton");
+        const note = document.getElementById("paymentSecurityNote");
+        const cardVnPay = document.getElementById("methodVnPay");
+        const cardSim = document.getElementById("methodSimulation");
+
+        if (method === "vnpay") {
+            cardVnPay.classList.add("active-vnpay");
+            cardSim.classList.remove("active");
+            form.action = "@Url.Action("CreateVnPayPayment", "Payment")";
+            btn.textContent = "Thanh toán qua VNPAY";
+            btn.style.background = "#005baa";
+            note.textContent = "Bạn sẽ được chuyển hướng sang cổng thanh toán VNPAY Sandbox";
+        } else {
+            cardSim.classList.add("active");
+            cardVnPay.classList.remove("active-vnpay");
+            form.action = "@Url.Action("ConfirmPayment", "Payment")";
+            btn.textContent = "✓ Xác nhận thanh toán mô phỏng";
+            btn.style.background = "#123b72";
+            note.textContent = "Thanh toán mô phỏng - Không phát sinh giao dịch thật";
+        }
+    }
+
     (function () {
         const countdown = document.getElementById("paymentCountdown");
+        const btn = document.getElementById("confirmPaymentButton");
 
-        // Thời gian còn lại được tính từ server
         const remainingAtLoad =
             @((long)(expiresAt - serverNow).TotalMilliseconds);
 
-        // Dùng đồng hồ monotonic để tránh lệch do đổi giờ máy
         const startTime = performance.now();
 
         function updateCountdown() {
@@ -465,6 +509,7 @@
             if (remaining <= 0) {
                 countdown.textContent = "00:00";
                 countdown.style.color = "#dc3545";
+                btn.disabled = true;
                 clearInterval(timer);
 
                 const note = document.createElement("div");
