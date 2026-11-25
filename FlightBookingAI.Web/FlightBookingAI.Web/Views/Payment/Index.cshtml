@@ -115,15 +115,20 @@
             color: #078c69;
         }
 
-        .method-icon.momo {
-            background: #fff0fa;
-            color: #ad1683;
-        }
-
         .method-icon.vnpay {
             background: #eaf4ff;
             color: #005baa;
         }
+
+        .method-icon.zalopay {
+            background: #e6f2ff;
+            color: #0068ff;
+        }
+
+    .payment-method.active-zalopay {
+        border: 2px solid #0068ff;
+        background: #f0f7ff;
+    }
 
     .method-content strong {
         display: block;
@@ -325,14 +330,16 @@
                     </div>
                 </div>
 
-                <!-- Vị trí tích hợp MoMo -->
-                <div class="payment-method disabled">
-                    <div class="method-icon momo">M</div>
+                <!-- Vị trí tích hợp ZaloPay -->
+                <div id="card-zalopay" onclick="selectPaymentMethod('zalopay')" class="payment-method" style="cursor: pointer;">
+                    <div class="method-icon zalopay">ZP</div>
                     <div class="method-content">
-                        <strong>Ví MoMo</strong>
-                        <span>Chưa khả dụng</span>
+                        <strong>Ví ZaloPay</strong>
+                        <span>Thanh toán qua cổng ZaloPay QR</span>
                     </div>
                 </div>
+
+
 
                 <div class="payment-timer">
                     <strong>Thời hạn thanh toán</strong>
@@ -463,17 +470,27 @@
         const note = document.getElementById("paymentSecurityNote");
         const cardVnPay = document.getElementById("methodVnPay");
         const cardSim = document.getElementById("methodSimulation");
+        const cardZalo = document.getElementById("card-zalopay");
+
+        // Xóa trạng thái active của cả 3 thẻ trước
+        cardVnPay.classList.remove("active-vnpay");
+        cardSim.classList.remove("active");
+        cardZalo.classList.remove("active-zalopay");
 
         if (method === "vnpay") {
             cardVnPay.classList.add("active-vnpay");
-            cardSim.classList.remove("active");
             form.action = "@Url.Action("CreateVnPayPayment", "Payment")";
             btn.textContent = "Thanh toán qua VNPAY";
             btn.style.background = "#005baa";
             note.textContent = "Bạn sẽ được chuyển hướng sang cổng thanh toán VNPAY Sandbox";
+        } else if (method === "zalopay") {
+            cardZalo.classList.add("active-zalopay");
+            form.action = "@Url.Action("CreateZaloPayUrl", "Payment")";
+            btn.textContent = "Thanh toán bằng Ví ZaloPay";
+            btn.style.background = "#0068ff";
+            note.textContent = "Bạn sẽ được chuyển hướng sang cổng thanh toán ZaloPay QR";
         } else {
             cardSim.classList.add("active");
-            cardVnPay.classList.remove("active-vnpay");
             form.action = "@Url.Action("ConfirmPayment", "Payment")";
             btn.textContent = "✓ Xác nhận thanh toán mô phỏng";
             btn.style.background = "#123b72";
@@ -524,4 +541,7 @@
         const timer = setInterval(updateCountdown, 1000);
         updateCountdown();
     })();
+
+
 </script>
+

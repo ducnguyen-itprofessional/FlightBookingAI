@@ -1,12 +1,14 @@
-﻿using System;
+﻿using FlightBookingAI.Web.Helpers;
+using FlightBookingAI.Web.Models;
+using FlightBookingAI.Web.Services;
+using System;
 using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Mvc;
-using FlightBookingAI.Web.Helpers;
-using FlightBookingAI.Web.Models;
 
 namespace FlightBookingAI.Web.Controllers
 {
@@ -538,6 +540,125 @@ namespace FlightBookingAI.Web.Controllers
             }
 
             base.Dispose(disposing);
+        }
+
+        private readonly ZaloPayService _zaloPayService = new ZaloPayService();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> CreateZaloPayUrl(int bookingId)
+        {
+            string email = User.Identity.Name;
+            var currentUser = db.Users.AsNoTracking().FirstOrDefault(u => u.Email == email);
+
+            var booking = db.Bookings.FirstOrDefault(b => b.BookingID == bookingId && b.UserID == currentUser.UserID);
+            if (booking == null || booking.Status != "Pending")
+            {
+                TempData["BookingError"] = "Đơn đặt vé không hợp lệ hoặc đã hết hạn.";
+                return RedirectToAction("Index", "Flights");
+            }
+
+            var result = await _zaloPayService.CreateOrderAsync(booking.BookingID, booking.BookingCode, booking.TotalAmount, email);
+
+            if (result != null && result.ReturnCode == 1 && !string.IsNullOrEmpty(result.OrderUrl))
+            {
+                return Redirect(result.OrderUrl);
+            }
+
+            TempData["BookingError"] = $"Lỗi ZaloPay ({result?.SubReturnCode}): {result?.SubReturnMessage ?? result?.ReturnMessage}";
+            return RedirectToAction("Index", new { bookingId = booking.BookingID });
+        }
+
+        [HttpGet]
+        public ActionResult ZaloPayCallBack()
+        {
+            string appId = Request.QueryString["appid"];
+            string appTransId = Request.QueryString["apptransid"];
+            string pmcId = Request.QueryString["pmcid"];
+            string bankCode = Request.QueryString["bankcode"];
+            string amount = Request.QueryString["amount"];
+            string discountAmount = Request.QueryString["discountamount"];
+            string status = Request.QueryString["status"];
+            string checksum = Request.QueryString["checksum"];
+
+            int bookingId = 0;
+            if (!string.IsNullOrEmpty(appTransId))
+            {
+                var parts = appTransId.Split('_');
+                if (parts.Length >= 2)
+                {
+                    int.TryParse(parts[1], out bookingId);
+                }
+            }
+
+            bool isValid = _zaloPayService.VerifyRedirectChecksum(appId, appTransId, pmcId, bankCode, amount, discountAmount, status, checksum);
+
+            if (!isValid || status != "1" || bookingId == 0)
+            {
+                TempData["BookingError"] = "Thanh toán ZaloPay thất bại hoặc đã bị hủy.";
+                return bookingId > 0
+                    ? RedirectToAction("Index", new { bookingId = bookingId })
+                    : RedirectToAction("Index", "Flights");
+            }
+
+            using (var transaction = db.Database.BeginTransaction(IsolationLevel.ReadCommitted))
+            {
+                try
+                {
+                    var booking = db.Bookings.SqlQuery(
+                        @"SELECT * FROM dbo.Bookings WITH (UPDLOCK, HOLDLOCK) WHERE BookingID = @p0",
+                        bookingId
+                    ).SingleOrDefault();
+
+                    if (booking != null && booking.Status == "Pending")
+                    {
+                        var seatIds = db.BookingPassengers
+                            .AsNoTracking()
+                            .Where(p => p.BookingID == booking.BookingID && p.FlightSeatID.HasValue)
+                            .Select(p => p.FlightSeatID.Value)
+                            .ToList();
+
+                        foreach (var seatId in seatIds)
+                        {
+                            db.Database.ExecuteSqlCommand(
+                                @"UPDATE dbo.FlightSeats SET Status = 'Booked' WHERE FlightSeatID = @p0 AND FlightID = @p1 AND Status = 'Held'",
+                                seatId, booking.FlightID
+                            );
+                        }
+
+                        db.Database.ExecuteSqlCommand(
+                            @"UPDATE dbo.Bookings SET Status = 'Confirmed' WHERE BookingID = @p0 AND Status = 'Pending'",
+                            booking.BookingID
+                        );
+
+                        var payment = new Payment
+                        {
+                            BookingID = booking.BookingID,
+                            Amount = booking.TotalAmount,
+                            PaymentMethod = "ZaloPay",
+                            PaymentStatus = "Completed",
+                            TransactionCode = appTransId,
+                            PaymentDate = DateTime.Now,
+                            CreatedAt = DateTime.Now
+                        };
+
+                        db.Payments.Add(payment);
+                        db.SaveChanges();
+                    }
+
+                    transaction.Commit();
+
+                    TempData["BookingSuccess"] = "Thanh toán ZaloPay thành công!";
+                    return RedirectToAction("Success", "Payment", new { bookingId = bookingId });
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine("ZALOPAY CALLBACK ERROR: " + ex.ToString());
+                    transaction.Rollback();
+                    TempData["BookingError"] = "Có lỗi xảy ra khi xác nhận vé sau thanh toán ZaloPay.";
+                    return RedirectToAction("Index", "Flights");
+                }
+            }
         }
     }
 }

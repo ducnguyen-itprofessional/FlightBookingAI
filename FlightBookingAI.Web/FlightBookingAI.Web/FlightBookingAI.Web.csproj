@@ -187,6 +187,7 @@
       <DependentUpon>FlightBookingAIModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\ZaloPayService.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\PassengerBookingViewModel.cs" />
     <Compile Include="ViewModels\PassengerInfoViewModel.cs" />
