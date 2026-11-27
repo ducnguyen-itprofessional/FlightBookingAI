@@ -52,7 +52,7 @@ namespace FlightBookingAI.Web.Services
             string appTransId = DateTime.Now.ToString("yyMMdd") + "_" + bookingId + "_" + new Random().Next(100000, 999999);
             long totalAmount = (long)amount;
 
-            string embedData = "{\"redirecturl\":\"" + redirectUrl + "\"}";
+            string embedData = JsonConvert.SerializeObject(new { redirecturl = redirectUrl }); 
             string items = "[]";
 
             string rawMac = $"{appId}|{appTransId}|{appUser}|{totalAmount}|{appTime}|{embedData}|{items}";
