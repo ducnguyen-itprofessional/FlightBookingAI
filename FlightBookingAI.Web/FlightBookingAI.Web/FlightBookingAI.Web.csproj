@@ -46,6 +46,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt.Net-Next.4.2.0\lib\net472\BCrypt-Net-Next.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -54,8 +57,21 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Memory, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.6.3\lib\net462\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.6.1\lib\net462\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
@@ -130,6 +146,12 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AdminAccountController.cs" />
+    <Compile Include="Controllers\AdminBookingController.cs" />
+    <Compile Include="Controllers\AdminCustomerController.cs" />
+    <Compile Include="Controllers\AdminFlightController.cs" />
+    <Compile Include="Controllers\AdminPaymentController.cs" />
+    <Compile Include="Controllers\AdminReportController.cs" />
     <Compile Include="Controllers\AITravelController.cs" />
     <Compile Include="Controllers\FlightsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -137,6 +159,19 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AdminBookingDetailViewModel.cs" />
+    <Compile Include="Models\AdminBookingItem.cs" />
+    <Compile Include="Models\AdminBookingListViewModel.cs" />
+    <Compile Include="Models\AdminCustomerDetailViewModel.cs" />
+    <Compile Include="Models\AdminCustomerItem.cs" />
+    <Compile Include="Models\AdminCustomerListViewModel.cs" />
+    <Compile Include="Models\AdminFlightViewModel.cs" />
+    <Compile Include="Models\AdminPaymentDetailViewModel.cs" />
+    <Compile Include="Models\AdminPaymentItem.cs" />
+    <Compile Include="Models\AdminPaymentListViewModel.cs" />
+    <Compile Include="Models\AdminRecentFlightItem.cs.cs" />
+    <Compile Include="Models\AdminReportViewModel.cs" />
+    <Compile Include="Models\AdminRevenueReportViewModel.cs" />
     <Compile Include="Models\Airline.cs">
       <DependentUpon>FlightBookingAIModel.tt</DependentUpon>
     </Compile>
@@ -195,6 +230,11 @@
     <Compile Include="ViewModels\RegisterViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\AdminAccount.css" />
+    <Content Include="Content\AdminDashboard.css" />
+    <Content Include="Content\AdminLogin.css" />
+    <Content Include="Content\AdminRegister.css" />
+    <Content Include="Content\AdminReport.css" />
     <Content Include="Content\auth.css" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
@@ -216,6 +256,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\Admin-Background.jpg" />
     <Content Include="Images\Airlines\bamboo-airways.jpg" />
     <Content Include="Images\Airlines\vietjet-air.jpg" />
     <Content Include="Images\Airlines\vietnam-airlines.png" />
@@ -288,6 +329,22 @@
     <Content Include="Views\Payment\Index.cshtml" />
     <Content Include="Views\Payment\Success.cshtml" />
     <Content Include="Views\Payment\MyTickets.cshtml" />
+    <Content Include="Views\AdminAccount\AdminDashboard.cshtml" />
+    <Content Include="Views\AdminAccount\AdminIndex.cshtml" />
+    <Content Include="Views\AdminAccount\AdminLogin.cshtml" />
+    <Content Include="Views\AdminAccount\AdminRegister.cshtml" />
+    <Content Include="Views\AdminBooking\BookingDetails.cshtml" />
+    <Content Include="Views\AdminBooking\BookingIndex.cshtml" />
+    <Content Include="Views\AdminCustomer\CustomerDetails.cshtml" />
+    <Content Include="Views\AdminCustomer\CustomerIndex.cshtml" />
+    <Content Include="Views\AdminFlight\FlightCreate.cshtml" />
+    <Content Include="Views\AdminFlight\FlightEdit.cshtml" />
+    <Content Include="Views\AdminFlight\FlightIndex.cshtml" />
+    <Content Include="Views\AdminPayment\PaymentDetails.cshtml" />
+    <Content Include="Views\AdminPayment\PaymentIndex.cshtml" />
+    <Content Include="Views\AdminReport\ReportIndex.cshtml" />
+    <Content Include="Views\AdminReport\RevenueDetails.cshtml" />
+    <Content Include="Views\AdminPayment\PaymentTransactionDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
