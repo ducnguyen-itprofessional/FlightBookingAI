@@ -1,0 +1,458 @@
+﻿
+/* =========================================
+   TRANG ĐĂNG NHẬP ADMIN - GLASSMORPHISM
+   ĐỒNG BỘ VỚI TRANG CHÍNH ADMIN
+========================================= */
+
+/* THIẾT LẬP CHUNG */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    min-height: 100%;
+}
+
+body {
+    font-family: 'Manrope', sans-serif;
+    color: #ffffff;
+}
+
+/* =========================================
+   1. ẢNH NỀN TRANG ĐĂNG NHẬP ADMIN
+========================================= */
+
+.admin-login-page {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding: 30px 6% 25px;
+    /* GIỮ NGUYÊN ẢNH NỀN VÀ MÀU PHỦ CỦA LUỒNG 1 */
+
+    background-image: linear-gradient( 120deg, rgba(3, 13, 31, 0.68), rgba(5, 25, 52, 0.50), rgba(3, 12, 29, 0.72) ), url('../Images/Admin-Background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+    /* =========================================
+   2. ÁNH SÁNG TRANG TRÍ
+========================================= */
+
+    .admin-login-page::before {
+        content: "";
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        top: -150px;
+        right: -100px;
+        background: rgba(42, 142, 255, 0.18);
+        border-radius: 50%;
+        filter: blur(100px);
+        pointer-events: none;
+    }
+
+    .admin-login-page::after {
+        content: "";
+        position: absolute;
+        width: 350px;
+        height: 350px;
+        bottom: -150px;
+        left: -100px;
+        background: rgba(24, 104, 220, 0.20);
+        border-radius: 50%;
+        filter: blur(100px);
+        pointer-events: none;
+    }
+
+/* =========================================
+   3. THANH TIÊU ĐỀ
+========================================= */
+
+.admin-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* LOGO HỆ THỐNG */
+
+.admin-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 290px;
+    height: 105px;
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+/* HÌNH ẢNH LOGO */
+.admin-logo-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: left center;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+.logo-icon {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: linear-gradient( 135deg, #4fa9ff, #1c5bc2 );
+    font-size: 22px;
+}
+
+/* NHÃN KHU VỰC QUẢN TRỊ */
+
+.admin-header-label {
+    color: rgba(255,255,255,0.70);
+    font-family: 'Manrope', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+/* =========================================
+   4. KHUNG ĐĂNG NHẬP
+========================================= */
+
+.admin-login-container {
+    width: 100%;
+    max-width: 440px;
+    margin: auto 0;
+    padding: 38px 35px 32px;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    /* GIỮ NGUYÊN HIỆU ỨNG GLASS CỦA LUỒNG 1 */
+
+    background: linear-gradient( 145deg, rgba(170, 220, 255, 0.30), rgba(105, 170, 225, 0.22), rgba(190, 225, 255, 0.18));
+    border: 1px solid rgba(220, 245, 255, 0.65);
+    border-radius: 23px;
+    /* hiệu ứng kính mờ*/
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    /*đồ bóng*/
+    box-shadow: 
+        0 20px 60px rgba(0,15,45,0.35), 
+        inset 0 1px 2px rgba(255,255,255,0.35), 
+        inset 0 -1px 1px rgba(255, 255, 255, 0.10);
+    animation: welcomeAppear 0.8s ease;
+}
+
+/* DÒNG CHÀO MỪNG */
+
+.login-label {
+    color: #91caff;
+    font-family: 'Manrope', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+}
+
+/* BIỂU TƯỢNG */
+
+.login-icon {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 17px;
+    border-radius: 19px;
+    background: linear-gradient( 135deg, #4fa9ff, #1c5bc2 );
+    box-shadow: 0 8px 25px rgba(30,120,240,0.35);
+    font-size: 30px;
+}
+
+/* TIÊU ĐỀ */
+
+.admin-login-container h1 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    margin-bottom: 10px;
+}
+
+.admin-login-container h2 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* NỘI DUNG GIỚI THIỆU */
+
+.login-description {
+    color: rgba(255,255,255,0.72);
+    font-size: 12px;
+    line-height: 1.9;
+    margin-bottom: 25px;
+}
+
+/* =========================================
+   5. BIỂU MẪU ĐĂNG NHẬP
+========================================= */
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    color: #ffffff;
+    font-family: 'Manrope', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 9px;
+}
+
+/* Ô NHẬP EMAIL VÀ MẬT KHẨU */
+
+.form-group input {
+    width: 100%;
+    height: 49px;
+    padding: 0 15px;
+    color: #ffffff;
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 11px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+    .form-group input::placeholder {
+        color: rgba(255,255,255,0.55);
+    }
+
+    .form-group input:focus {
+        border-color: #91caff;
+        background: rgba(255,255,255,0.15);
+        box-shadow: 0 0 0 3px rgba(79,169,255,0.12);
+    }
+
+/* Ô MẬT KHẨU */
+
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+    .password-wrapper input {
+        padding-right: 70px;
+    }
+
+    /* NÚT HIỆN VÀ ẨN MẬT KHẨU */
+
+    .password-wrapper button {
+        position: absolute;
+        right: 13px;
+        border: none;
+        background: none;
+        color: #91caff;
+        font-family: 'Manrope', sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+/* =========================================
+   6. NÚT ĐĂNG NHẬP
+========================================= */
+
+.login-button {
+    width: 100%;
+    min-height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 5px;
+    padding: 12px 18px;
+    color: #ffffff;
+    font-family: 'Manrope', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    background: linear-gradient( 135deg, rgba(50,151,255,0.95), rgba(20,88,199,0.95) );
+    border: 1px solid rgba(140,200,255,0.45);
+    border-radius: 13px;
+    box-shadow: 0 8px 25px rgba(25,110,230,0.25);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .login-button:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    }
+
+.button-arrow {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+}
+
+.login-button:hover .button-arrow {
+    transform: translateX(5px);
+}
+
+/* =========================================
+   7. LIÊN KẾT ĐĂNG KÝ
+========================================= */
+
+.register-link {
+    margin-top: 22px;
+    color: rgba(255,255,255,0.72);
+    font-size: 11px;
+}
+
+    .register-link a {
+        color: #91caff;
+        font-weight: 700;
+        text-decoration: none;
+        margin-left: 4px;
+    }
+
+        .register-link a:hover {
+            color: #ffffff;
+        }
+
+/* =========================================
+   8. THÔNG BÁO
+========================================= */
+
+.login-message {
+    margin-top: 18px;
+    color: #ffd98a;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+/* =========================================
+   9. THÔNG TIN BẢO MẬT
+========================================= */
+
+.admin-security {
+    margin-top: 25px;
+    color: rgba(255,255,255,0.55);
+    font-family: 'Manrope', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+/* =========================================
+   10. CHÂN TRANG
+========================================= */
+
+.admin-footer {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: rgba(255,255,255,0.60);
+    font-size: 10px;
+}
+
+/* =========================================
+   11. HIỆU ỨNG XUẤT HIỆN
+========================================= */
+
+@keyframes welcomeAppear {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* =========================================
+   12. ĐIỀU CHỈNH TRÊN ĐIỆN THOẠI
+========================================= */
+
+@media (max-width: 600px) {
+
+    .admin-login-page {
+        padding: 22px 16px;
+    }
+
+    .admin-header-label {
+        font-size: 8px;
+        letter-spacing: 1px;
+    }
+
+    .admin-logo {
+        font-size: 11px;
+    }
+
+    .admin-login-container {
+        padding: 32px 22px;
+    }
+
+        .admin-login-container h1 {
+            font-size: 25px;
+        }
+
+        .admin-login-container h2 {
+            font-size: 14px;
+        }
+
+    .login-label {
+        font-size: 9px;
+        letter-spacing: 2px;
+    }
+}
+
+/* =========================================
+   13. HỖ TRỢ GIẢM CHUYỂN ĐỘNG
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+/* LOGO FLIGHTBOOKINGAI DÙNG CHUNG 3 LUỒNG */
+
+.admin-logo-image {
+    display: block;
+    width: 220px;
+    height: 66px;
+    object-fit: contain;
+    object-position: left center;
+    margin-bottom: 25px;
+}

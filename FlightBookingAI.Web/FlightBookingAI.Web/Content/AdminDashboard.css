@@ -1,0 +1,1275 @@
+﻿
+/* =========================================
+   ADMIN DASHBOARD - PREMIUM AIRLINE ADMIN
+   FLIGHTBOOKINGAI
+========================================= */
+
+
+/* =========================================
+   1. GLOBAL
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: #f5f6fa;
+    color: #202b3c;
+    min-height: 100vh;
+}
+
+button,
+input {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.admin-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+/* =========================================
+   2. SIDEBAR
+========================================= */
+
+.sidebar {
+    width: 265px;
+    min-width: 265px;
+    min-height: 100vh;
+    background: #101c32;
+    color: #ffffff;
+    padding: 28px 18px 22px;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 100;
+    overflow-y: auto;
+}
+
+
+/* BRAND */
+
+.sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 8px 35px;
+    border-bottom: 1px solid rgba(255,255,255,0.09);
+}
+
+.brand-logo {
+    width: 43px;
+    height: 43px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, #d8b66a, #b78b3d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #101c32;
+    font-size: 19px;
+    box-shadow: 0 5px 15px rgba(216,182,106,0.2);
+}
+
+.brand-info h2 {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.brand-info span {
+    display: block;
+    color: #d8b66a;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-top: 5px;
+}
+
+
+/* MENU TITLE */
+
+.sidebar-section-title {
+    color: #77859b;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    margin: 30px 10px 13px;
+}
+
+.sidebar-account-title {
+    margin-top: 32px;
+}
+
+
+/* MENU ITEMS */
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 14px;
+    color: #aeb8c9;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 9px;
+    transition: all 0.25s ease;
+}
+
+    .menu-item i {
+        width: 19px;
+        text-align: center;
+        font-size: 15px;
+    }
+
+    .menu-item:hover {
+        color: #ffffff;
+        background: rgba(255,255,255,0.07);
+    }
+
+    .menu-item.active {
+        background: linear-gradient(90deg, #d8b66a, #c39a4c);
+        color: #101c32;
+        font-weight: 700;
+        box-shadow: 0 5px 15px rgba(216,182,106,0.15);
+    }
+
+.logout-item {
+    margin-top: 3px;
+}
+
+    .logout-item:hover {
+        color: #ff8f8f;
+        background: rgba(255,80,80,0.08);
+    }
+
+
+/* SIDEBAR FOOTER */
+
+.sidebar-footer {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 15px 10px;
+    margin-top: auto;
+    border-top: 1px solid rgba(255,255,255,0.09);
+}
+
+.sidebar-footer-icon {
+    width: 37px;
+    height: 37px;
+    background: rgba(216,182,106,0.13);
+    color: #d8b66a;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar-footer strong {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.sidebar-footer span {
+    display: block;
+    color: #8290a6;
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+
+/* =========================================
+   3. MAIN CONTENT
+========================================= */
+
+.main-content {
+    margin-left: 265px;
+    width: calc(100% - 265px);
+    min-height: 100vh;
+}
+
+
+/* =========================================
+   4. HEADER
+========================================= */
+
+.top-header {
+    height: 88px;
+    background: #ffffff;
+    border-bottom: 1px solid #edf0f4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 38px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #98a1af;
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+
+    .breadcrumb i {
+        font-size: 9px;
+    }
+
+    .breadcrumb strong {
+        color: #b18b45;
+        font-weight: 600;
+    }
+
+.header-left h1 {
+    color: #17243a;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 21px;
+}
+
+.notification-button {
+    width: 39px;
+    height: 39px;
+    border: 1px solid #edf0f4;
+    background: #ffffff;
+    border-radius: 11px;
+    color: #5c687b;
+    font-size: 16px;
+    position: relative;
+    transition: 0.25s;
+}
+
+    .notification-button:hover {
+        background: #f8f5ee;
+        color: #b18b45;
+    }
+
+.notification-dot {
+    width: 7px;
+    height: 7px;
+    background: #e75d5d;
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    border: 1px solid #ffffff;
+}
+
+.header-divider {
+    width: 1px;
+    height: 38px;
+    background: #edf0f4;
+}
+
+.admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    cursor: pointer;
+}
+
+.admin-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #172943;
+    color: #d8b66a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+}
+
+.admin-profile-info strong {
+    display: block;
+    color: #26344a;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.admin-profile-info span {
+    display: block;
+    color: #99a2b0;
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+.profile-arrow {
+    color: #8993a3;
+    font-size: 10px;
+    margin-left: 5px;
+}
+
+
+/* =========================================
+   5. DASHBOARD CONTAINER
+========================================= */
+
+.dashboard-container {
+    padding: 30px 38px;
+    max-width: 1700px;
+    margin: 0 auto;
+}
+
+
+/* =========================================
+   6. WELCOME BANNER
+========================================= */
+
+.welcome-banner {
+    min-height: 185px;
+    background: linear-gradient(110deg, #132440 0%, #1d3455 65%, #263e5e 100%);
+    border-radius: 16px;
+    padding: 30px 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(16,28,50,0.08);
+}
+
+.welcome-content {
+    position: relative;
+    z-index: 2;
+}
+
+.welcome-label {
+    color: #d8b66a;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.6px;
+}
+
+    .welcome-label i {
+        margin-right: 7px;
+    }
+
+.welcome-content h2 {
+    font-size: 27px;
+    font-weight: 700;
+    margin-top: 14px;
+    margin-bottom: 9px;
+}
+
+.welcome-content p {
+    color: #c1cbd9;
+    font-size: 12px;
+    line-height: 1.7;
+    max-width: 550px;
+}
+
+.welcome-date {
+    margin-top: 17px;
+    color: #d8b66a;
+    font-size: 10px;
+}
+
+    .welcome-date i {
+        margin-right: 7px;
+    }
+
+.welcome-decoration {
+    width: 230px;
+    height: 230px;
+    position: absolute;
+    right: 40px;
+    top: -20px;
+    border: 1px solid rgba(216,182,106,0.13);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .welcome-decoration::before {
+        content: "";
+        position: absolute;
+        width: 175px;
+        height: 175px;
+        border: 1px solid rgba(216,182,106,0.15);
+        border-radius: 50%;
+    }
+
+    .welcome-decoration i {
+        font-size: 82px;
+        color: rgba(216,182,106,0.28);
+        transform: rotate(-10deg);
+    }
+
+
+/* =========================================
+   7. SECTION HEADING
+========================================= */
+
+.section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 31px 0 18px;
+}
+
+    .section-heading h2 {
+        font-size: 17px;
+        color: #1c2b42;
+        font-weight: 700;
+    }
+
+    .section-heading p {
+        font-size: 11px;
+        color: #939cab;
+        margin-top: 6px;
+    }
+
+.overview-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #8d774b;
+    background: #f5efdf;
+    padding: 9px 12px;
+    border-radius: 7px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.status-indicator {
+    width: 7px;
+    height: 7px;
+    background: #c59c50;
+    border-radius: 50%;
+}
+
+
+/* =========================================
+   8. STATISTIC CARDS
+========================================= */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.stat-card {
+    background: #ffffff;
+    padding: 21px;
+    border: 1px solid #edf0f4;
+    border-radius: 13px;
+    box-shadow: 0 4px 15px rgba(26,43,68,0.025);
+    transition: all 0.25s ease;
+}
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px rgba(26,43,68,0.07);
+    }
+
+.stat-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+}
+
+.icon-blue {
+    background: #eaf1fc;
+    color: #4d78bc;
+}
+
+.icon-gold {
+    background: #f8f1e2;
+    color: #bd964c;
+}
+
+.icon-green {
+    background: #e8f5ef;
+    color: #42a77a;
+}
+
+.icon-purple {
+    background: #f1ebfa;
+    color: #9270bf;
+}
+
+.stat-period {
+    color: #a1a9b6;
+    font-size: 9px;
+}
+
+.stat-info {
+    margin-top: 20px;
+}
+
+    .stat-info span {
+        display: block;
+        color: #8a95a5;
+        font-size: 11px;
+    }
+
+    .stat-info h3 {
+        color: #192941;
+        font-size: 25px;
+        font-weight: 700;
+        margin-top: 8px;
+        letter-spacing: -0.6px;
+    }
+
+.stat-bottom {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 17px;
+    font-size: 9px;
+}
+
+    .stat-bottom i,
+    .stat-bottom strong {
+        color: #3ca77b;
+    }
+
+    .stat-bottom span {
+        color: #a1a9b6;
+    }
+
+
+/* =========================================
+   9. ANALYTICS GRID
+========================================= */
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+    gap: 19px;
+    margin-top: 23px;
+}
+
+.dashboard-card {
+    background: #ffffff;
+    border: 1px solid #edf0f4;
+    border-radius: 13px;
+    box-shadow: 0 4px 15px rgba(26,43,68,0.025);
+    padding: 23px;
+    min-width: 0;
+}
+
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+    .card-header h3 {
+        color: #1c2b42;
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .card-header p {
+        color: #9aa3b0;
+        font-size: 10px;
+        margin-top: 6px;
+    }
+
+
+/* FILTER BUTTON */
+
+.filter-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    background: #ffffff;
+    border: 1px solid #e9edf2;
+    border-radius: 7px;
+    color: #667286;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+    .filter-button i {
+        font-size: 9px;
+    }
+
+    .filter-button:hover {
+        border-color: #d8b66a;
+    }
+
+
+/* REVENUE SUMMARY */
+
+.revenue-summary {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 25px;
+}
+
+    .revenue-summary span {
+        display: block;
+        color: #9aa3b0;
+        font-size: 10px;
+    }
+
+    .revenue-summary h2 {
+        color: #192941;
+        font-size: 23px;
+        margin-top: 7px;
+        font-weight: 700;
+    }
+
+        .revenue-summary h2 small {
+            font-size: 11px;
+            color: #8994a4;
+            font-weight: 500;
+        }
+
+.revenue-growth {
+    color: #369b70;
+    background: #e9f6ef;
+    padding: 7px 9px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* =========================================
+   10. REVENUE CHART
+========================================= */
+
+.chart-container {
+    display: flex;
+    margin-top: 24px;
+    height: 235px;
+}
+
+.chart-y-labels {
+    width: 75px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding-bottom: 26px;
+    color: #a1a9b6;
+    font-size: 9px;
+}
+
+.chart-area {
+    flex: 1;
+    position: relative;
+    min-width: 0;
+    height: 100%;
+    padding-bottom: 27px;
+}
+
+.chart-grid-lines {
+    position: absolute;
+    inset: 0 0 27px 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    .chart-grid-lines span {
+        display: block;
+        width: 100%;
+        border-top: 1px dashed #edf0f4;
+    }
+
+.revenue-chart {
+    width: 100%;
+    height: calc(100% - 27px);
+    position: relative;
+    z-index: 2;
+    overflow: visible;
+}
+
+.chart-area-fill {
+    fill: url(#revenueGradient);
+}
+
+.chart-line {
+    fill: none;
+    stroke: #c9a45d;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.revenue-chart circle {
+    fill: #ffffff;
+    stroke: #c9a45d;
+    stroke-width: 3;
+}
+
+.chart-x-labels {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 3px;
+}
+
+    .chart-x-labels span {
+        color: #9da6b3;
+        font-size: 8px;
+        white-space: nowrap;
+    }
+
+.chart-legend {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 9px;
+    color: #8994a4;
+    font-size: 10px;
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    background: #c9a45d;
+    border-radius: 50%;
+}
+
+
+/* =========================================
+   11. BOOKING SUMMARY
+========================================= */
+
+.more-button {
+    border: none;
+    background: transparent;
+    color: #8994a4;
+    font-size: 18px;
+    padding: 2px 5px;
+}
+
+    .more-button:hover {
+        color: #bd964c;
+    }
+
+.booking-chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 0 20px;
+}
+
+.donut-chart {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    background: conic-gradient( #3e9b78 0% 66.56%, #d9b76c 66.56% 88.32%, #e47b79 88.32% 100% );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+    .donut-chart::before {
+        content: "";
+        position: absolute;
+        width: 126px;
+        height: 126px;
+        background: #ffffff;
+        border-radius: 50%;
+    }
+
+.donut-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+    .donut-inner strong {
+        display: block;
+        color: #1d2d44;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .donut-inner span {
+        display: block;
+        color: #9aa3b0;
+        font-size: 9px;
+        margin-top: 5px;
+    }
+
+.booking-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border-top: 1px solid #edf0f4;
+    padding-top: 18px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 10px;
+}
+
+.legend-color {
+    width: 9px;
+    height: 9px;
+    border-radius: 3px;
+}
+
+    .legend-color.confirmed {
+        background: #3e9b78;
+    }
+
+    .legend-color.pending {
+        background: #d9b76c;
+    }
+
+    .legend-color.cancelled {
+        background: #e47b79;
+    }
+
+.legend-item span:nth-child(2) {
+    color: #8792a2;
+    flex: 1;
+}
+
+.legend-item strong {
+    color: #26344a;
+    font-size: 11px;
+}
+
+
+/* =========================================
+   12. RECENT FLIGHTS TABLE
+========================================= */
+
+.flights-card {
+    margin-top: 23px;
+}
+
+.view-all-button {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: #b28d4b;
+    font-size: 10px;
+    font-weight: 700;
+    padding-top: 4px;
+    white-space: nowrap;
+}
+
+    .view-all-button:hover {
+        color: #172943;
+    }
+
+    .view-all-button i {
+        font-size: 10px;
+    }
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 22px;
+}
+
+.flights-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+    .flights-table thead {
+        background: #f8f9fb;
+    }
+
+    .flights-table th {
+        color: #8994a4;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.4px;
+        padding: 14px 13px;
+        white-space: nowrap;
+    }
+
+    .flights-table td {
+        padding: 17px 13px;
+        border-bottom: 1px solid #f0f2f5;
+        color: #718096;
+        font-size: 10px;
+        white-space: nowrap;
+    }
+
+    .flights-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .flights-table tbody tr {
+        transition: background 0.2s;
+    }
+
+        .flights-table tbody tr:hover {
+            background: #fcfaf5;
+        }
+
+.flight-code {
+    color: #1c2d47;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+
+.route-info {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+}
+
+    .route-info strong {
+        color: #39475b;
+        font-size: 10px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .route-info i {
+        color: #c3a05e;
+        font-size: 9px;
+        flex-shrink: 0;
+    }
+
+.price-cell {
+    color: #26344a !important;
+    font-weight: 700;
+}
+
+
+/* FLIGHT STATUS */
+
+.flight-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 9px;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+    .flight-status > span {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+    }
+
+    .flight-status.available {
+        background: #e9f6ef;
+        color: #348c69;
+    }
+
+        .flight-status.available > span {
+            background: #3e9b78;
+        }
+
+    .flight-status.booked {
+        background: #fff1e8;
+        color: #d17a43;
+    }
+
+        .flight-status.booked > span {
+            background: #d17a43;
+        }
+
+
+/* =========================================
+   13. FOOTER
+========================================= */
+
+.dashboard-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 23px 2px 5px;
+    color: #a1a9b6;
+    font-size: 9px;
+}
+
+
+/* =========================================
+   14. RESPONSIVE - TABLET
+========================================= */
+
+@media (max-width: 1200px) {
+
+    .sidebar {
+        width: 235px;
+        min-width: 235px;
+    }
+
+    .main-content {
+        margin-left: 235px;
+        width: calc(100% - 235px);
+    }
+
+    .dashboard-container {
+        padding: 25px 24px;
+    }
+
+    .top-header {
+        padding: 0 24px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .analytics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-card {
+        min-height: auto;
+    }
+
+    .booking-legend {
+        max-width: 350px;
+        margin: 0 auto;
+        width: 100%;
+    }
+}
+
+
+/* =========================================
+   15. RESPONSIVE - MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+    .sidebar {
+        width: 72px;
+        min-width: 72px;
+        padding: 22px 10px;
+    }
+
+    .sidebar-brand {
+        justify-content: center;
+        padding: 0 0 25px;
+    }
+
+    .brand-info,
+    .sidebar-section-title,
+    .menu-item span,
+    .sidebar-footer > div:last-child {
+        display: none;
+    }
+
+    .brand-logo {
+        width: 43px;
+        height: 43px;
+    }
+
+    .sidebar-menu {
+        align-items: center;
+    }
+
+    .menu-item {
+        width: 48px;
+        height: 48px;
+        justify-content: center;
+        padding: 0;
+    }
+
+        .menu-item i {
+            font-size: 17px;
+        }
+
+    .sidebar-footer {
+        justify-content: center;
+        padding: 15px 0;
+    }
+
+    .main-content {
+        margin-left: 72px;
+        width: calc(100% - 72px);
+    }
+
+    .top-header {
+        height: 75px;
+        padding: 0 17px;
+    }
+
+    .header-left h1 {
+        font-size: 16px;
+    }
+
+    .header-right {
+        gap: 10px;
+    }
+
+    .admin-profile-info,
+    .profile-arrow,
+    .header-divider {
+        display: none;
+    }
+
+    .dashboard-container {
+        padding: 20px 15px;
+    }
+
+    .welcome-banner {
+        min-height: 180px;
+        padding: 25px 22px;
+    }
+
+    .welcome-content h2 {
+        font-size: 21px;
+    }
+
+    .welcome-content p {
+        font-size: 10px;
+        max-width: 300px;
+    }
+
+    .welcome-decoration {
+        right: -90px;
+        opacity: 0.6;
+    }
+
+    .section-heading {
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .overview-tag {
+        font-size: 8px;
+        padding: 8px;
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .stat-info h3 {
+        font-size: 21px;
+    }
+
+    .stat-bottom {
+        flex-wrap: wrap;
+    }
+
+    .dashboard-card {
+        padding: 18px;
+    }
+
+    .revenue-summary h2 {
+        font-size: 19px;
+    }
+
+    .chart-y-labels {
+        width: 58px;
+    }
+
+    .chart-x-labels span {
+        font-size: 7px;
+    }
+
+    .dashboard-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        line-height: 1.6;
+    }
+}
+
+
+/* =========================================
+   16. RESPONSIVE - SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome-decoration {
+        display: none;
+    }
+
+    .section-heading {
+        flex-direction: column;
+    }
+
+    .card-header {
+        flex-wrap: wrap;
+    }
+
+    .filter-button {
+        margin-top: 10px;
+    }
+
+    .revenue-summary {
+        flex-wrap: wrap;
+    }
+
+    .chart-container {
+        height: 210px;
+    }
+
+    .chart-x-labels span {
+        font-size: 6px;
+    }
+}
