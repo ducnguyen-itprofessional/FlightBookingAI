@@ -1,0 +1,260 @@
+﻿
+@model FlightBookingAI.Web.Models.AdminCustomerDetailViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Chi tiết khách hàng";
+
+    string roleLabel = Model.Role == "Customer"
+        ? "Khách hàng"
+        : Model.Role;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chi tiết khách hàng - AER Aviation</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #eee;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 35px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+            .page-header h1 {
+                color: #e0ad45;
+                font-size: 27px;
+                margin-bottom: 10px;
+            }
+
+            .page-header p {
+                color: #aaa;
+                font-size: 14px;
+            }
+
+        .customer-card {
+            background: #1b1b1b;
+            border: 1px solid #383838;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 25px;
+            background: #252525;
+            border-bottom: 1px solid #444;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .avatar {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: #e0ad45;
+            color: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .customer-heading h2 {
+            color: white;
+            font-size: 21px;
+            margin-bottom: 8px;
+        }
+
+        .customer-heading span {
+            color: #e0ad45;
+            font-size: 13px;
+        }
+
+        .card-body {
+            padding: 28px;
+        }
+
+        .section-title {
+            color: #e0ad45;
+            font-size: 16px;
+            margin-bottom: 22px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 22px;
+        }
+
+        .info-item {
+            background: #252525;
+            border: 1px solid #383838;
+            padding: 18px;
+            border-radius: 8px;
+        }
+
+            .info-item label {
+                display: block;
+                color: #999;
+                font-size: 12px;
+                margin-bottom: 10px;
+            }
+
+            .info-item p {
+                color: white;
+                font-size: 15px;
+                font-weight: bold;
+                word-break: break-word;
+            }
+
+        .role-label {
+            color: #69d99a !important;
+        }
+
+        .card-footer {
+            padding: 20px 28px;
+            border-top: 1px solid #383838;
+        }
+
+        .btn-back {
+            display: inline-block;
+            background: #e0ad45;
+            color: #111;
+            padding: 12px 20px;
+            border-radius: 7px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+            .btn-back:hover {
+                background: #f0c66d;
+            }
+
+        @@media (max-width: 650px) {
+            .container {
+                padding: 18px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="page-header">
+            <h1>
+                <i class="fa-solid fa-user"></i>
+                Chi tiết khách hàng
+            </h1>
+
+            <p>Xem thông tin tài khoản khách hàng của AER Aviation</p>
+        </div>
+
+        <div class="customer-card">
+
+            <div class="card-header">
+
+                <div class="avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div class="customer-heading">
+                    <h2>@Model.FullName</h2>
+                    <span>Mã khách hàng: #@Model.UserID</span>
+                </div>
+
+            </div>
+
+            <div class="card-body">
+
+                <h3 class="section-title">
+                    <i class="fa-solid fa-address-card"></i>
+                    Thông tin tài khoản
+                </h3>
+
+                <div class="info-grid">
+
+                    <div class="info-item">
+                        <label>MÃ KHÁCH HÀNG</label>
+                        <p>@Model.UserID</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>HỌ VÀ TÊN</label>
+                        <p>@Model.FullName</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>ĐỊA CHỈ EMAIL</label>
+                        <p>@Model.Email</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>SỐ ĐIỆN THOẠI</label>
+                        <p>@Model.Phone</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>VAI TRÒ TÀI KHOẢN</label>
+                        <p class="role-label">@roleLabel</p>
+                    </div>
+
+                    <div class="info-item">
+                        <label>NGÀY ĐĂNG KÝ</label>
+                        <p>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+
+                <a href="@Url.Action("Index", "AdminCustomer")"
+                   class="btn-back">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Quay lại danh sách
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

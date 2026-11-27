@@ -1,0 +1,359 @@
+﻿
+@model FlightBookingAI.Web.Models.AdminCustomerListViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Quản lý khách hàng";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Quản lý khách hàng - AER Aviation</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #eee;
+        }
+
+        .container {
+            padding: 35px;
+            max-width: 1600px;
+            margin: auto;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+            .page-header h1 {
+                color: #e0ad45;
+                font-size: 28px;
+                margin-bottom: 8px;
+            }
+
+            .page-header p {
+                color: #aaa;
+                font-size: 14px;
+            }
+
+        .total-box {
+            background: #202020;
+            border: 1px solid #493b20;
+            border-radius: 10px;
+            padding: 18px 25px;
+            min-width: 180px;
+        }
+
+            .total-box span {
+                color: #aaa;
+                font-size: 13px;
+            }
+
+            .total-box h2 {
+                color: #e0ad45;
+                font-size: 26px;
+                margin-top: 8px;
+            }
+
+        .content-box {
+            background: #1b1b1b;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 25px;
+        }
+
+        .search-area {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+            .search-area input {
+                flex: 1;
+                min-width: 220px;
+                padding: 13px 15px;
+                border-radius: 7px;
+                border: 1px solid #444;
+                background: #111;
+                color: white;
+                outline: none;
+            }
+
+                .search-area input:focus {
+                    border-color: #e0ad45;
+                }
+
+        .btn-search {
+            padding: 13px 22px;
+            border: none;
+            border-radius: 7px;
+            background: #e0ad45;
+            color: #111;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-reset {
+            padding: 13px 20px;
+            border-radius: 7px;
+            background: #333;
+            color: white;
+            text-decoration: none;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        thead {
+            background: #292929;
+        }
+
+        th {
+            color: #e0ad45;
+            padding: 16px 12px;
+            text-align: left;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #333;
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #252525;
+        }
+
+        .customer-name {
+            color: white;
+            font-weight: bold;
+        }
+
+        .customer-email {
+            color: #aaa;
+        }
+
+        .role-label {
+            display: inline-block;
+            padding: 6px 11px;
+            border-radius: 20px;
+            background: #173c2a;
+            color: #69d99a;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .btn-detail {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #e0ad45;
+            color: #111;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 35px;
+            color: #999;
+        }
+
+        .error-message {
+            background: #4b2222;
+            border: 1px solid #8b3939;
+            color: #ffb0b0;
+            padding: 14px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+        }
+
+        @@media (max-width: 768px) {
+            .container {
+                padding: 18px;
+            }
+
+            .page-header h1 {
+                font-size: 23px;
+            }
+
+            .content-box {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="page-header">
+            <div>
+                <h1>
+                    <i class="fa-solid fa-users"></i>
+                    Quản lý khách hàng
+                </h1>
+
+                <p>Quản lý thông tin tài khoản khách hàng của AER Aviation</p>
+            </div>
+
+            <div class="total-box">
+                <span>Tổng số khách hàng</span>
+                <h2>@Model.Customers.Count</h2>
+            </div>
+        </div>
+
+        @if (TempData["CustomerError"] != null)
+        {
+            <div class="error-message">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                @TempData["CustomerError"]
+            </div>
+        }
+
+        <div class="content-box">
+
+            <form method="get"
+                  action="@Url.Action("Index", "AdminCustomer")"
+                  class="search-area">
+
+                <input type="text"
+                       name="keyword"
+                       value="@Model.Keyword"
+                       placeholder="Nhập tên, email hoặc số điện thoại khách hàng..." />
+
+                <button type="submit" class="btn-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Tìm kiếm
+                </button>
+
+                <a href="@Url.Action("Index", "AdminCustomer")"
+                   class="btn-reset">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    Làm mới
+                </a>
+
+            </form>
+
+            <div class="table-wrapper">
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>MÃ KHÁCH HÀNG</th>
+                            <th>HỌ VÀ TÊN</th>
+                            <th>EMAIL</th>
+                            <th>SỐ ĐIỆN THOẠI</th>
+                            <th>VAI TRÒ</th>
+                            <th>NGÀY ĐĂNG KÝ</th>
+                            <th>THAO TÁC</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (Model.Customers != null &&
+                             Model.Customers.Count > 0)
+                        {
+                            foreach (var customer in Model.Customers)
+                            {
+                                <tr>
+                                    <td>@customer.UserID</td>
+
+                                    <td>
+                                        <span class="customer-name">
+                                            @customer.FullName
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class="customer-email">
+                                            @customer.Email
+                                        </span>
+                                    </td>
+
+                                    <td>@customer.Phone</td>
+
+                                    <td>
+                                        <span class="role-label">
+                                            Khách hàng
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @customer.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+
+                                    <td>
+                                        <a href="@Url.Action("Details", "AdminCustomer", new { id = customer.UserID })"
+                                           style="display:inline-block;
+                                                  padding:8px 13px;
+                                                  background:#e0ad45;
+                                                  color:#111;
+                                                  border-radius:6px;
+                                                  text-decoration:none;
+                                                  font-weight:bold;
+                                                  white-space:nowrap;">
+                                            <i class="fa-solid fa-eye"></i>
+                                            Xem chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="empty-message">
+                                    <i class="fa-solid fa-users"
+                                       style="font-size:30px; margin-bottom:12px;"></i>
+
+                                    <p>Không tìm thấy khách hàng nào.</p>
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

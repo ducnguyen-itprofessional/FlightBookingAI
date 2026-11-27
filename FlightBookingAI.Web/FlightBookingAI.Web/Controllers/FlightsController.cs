@@ -107,7 +107,6 @@ namespace FlightBookingAI.Web.Controllers
             return View(flight);
         }
 
-
         [HttpGet]
         public ActionResult SeatSelection(int id, int passengers = 1)
         {
@@ -154,8 +153,7 @@ namespace FlightBookingAI.Web.Controllers
             // Kiểm tra số lượng hành khách
             if (passengers < 1)
             {
-                return new HttpStatusCodeResult(400,
-                    "Số lượng hành khách không hợp lệ.");
+                passengers = 1;
             }
 
             // Lấy thông tin chuyến bay
@@ -165,7 +163,6 @@ namespace FlightBookingAI.Web.Controllers
             {
                 return HttpNotFound();
             }
-
             // Kiểm tra trạng thái và số ghế còn trống
             if (flight.Status != "Scheduled" ||
                 flight.AvailableSeats < passengers)

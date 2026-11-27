@@ -648,142 +648,103 @@
 </div>
 
 
+
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
 
-        // Số hành khách lấy từ Razor
-        var maxSeats = @passengers;
+    var maxSeats = @passengers;
+    var selectedSeats = [];
 
-        // Danh sách ghế đang chọn
-        var selectedSeats = [];
+    var seatButtons = document.querySelectorAll(
+        ".aircraft-seat:not(:disabled)"
+    );
 
-        var seatButtons = document.querySelectorAll(
-            ".aircraft-seat:not(:disabled)"
-        );
+    var selectedSeatText = document.getElementById("selectedSeatText");
+    var seatCounter = document.getElementById("seatCounter");
+    var selectionMessage = document.getElementById("seatSelectionMessage");
+    var continueButton = document.getElementById("continueSeatButton");
 
-        var selectedSeatText = document.getElementById(
-            "selectedSeatText"
-        );
+    function updateSelection() {
 
-        var seatCounter = document.getElementById(
-            "seatCounter"
-        );
+        var count = selectedSeats.length;
 
-        var selectionMessage = document.getElementById(
-            "seatSelectionMessage"
-        );
+        seatCounter.textContent = count + "/" + maxSeats + " ghế";
 
-        var continueButton = document.getElementById(
-            "continueSeatButton"
-        );
+        selectedSeatText.textContent =
+            count > 0 ? selectedSeats.join(", ") : "Chưa chọn ghế";
 
-        function updateSelection() {
-
-            var count = selectedSeats.length;
-
-            // Cập nhật số lượng ghế
-            seatCounter.textContent =
-                count + "/" + maxSeats + " ghế";
-
-            // Hiển thị danh sách ghế
-            selectedSeatText.textContent =
-                count > 0
-                    ? selectedSeats.join(", ")
-                    : "Chưa chọn ghế";
-
-            // Thông báo trạng thái
-            if (count === maxSeats) {
-                selectionMessage.textContent =
-                    "Đã chọn đủ " + maxSeats + " ghế.";
-                selectionMessage.className =
-                    "small text-success mt-3";
-            }
-            else {
-                selectionMessage.textContent =
-                    "Vui lòng chọn thêm " +
-                    (maxSeats - count) + " ghế.";
-
-                selectionMessage.className =
-                    "small text-muted mt-3";
-            }
-
-            // Chỉ cho phép tiếp tục khi chọn đủ số ghế
-            continueButton.disabled =
-                selectedSeats.length !== maxSeats;
-
+        if (count === maxSeats) {
+            selectionMessage.textContent =
+                "Đã chọn đủ " + maxSeats + " ghế.";
+            selectionMessage.className = "small text-success mt-3";
+        }
+        else {
+            selectionMessage.textContent =
+                "Vui lòng chọn thêm " + (maxSeats - count) + " ghế.";
+            selectionMessage.className = "small text-muted mt-3";
         }
 
-        seatButtons.forEach(function (button) {
+        continueButton.disabled = count !== maxSeats;
+    }
 
-            button.addEventListener("click", function () {
+    // Sự kiện chọn hoặc bỏ chọn ghế
+    seatButtons.forEach(function (button) {
 
-                var seatNumber = button.dataset.seat;
+        button.addEventListener("click", function () {
 
-                var index = selectedSeats.indexOf(seatNumber);
+            var seatNumber = button.dataset.seat;
+            var index = selectedSeats.indexOf(seatNumber);
 
-                if (index !== -1) {
+            if (index !== -1) {
 
-                    // Bỏ chọn ghế
-                    selectedSeats.splice(index, 1);
+                selectedSeats.splice(index, 1);
+                button.classList.remove("is-selected");
+                button.setAttribute("aria-pressed", "false");
 
-                    button.classList.remove("is-selected");
+            }
+            else {
 
-                    button.setAttribute(
-                        "aria-pressed", "false"
-                    );
-                }
-                else {
+                if (selectedSeats.length >= maxSeats) {
 
-                    // Không cho chọn vượt số hành khách
-                    if (selectedSeats.length >= maxSeats) {
-                        selectionMessage.textContent =
-                            "Bạn chỉ được chọn tối đa " +
-                            maxSeats + " ghế.";
+                    selectionMessage.textContent =
+                        "Bạn chỉ được chọn tối đa " + maxSeats + " ghế.";
 
-                        selectionMessage.className =
-                            "small text-danger mt-3";
+                    selectionMessage.className =
+                        "small text-danger mt-3";
 
-                        return;
-                    }
-
-                    // Thêm ghế mới
-                    selectedSeats.push(seatNumber);
-
-                    button.classList.add("is-selected");
-
-                    button.setAttribute(
-                        "aria-pressed", "true"
-                    );
+                    return;
                 }
 
-        // Chuyển sang trang nhập thông tin hành khách
-        continueButton.addEventListener("click", function () {
-
-            // Không cho chuyển trang nếu chưa chọn đủ ghế
-            if (selectedSeats.length !== maxSeats) {
-                return;
+                selectedSeats.push(seatNumber);
+                button.classList.add("is-selected");
+                button.setAttribute("aria-pressed", "true");
             }
 
-            // Đường dẫn Action PassengerInformation
-            var url = '@Url.Action("PassengerInformation", "Flights",
-                           new { id = Model.FlightID })';
-
-            // Truyền số hành khách và danh sách ghế
-            var query =
-                "passengers=" + encodeURIComponent(maxSeats) +
-                "&seats=" + encodeURIComponent(
-                    selectedSeats.join(",")
-                );
-
-            window.location.href = url + "?" + query;
+            updateSelection();
         });
-                updateSelection();
-            });
-
-        });
-
-        updateSelection();
-
     });
-</script>
 
+
+
+    // Sự kiện nút Tiếp tục
+    continueButton.addEventListener("click", function () {
+
+        if (selectedSeats.length !== maxSeats) {
+            alert("Bạn chưa chọn đủ ghế!");
+            return;
+        }
+
+        var url = '@Url.Action("PassengerInformation", "Flights", new { id = Model.FlightID })';
+
+        var query =
+            "passengers=" + encodeURIComponent(maxSeats) +
+            "&seats=" + encodeURIComponent(selectedSeats.join(","));
+
+        var finalUrl = url + "?" + query;
+
+        // Chuyển sang trang nhập thông tin hành khách
+        window.location.href = finalUrl;
+    });
+
+}); // Đóng sự kiện DOMContentLoaded
+</script>
