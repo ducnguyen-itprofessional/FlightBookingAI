@@ -1,0 +1,524 @@
+﻿
+@model FlightBookingAI.Web.Models.AdminBookingListViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Quản lý đặt vé";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý đặt vé - AER Aviation</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #101010;
+            color: #f5f5f5;
+            padding: 35px;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+            .header h1 {
+                color: #e0ad45;
+                font-size: 30px;
+                margin-bottom: 10px;
+            }
+
+            .header p {
+                color: #aaa;
+                font-size: 14px;
+            }
+
+        .back-btn {
+            display: inline-block;
+            padding: 11px 18px;
+            background: #252525;
+            color: #e0ad45;
+            border: 1px solid #e0ad45;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+            .back-btn:hover {
+                background: #e0ad45;
+                color: #111;
+            }
+
+        .filter-box {
+            background: #1b1b1b;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 22px;
+            margin-bottom: 25px;
+        }
+
+        .filter-title {
+            color: #e0ad45;
+            font-size: 17px;
+            margin-bottom: 18px;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+            .filter-form input,
+            .filter-form select {
+                width: 100%;
+                padding: 12px;
+                background: #111;
+                border: 1px solid #444;
+                border-radius: 6px;
+                color: white;
+                outline: none;
+            }
+
+                .filter-form input:focus,
+                .filter-form select:focus {
+                    border-color: #e0ad45;
+                }
+
+        .btn-search {
+            padding: 12px 20px;
+            background: #e0ad45;
+            color: #111;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-reset {
+            padding: 12px 20px;
+            background: #444;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .table-box {
+            background: #1b1b1b;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 22px;
+            overflow: hidden;
+        }
+
+        .table-title {
+            color: #e0ad45;
+            font-size: 19px;
+            margin-bottom: 20px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1250px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #292929;
+            color: #e0ad45;
+            padding: 15px 12px;
+            text-align: left;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #333;
+            color: #ddd;
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #252525;
+        }
+
+        .booking-code {
+            color: #e0ad45;
+            font-weight: bold;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .status-pending {
+            background: #5b481d;
+            color: #ffd76a;
+        }
+
+        .status-confirmed,
+        .status-paid {
+            background: #174d31;
+            color: #75e6a3;
+        }
+
+        .status-cancelled,
+        .status-failed {
+            background: #592626;
+            color: #ff9999;
+        }
+
+        .status-completed {
+            background: #24445c;
+            color: #9bd4ff;
+        }
+
+        .status-unpaid {
+            background: #5b481d;
+            color: #ffd76a;
+        }
+
+        .btn-detail {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #e0ad45;
+            color: #111;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+            .btn-detail:hover {
+                background: #f5c968;
+            }
+
+        .empty-message {
+            text-align: center;
+            padding: 35px;
+            color: #aaa;
+        }
+
+        .alert-error {
+            padding: 14px;
+            background: #592626;
+            color: #ffb3b3;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        @@media (max-width: 1000px) {
+            body {
+                padding: 18px;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @@media (max-width: 600px) {
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div>
+                <h1>
+                    <i class="fa-solid fa-ticket"></i>
+                    Quản lý đặt vé
+                </h1>
+                <p>Quản lý và theo dõi thông tin đặt vé của khách hàng</p>
+            </div>
+
+            <a href="@Url.Action("Index", "AdminFlight")"
+               class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+                Quản lý chuyến bay
+            </a>
+        </div>
+
+        @if (TempData["BookingError"] != null)
+        {
+            <div class="alert-error">
+                @TempData["BookingError"]
+            </div>
+        }
+
+        @if (TempData["FlightError"] != null)
+        {
+            <div class="alert-error">
+                @TempData["FlightError"]
+            </div>
+        }
+
+        <div class="filter-box">
+
+            <div class="filter-title">
+                <i class="fa-solid fa-filter"></i>
+                TÌM KIẾM VÀ LỌC ĐẶT VÉ
+            </div>
+
+            @using (Html.BeginForm("Index", "AdminBooking",
+                FormMethod.Get, new { @class = "filter-form" }))
+            {
+                <input type="text"
+                       name="keyword"
+                       value="@Model.Keyword"
+                       placeholder="Nhập mã đặt vé, tên, email, số điện thoại hoặc chuyến bay..." />
+
+                <select name="bookingStatus">
+                    <option value="">Tất cả trạng thái đặt vé</option>
+                    <option value="Pending"
+                            @(Model.BookingStatus == "Pending" ? "selected" : "")>
+                        Chờ xử lý
+                    </option>
+                    <option value="Confirmed"
+                            @(Model.BookingStatus == "Confirmed" ? "selected" : "")>
+                        Đã xác nhận
+                    </option>
+                    <option value="Cancelled"
+                            @(Model.BookingStatus == "Cancelled" ? "selected" : "")>
+                        Đã hủy
+                    </option>
+                    <option value="Completed"
+                            @(Model.BookingStatus == "Completed" ? "selected" : "")>
+                        Đã hoàn thành
+                    </option>
+                </select>
+
+                <select name="paymentStatus">
+                    <option value="">Tất cả trạng thái thanh toán</option>
+                    <option value="Pending"
+                            @(Model.PaymentStatus == "Pending" ? "selected" : "")>
+                        Chờ thanh toán
+                    </option>
+                    <option value="Paid"
+                            @(Model.PaymentStatus == "Paid" ? "selected" : "")>
+                        Đã thanh toán
+                    </option>
+                    <option value="Unpaid"
+                            @(Model.PaymentStatus == "Unpaid" ? "selected" : "")>
+                        Chưa thanh toán
+                    </option>
+                    <option value="Failed"
+                            @(Model.PaymentStatus == "Failed" ? "selected" : "")>
+                        Thất bại
+                    </option>
+                </select>
+
+                <button type="submit" class="btn-search">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Tìm kiếm
+                </button>
+
+                <a href="@Url.Action("Index", "AdminBooking")"
+                   class="btn-reset">
+                    <i class="fa-solid fa-rotate"></i>
+                    Làm mới
+                </a>
+            }
+
+        </div>
+
+        <div class="table-box">
+
+            <div class="table-title">
+                <i class="fa-solid fa-list"></i>
+                DANH SÁCH ĐẶT VÉ
+                <span style="color:#aaa;font-size:13px;">
+                    (@(Model.Bookings == null ? 0 : Model.Bookings.Count) đơn đặt vé)
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>MÃ ĐẶT VÉ</th>
+                            <th>KHÁCH HÀNG</th>
+                            <th>MÃ CHUYẾN BAY</th>
+                            <th>NGÀY ĐẶT</th>
+                            <th>SỐ HÀNH KHÁCH</th>
+                            <th>TỔNG TIỀN</th>
+                            <th>TRẠNG THÁI ĐẶT VÉ</th>
+                            <th>THANH TOÁN</th>
+                            <th>THAO TÁC</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Bookings != null && Model.Bookings.Count > 0)
+                        {
+                            foreach (var booking in Model.Bookings)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="booking-code">
+                                            @booking.BookingCode
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <strong>@booking.CustomerName</strong>
+                                        <br />
+                                        <span style="color:#999;">
+                                            @booking.CustomerEmail
+                                        </span>
+                                    </td>
+
+                                    <td>@booking.FlightNumber</td>
+
+                                    <td>
+                                        @booking.BookingDate.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+                                    <td>@booking.PassengerCount</td>
+
+                                    <td style="color:#e0ad45;font-weight:bold;">
+                                        @booking.TotalAmount.ToString("N0") VNĐ
+                                    </td>
+
+                                    <td>
+                                        @{
+                                            string bookingLabel = booking.BookingStatus;
+                                            string bookingClass = "status-pending";
+
+                                            switch (booking.BookingStatus)
+                                            {
+                                                case "Pending":
+                                                    bookingLabel = "Chờ xử lý";
+                                                    bookingClass = "status-pending";
+                                                    break;
+                                                case "Confirmed":
+                                                    bookingLabel = "Đã xác nhận";
+                                                    bookingClass = "status-confirmed";
+                                                    break;
+                                                case "Cancelled":
+                                                    bookingLabel = "Đã hủy";
+                                                    bookingClass = "status-cancelled";
+                                                    break;
+                                                case "Completed":
+                                                    bookingLabel = "Đã hoàn thành";
+                                                    bookingClass = "status-completed";
+                                                    break;
+                                            }
+                                        }
+
+                                        <span class="status @bookingClass">
+                                            @bookingLabel
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @{
+                                            string paymentLabel = booking.PaymentStatus;
+                                            string paymentClass = "status-pending";
+
+                                            switch (booking.PaymentStatus)
+                                            {
+                                                case "Paid":
+                                                    paymentLabel = "Đã thanh toán";
+                                                    paymentClass = "status-paid";
+                                                    break;
+                                                case "Pending":
+                                                    paymentLabel = "Chờ thanh toán";
+                                                    paymentClass = "status-pending";
+                                                    break;
+                                                case "Unpaid":
+                                                    paymentLabel = "Chưa thanh toán";
+                                                    paymentClass = "status-unpaid";
+                                                    break;
+                                                case "Failed":
+                                                    paymentLabel = "Thất bại";
+                                                    paymentClass = "status-failed";
+                                                    break;
+                                                case "Chưa có thanh toán":
+                                                    paymentLabel = "Chưa có thanh toán";
+                                                    paymentClass = "status-unpaid";
+                                                    break;
+                                            }
+                                        }
+
+                                        <span class="status @paymentClass">
+                                            @paymentLabel
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <a href="@Url.Action("Details", "AdminBooking",
+                                            new { id = booking.BookingID })"
+                                           class="btn-detail">
+                                            <i class="fa-solid fa-eye"></i>
+                                            Chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="empty-message">
+                                    <i class="fa-solid fa-inbox"
+                                       style="font-size:30px;margin-bottom:12px;"></i>
+                                    <br />
+                                    Chưa có dữ liệu đặt vé.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>

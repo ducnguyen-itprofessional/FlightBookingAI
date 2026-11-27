@@ -1,0 +1,774 @@
+﻿
+@{
+    Layout = null;
+    ViewBag.Title = "Bảng điều khiển Admin | FlightBookingAI";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Bảng điều khiển Admin | FlightBookingAI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <link rel="stylesheet"
+          href="@Url.Content("~/Content/AdminDashboard.css")" />
+</head>
+
+<body>
+
+    <div class="admin-wrapper">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="sidebar-brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-plane-departure"></i>
+                </div>
+
+                <div class="brand-info">
+                    <h2>FlightBookingAI</h2>
+                    <span>QUẢN TRỊ HỆ THỐNG</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section-title">
+                DANH MỤC CHÍNH
+            </div>
+
+            <nav class="sidebar-menu">
+
+                <a href="@Url.Action("AdminDashboard", "AdminAccount")" class="menu-item active">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Tổng quan</span>
+                </a>
+
+                <a href="@Url.Action("Index", "AdminFlight")" class="menu-item">
+                    <i class="fa-solid fa-plane"></i>
+                    <span>Quản lý chuyến bay</span>
+                </a>
+
+                <a href="@Url.Action("Index", "AdminBooking")" class="menu-item">
+                    <i class="fa-solid fa-ticket"></i>
+                    <span>Quản lý đặt vé</span>
+                </a>
+
+                <a href="@Url.Action("Index", "AdminCustomer")" class="menu-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Quản lý khách hàng</span>
+                </a>
+
+                <a href="@Url.Action("Index", "AdminPayment")" class="menu-item">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Quản lý thanh toán</span>
+                </a>
+                <a href="#reports" class="menu-item">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Báo cáo và thống kê</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-section-title sidebar-account-title">
+                TÀI KHOẢN
+            </div>
+
+            <nav class="sidebar-menu">
+
+                <a href="#profile" class="menu-item">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span>Hồ sơ quản trị</span>
+                </a>
+
+                @using (Html.BeginForm(
+                    "AdminLogout",
+                    "AdminAccount",
+                    FormMethod.Post,
+                    new { style = "margin: 0;" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit" class="menu-item logout-item">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Đăng xuất</span>
+                    </button>
+                }
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="sidebar-footer-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <div>
+                    <strong>Hệ thống quản trị</strong>
+                    <span>Phiên bản Demo 1.0</span>
+                </div>
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- HEADER -->
+            <header class="top-header">
+
+                <div class="header-left">
+                    <div class="breadcrumb">
+                        <span>Quản trị</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                        <strong>Tổng quan</strong>
+                    </div>
+
+                    <h1>Bảng điều khiển</h1>
+                </div>
+
+                <div class="header-right">
+
+                    <button class="notification-button" type="button"
+                            aria-label="Thông báo">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+
+                    <div class="header-divider"></div>
+
+                    <div class="admin-profile">
+
+                        <div class="admin-avatar">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+
+                        <div class="admin-profile-info">
+                            <strong>@(ViewBag.AdminName ?? "Quản trị viên")</strong>
+                            <span>@(ViewBag.AdminEmail ?? "Tài khoản quản trị")</span>
+                        </div>
+
+                        <i class="fa-solid fa-chevron-down profile-arrow"></i>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- DASHBOARD CONTENT -->
+            <div class="dashboard-container" id="overview">
+
+                <!-- WELCOME BANNER -->
+                <section class="welcome-banner">
+
+                    <div class="welcome-content">
+
+                        <span class="welcome-label">
+                            <i class="fa-solid fa-sun"></i>
+                            TỔNG QUAN QUẢN TRỊ
+                        </span>
+
+                        <h2>Chào mừng trở lại!</h2>
+
+                        <p>
+                            Theo dõi và quản lý hoạt động của hệ thống
+                            đặt vé máy bay FlightBookingAI tại đây.
+                        </p>
+
+                        <div class="welcome-date">
+                            <i class="fa-regular fa-calendar"></i>
+                            Hệ thống quản lý chuyến bay
+                        </div>
+
+                    </div>
+
+                    <div class="welcome-decoration">
+                        <i class="fa-solid fa-plane-departure"></i>
+                    </div>
+
+                </section>
+
+
+                <!-- SECTION TITLE -->
+                <div class="section-heading">
+
+                    <div>
+                        <h2>Tổng quan hoạt động</h2>
+                        <p>Các chỉ số quan trọng của hệ thống</p>
+                    </div>
+
+                    <div class="overview-tag">
+                        <span class="status-indicator"></span>
+                        DỮ LIỆU HỆ THỐNG
+                    </div>
+                </div>
+
+
+                <!-- STATISTIC CARDS -->
+                <section class="stats-grid">
+
+                    <!-- TOTAL FLIGHTS -->
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-icon icon-blue">
+                                <i class="fa-solid fa-plane"></i>
+                            </div>
+
+                            <span class="stat-period">
+                                Toàn hệ thống
+                            </span>
+                        </div>
+
+                        <div class="stat-info">
+                            <span>Tổng số chuyến bay</span>
+                            <h3>@ViewBag.TotalFlights</h3>
+                        </div>
+
+                        <div class="stat-bottom">
+                            <i class="fa-solid fa-database"></i>
+                            <strong>Dữ liệu thực tế</strong>
+                            <span>Trong hệ thống</span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- TOTAL BOOKINGS -->
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-icon icon-gold">
+                                <i class="fa-solid fa-ticket"></i>
+                            </div>
+
+                            <span class="stat-period">
+                                Toàn hệ thống
+                            </span>
+                        </div>
+
+                        <div class="stat-info">
+                            <span>Tổng lượt đặt vé</span>
+                            <h3>@ViewBag.TotalBookings</h3>
+                        </div>
+
+                        <div class="stat-bottom">
+                            <i class="fa-solid fa-ticket"></i>
+                            <strong>Dữ liệu thực tế</strong>
+                            <span>đặt vé đã ghi nhận</span>
+                        </div>
+                    </div>
+
+
+                    <!-- TOTAL CUSTOMERS -->
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-icon icon-green">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+
+                            <span class="stat-period">
+                                Toàn hệ thống
+                            </span>
+                        </div>
+
+                        <div class="stat-info">
+                            <span>Tổng số khách hàng</span>
+                            <h3>@ViewBag.TotalCustomers</h3>
+                        </div>
+
+                        <div class="stat-bottom">
+                            <i class="fa-solid fa-users"></i>
+                            <strong>Dữ liệu thực tế</strong>
+                            <span>khách hàng đã đăng ký</span>
+                        </div>
+                    </div>
+
+
+                    <!-- TOTAL REVENUE -->
+                    <div class="stat-card">
+
+                        <div class="stat-top">
+                            <div class="stat-icon icon-purple">
+                                <i class="fa-solid fa-wallet"></i>
+                            </div>
+
+                            <span class="stat-period">
+                                Toàn hệ thống
+                            </span>
+                        </div>
+
+                        <div class="stat-info">
+                            <span>Tổng doanh thu</span>
+                            <h3>@String.Format("{0:N0}", ViewBag.TotalRevenue) VNĐ</h3>
+                        </div>
+
+                        <div class="stat-bottom">
+                            <i class="fa-solid fa-wallet"></i>
+                            <strong>Thanh toán thành công</strong>
+                            <span>trên toàn hệ thống</span>
+                        </div>
+                    </div>
+
+                </section>
+
+
+                <!-- ANALYTICS GRID -->
+                <section class="analytics-grid">
+
+                    <!-- REVENUE CHART -->
+                    <div class="dashboard-card revenue-card" id="reports">
+
+                        <div class="card-header">
+
+                            <div>
+                                <h3>Thống kê doanh thu</h3>
+                                <p>Biến động doanh thu theo từng tháng</p>
+                            </div>
+
+                            <button class="filter-button" type="button">
+                                Năm 2026
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="revenue-summary">
+                            <div>
+                                <span>Tổng doanh thu hệ thống</span>
+                                <h2>
+                                    @String.Format(
+                                                  "{0:N0}",
+                                                  ViewBag.TotalRevenue ?? 0
+                                              )
+                                    <small>VNĐ</small>
+                                </h2>
+                            </div>
+
+                            <div class="revenue-growth">
+                                <i class="fa-solid fa-chart-line"></i>
+                                <span>Doanh thu thực tế</span>
+                            </div>
+                        </div>
+
+                        <div class="chart-container">
+
+
+
+                            <div class="chart-y-labels">
+                                @{
+                                    decimal[] monthlyRevenueForLabels =
+                                        ViewBag.MonthlyRevenue as decimal[] ?? new decimal[12];
+
+                                    decimal chartMaxRevenue = 0m;
+
+                                    for (int i = 0; i < 12; i++)
+                                    {
+                                        if (monthlyRevenueForLabels[i] > chartMaxRevenue)
+                                        {
+                                            chartMaxRevenue = monthlyRevenueForLabels[i];
+                                        }
+                                    }
+
+                                    decimal chartStep = chartMaxRevenue / 4m;
+                                }
+
+                                @for (int i = 4; i >= 0; i--)
+                                {
+                                    decimal labelValue = chartStep * i;
+
+                                    <span>
+                                        @String.Format("{0:N0}", labelValue)
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="chart-area">
+
+                                <div class="chart-grid-lines">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+
+
+                                @{
+                                    // Lấy doanh thu 12 tháng từ Controller
+                                    decimal[] monthlyRevenue =
+                                        ViewBag.MonthlyRevenue as decimal[] ?? new decimal[12];
+
+                                    // Tìm doanh thu tháng cao nhất
+                                    decimal maxRevenue = 0m;
+
+                                    for (int i = 0; i < 12; i++)
+                                    {
+                                        if (monthlyRevenue[i] > maxRevenue)
+                                        {
+                                            maxRevenue = monthlyRevenue[i];
+                                        }
+                                    }
+
+                                    // Tránh chia cho 0 khi chưa có doanh thu
+                                    if (maxRevenue == 0)
+                                    {
+                                        maxRevenue = 1m;
+                                    }
+
+                                    // Tạo tọa độ đường biểu đồ
+                                    System.Text.StringBuilder linePath =
+                                        new System.Text.StringBuilder();
+
+                                    for (int i = 0; i < 12; i++)
+                                    {
+                                        double x = i * 65.454545;
+                                        double y = 220 - (double)(monthlyRevenue[i] / maxRevenue) * 190;
+
+                                        string xText = x.ToString(
+                                            System.Globalization.CultureInfo.InvariantCulture);
+
+                                        string yText = y.ToString(
+                                            System.Globalization.CultureInfo.InvariantCulture);
+
+                                        if (i == 0)
+                                        {
+                                            linePath.Append("M" + xText + "," + yText);
+                                        }
+                                        else
+                                        {
+                                            linePath.Append(" L" + xText + "," + yText);
+                                        }
+                                    }
+
+                                    // Tạo vùng màu phía dưới đường biểu đồ
+                                    string areaPath =
+                                        linePath.ToString() + " L720,250 L0,250 Z";
+                                }
+
+                                <svg class="revenue-chart"
+                                     viewBox="0 0 720 250"
+                                     preserveAspectRatio="none">
+
+                                    <defs>
+                                        <linearGradient id="revenueGradient"
+                                                        x1="0" y1="0"
+                                                        x2="0" y2="1">
+                                            <stop offset="0%"
+                                                  stop-color="#d8b66a"
+                                                  stop-opacity="0.35" />
+
+                                            <stop offset="100%"
+                                                  stop-color="#d8b66a"
+                                                  stop-opacity="0" />
+                                        </linearGradient>
+                                    </defs>
+
+                                    <!-- Vùng màu phía dưới biểu đồ -->
+                                    <path class="chart-area-fill"
+                                          d="@areaPath" />
+
+                                    <!-- Đường biểu diễn doanh thu -->
+                                    <path class="chart-line"
+                                          d="@linePath" />
+
+                                    <!-- Các điểm doanh thu của 12 tháng -->
+                                    @for (int i = 0; i < 12; i++)
+                                    {
+                                        double x = i * 65.454545;
+                                        double y = 220 - (double)(monthlyRevenue[i] / maxRevenue) * 190;
+
+                                        <circle cx="@x.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                                cy="@y.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                                r="4" />
+                                    }
+
+                                </svg>
+
+                                <div class="chart-x-labels">
+                                    <span>Tháng 1</span>
+                                    <span>Tháng 2</span>
+                                    <span>Tháng 3</span>
+                                    <span>Tháng 4</span>
+                                    <span>Tháng 5</span>
+                                    <span>Tháng 6</span>
+                                    <span>Tháng 7</span>
+                                    <span>Tháng 8</span>
+                                    <span>Tháng 9</span>
+                                    <span>Tháng 10</span>
+                                    <span>Tháng 11</span>
+                                    <span>Tháng 12</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="chart-legend">
+                            <span class="legend-dot"></span>
+                            Doanh thu
+                        </div>
+                        <!-- BUTTON: VIEW DETAILED REPORT -->
+                        <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+
+                            <a href="@Url.Action("RevenueDetails", "AdminReport")"
+                               style="display: inline-flex;
+                                      align-items: center;
+                                      gap: 9px;
+                                      padding: 11px 18px;
+                                      background: #d8b66a;
+                                      color: #14233b;
+                                      border-radius: 8px;
+                                      font-size: 13px;
+                                      font-weight: 700;
+                                      text-decoration: none;">
+
+                                <i class="fa-solid fa-chart-column"></i>
+                                Xem chi tiết báo cáo & thống kê
+                                <i class="fa-solid fa-arrow-right"></i>
+
+                            </a>
+                        </div>
+
+                    </div>
+
+
+                    <!-- BOOKING SUMMARY -->
+                    <div class="dashboard-card booking-card" id="bookings">
+
+                        <div class="card-header">
+
+                            <div>
+                                <h3>Tình trạng đặt vé</h3>
+                                <p>Thống kê trạng thái đặt vé</p>
+                            </div>
+
+                            <button class="more-button" type="button"
+                                    aria-label="Xem thêm">
+                                <i class="fa-solid fa-ellipsis"></i>
+                            </button>
+
+                        </div>
+
+
+                        @{
+                            int pendingCount = ViewBag.PendingBookings ?? 0;
+                            int confirmedCount = ViewBag.ConfirmedBookings ?? 0;
+                            int cancelledCount = ViewBag.CancelledBookings ?? 0;
+                            int completedCount = ViewBag.CompletedBookings ?? 0;
+                            int totalBookingStatus = ViewBag.BookingStatusTotal ?? 0;
+
+                            double confirmedPercent = totalBookingStatus > 0
+                                ? (double)confirmedCount / totalBookingStatus * 100 : 0;
+
+                            double pendingPercent = totalBookingStatus > 0
+                                ? (double)pendingCount / totalBookingStatus * 100 : 0;
+
+                            double cancelledPercent = totalBookingStatus > 0
+                                ? (double)cancelledCount / totalBookingStatus * 100 : 0;
+
+                            double completedPercent = totalBookingStatus > 0
+                                ? (double)completedCount / totalBookingStatus * 100 : 0;
+
+                            double confirmedEnd = confirmedPercent;
+                            double pendingEnd = confirmedEnd + pendingPercent;
+                            double cancelledEnd = pendingEnd + cancelledPercent;
+                        }
+
+                        <div class="booking-chart">
+                            <div class="donut-chart"
+                                 style="background: conic-gradient(
+                                    #d8b66a 0% @confirmedEnd.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%,
+                                    #7196c8 @confirmedEnd.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)% @pendingEnd.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%,
+                                    #c86f6f @pendingEnd.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)% @cancelledEnd.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%,
+                                    #70a88a @cancelledEnd.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)% 100%
+                                 );">
+
+                                <div class="donut-inner">
+                                    <strong>@totalBookingStatus.ToString("N0")</strong>
+                                    <span>Tổng lượt đặt vé</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="booking-legend">
+
+                            <div class="legend-item">
+                                <span class="legend-color confirmed"></span>
+                                <span>Đã xác nhận</span>
+                                <strong>@confirmedCount.ToString("N0")</strong>
+                            </div>
+
+                            <div class="legend-item">
+                                <span class="legend-color pending"></span>
+                                <span>Chờ xử lý</span>
+                                <strong>@pendingCount.ToString("N0")</strong>
+                            </div>
+
+                            <div class="legend-item">
+                                <span class="legend-color cancelled"></span>
+                                <span>Đã hủy</span>
+                                <strong>@cancelledCount.ToString("N0")</strong>
+                            </div>
+
+                            <div class="legend-item">
+                                <span class="legend-color completed"></span>
+                                <span>Đã hoàn thành</span>
+                                <strong>@completedCount.ToString("N0")</strong>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </section>
+
+
+                <!-- RECENT FLIGHTS -->
+                <section class="dashboard-card flights-card" id="flights">
+
+                    <div class="card-header">
+
+                        <div>
+                            <h3>Chuyến bay gần đây</h3>
+                            <p>Danh sách các chuyến bay trong hệ thống</p>
+                        </div>
+
+                        <a href="@Url.Action("Index", "AdminFlight")"
+                           class="view-all-button">
+                            Xem tất cả
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="flights-table">
+
+                            <thead>
+                                <tr>
+                                    <th>MÃ CHUYẾN BAY</th>
+                                    <th>HÀNH TRÌNH</th>
+                                    <th>GIỜ KHỞI HÀNH</th>
+                                    <th>GIỜ ĐẾN</th>
+                                    <th>GIÁ VÉ</th>
+                                    <th>TRẠNG THÁI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @{
+                                    var recentFlights =
+                                        ViewBag.RecentFlights as
+                                        List<FlightBookingAI.Web.Models.AdminRecentFlightItem>;
+                                }
+
+                                @if (recentFlights != null && recentFlights.Count > 0)
+                                {
+                                    foreach (var flight in recentFlights)
+                                    {
+                                        string statusClass = "available";
+                                        string statusText = "Còn chỗ";
+
+                                        if (flight.Status == "Delayed")
+                                        {
+                                            statusClass = "delayed";
+                                            statusText = "Bị hoãn";
+                                        }
+                                        else if (flight.Status == "Cancelled")
+                                        {
+                                            statusClass = "cancelled";
+                                            statusText = "Đã hủy";
+                                        }
+                                        else if (flight.AvailableSeats <= 0)
+                                        {
+                                            statusClass = "booked";
+                                            statusText = "Đã hết chỗ";
+                                        }
+
+                                        <tr>
+                                            <td>
+                                                <strong class="flight-code">
+                                                    @flight.FlightNumber
+                                                </strong>
+                                            </td>
+
+                                            <td>
+                                                <div class="route-info">
+                                                    <strong>@flight.DepartureCity</strong>
+                                                    <i class="fa-solid fa-arrow-right"></i>
+                                                    <strong>@flight.ArrivalCity</strong>
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                @flight.DepartureTime.ToString("HH:mm - dd/MM/yyyy")
+                                            </td>
+
+                                            <td>
+                                                @flight.ArrivalTime.ToString("HH:mm - dd/MM/yyyy")
+                                            </td>
+
+                                            <td class="price-cell">
+                                                @String.Format("{0:N0}", flight.Price) VNĐ
+                                            </td>
+
+                                            <td>
+                                                <span class="flight-status @statusClass">
+                                                    <span></span>
+                                                    @statusText
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" style="text-align:center; padding:25px;">
+                                            Chưa có dữ liệu chuyến bay.
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </section>
+
+
+                <!-- FOOTER -->
+                <footer class="dashboard-footer">
+
+                    <span>
+                        © 2026 FlightBookingAI. Bản quyền thuộc về hệ thống.
+                    </span>
+
+                    <span>
+                        Hệ thống quản trị hàng không cao cấp
+                    </span>
+
+                </footer>
+
+            </div>
+
+        </main>
+
+    </div>
+</body>
+</html>

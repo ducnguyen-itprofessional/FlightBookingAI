@@ -1,0 +1,181 @@
+﻿
+@{
+    ViewBag.Title = "Đăng nhập Admin";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Admin Login | FlightBookingAI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet" />
+    <link rel="stylesheet"
+          href="@Url.Content("~/Content/AdminLogin.css")" />
+</head>
+
+<body>
+
+    <main class="admin-login-page">
+
+        <!-- THANH TIÊU ĐỀ -->
+
+
+
+        <!-- KHUNG ĐĂNG NHẬP -->
+
+        <section class="admin-login-container">
+
+            <div class="login-label">
+                WELCOME BACK ADMINISTRATOR
+            </div>
+
+            <div class="login-icon">
+                ✈︎
+            </div>
+
+            <h1>ADMIN LOGIN</h1>
+
+            <h2>Đăng nhập hệ thống quản trị</h2>
+
+            <p class="login-description">
+                Vui lòng nhập thông tin tài khoản để tiếp tục
+                truy cập khu vực quản trị FlightBookingAI.
+            </p>
+
+            <!-- BIỂU MẪU ĐĂNG NHẬP -->
+
+            @using (Html.BeginForm(
+                "AdminLogin",
+                "AdminAccount",
+                FormMethod.Post,
+                new { id = "adminLoginForm" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="login-form">
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            ĐỊA CHỈ EMAIL
+                        </label>
+
+                        <input type="email"
+                               id="email"
+                               name="email"
+                               placeholder="Nhập email quản trị"
+                               required />
+
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            MẬT KHẨU
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input type="password"
+                                   id="password"
+                                   name="password"
+                                   placeholder="Nhập mật khẩu"
+                                   required />
+
+                            <button type="button"
+                                    id="togglePassword">
+                                HIỆN
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="login-button">
+
+                        <span>ĐĂNG NHẬP ADMIN</span>
+
+                        <span class="button-arrow">→</span>
+
+                    </button>
+
+                </div>
+            }
+
+            <!-- LIÊN KẾT ĐĂNG KÝ -->
+
+            <div class="register-link">
+
+                Chưa có tài khoản Admin?
+
+                <a href="@Url.Action("AdminRegister", "AdminAccount")">
+                    Đăng ký ngay
+                </a>
+
+            </div>
+
+            <!-- THÔNG BÁO -->
+
+            @if (ViewBag.LoginMessage != null)
+            {
+                <div class="login-message">
+                    @ViewBag.LoginMessage
+                </div>
+            }
+
+            <!-- THÔNG TIN BẢO MẬT -->
+
+            <div class="admin-security">
+                KHU VỰC DÀNH RIÊNG CHO QUẢN TRỊ VIÊN
+            </div>
+
+        </section>
+
+        <!-- CHÂN TRANG -->
+
+        <footer class="admin-footer">
+            © 2026 FlightBookingAI. All rights reserved.
+        </footer>
+
+    </main>
+
+    <!-- CHỨC NĂNG HIỆN VÀ ẨN MẬT KHẨU -->
+
+    <script>
+
+        const togglePassword =
+            document.getElementById("togglePassword");
+
+        const password =
+            document.getElementById("password");
+
+        togglePassword.addEventListener("click", function () {
+
+            if (password.type === "password") {
+
+                password.type = "text";
+                togglePassword.textContent = "ẨN";
+
+            } else {
+
+                password.type = "password";
+                togglePassword.textContent = "HIỆN";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

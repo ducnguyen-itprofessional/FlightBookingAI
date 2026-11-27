@@ -1,0 +1,340 @@
+﻿
+@model FlightBookingAI.Web.Models.AdminFlightFormViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Chỉnh sửa chuyến bay";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chỉnh sửa chuyến bay | AER Aviation</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #101319;
+            color: #f5f5f5;
+            padding: 35px;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        .header {
+            margin-bottom: 28px;
+        }
+
+            .header h1 {
+                color: #d9ad55;
+                font-size: 28px;
+                margin-bottom: 10px;
+            }
+
+            .header p {
+                color: #aaa;
+            }
+
+        .form-box {
+            background: #1b2029;
+            border: 1px solid #30343d;
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .section-title {
+            color: #d9ad55;
+            font-size: 17px;
+            margin: 10px 0 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #383e49;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+            .field label {
+                display: block;
+                color: #ddd;
+                font-size: 13px;
+                margin-bottom: 9px;
+            }
+
+            .field input,
+            .field select {
+                width: 100%;
+                padding: 13px;
+                border: 1px solid #414752;
+                border-radius: 6px;
+                background: #11151c;
+                color: white;
+                outline: none;
+                font-size: 14px;
+            }
+
+                .field input:focus,
+                .field select:focus {
+                    border-color: #d9ad55;
+                }
+
+        .validation {
+            display: block;
+            color: #ff9999;
+            font-size: 12px;
+            margin-top: 7px;
+        }
+
+        .validation-summary-errors {
+            color: #ff9999;
+            background: #492323;
+            padding: 15px;
+            border-radius: 7px;
+            margin-bottom: 20px;
+        }
+
+            .validation-summary-errors ul {
+                padding-left: 20px;
+            }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 25px;
+            padding-top: 22px;
+            border-top: 1px solid #383e49;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 13px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-gold {
+            background: #d9ad55;
+            color: #151515;
+        }
+
+        .btn-dark {
+            background: #30343d;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: .88;
+        }
+
+        @@media(max-width: 650px) {
+            body {
+                padding: 15px;
+            }
+
+            .form-box {
+                padding: 20px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+                .actions .btn {
+                    text-align: center;
+                }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <h1>
+                <i class="fa-solid fa-pen-to-square"></i>
+                Chỉnh sửa chuyến bay
+            </h1>
+            <p>Cập nhật thông tin chuyến bay trong hệ thống</p>
+        </div>
+
+        <div class="form-box">
+
+            @using (Html.BeginForm(
+                "Edit",
+                "AdminFlight",
+                FormMethod.Post,
+                new { id = "flightEditForm" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.HiddenFor(m => m.FlightID)
+
+                @Html.ValidationSummary(false, "", new { @class = "validation-summary-errors" })
+
+                <h3 class="section-title">
+                    <i class="fa-solid fa-plane"></i>
+                    Thông tin chuyến bay
+                </h3>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        @Html.LabelFor(m => m.FlightNumber)
+                        @Html.TextBoxFor(m => m.FlightNumber,
+                                 new { placeholder = "Ví dụ: VN123", maxlength = "20" })
+                        @Html.ValidationMessageFor(m => m.FlightNumber,
+                                 "", new { @class = "validation" })
+                    </div>
+
+                    <div class="field">
+                        @Html.LabelFor(m => m.AirlineID)
+                        @Html.DropDownListFor(m => m.AirlineID,
+                                 Model.AirlineOptions,
+                                 "-- Chọn hãng hàng không --")
+                        @Html.ValidationMessageFor(m => m.AirlineID,
+                                 "", new { @class = "validation" })
+                    </div>
+
+                    <div class="field">
+                        @Html.LabelFor(m => m.DepartureAirportID)
+                        @Html.DropDownListFor(m => m.DepartureAirportID,
+                                 Model.AirportOptions,
+                                 "-- Chọn sân bay đi --")
+                        @Html.ValidationMessageFor(m => m.DepartureAirportID,
+                                 "", new { @class = "validation" })
+                    </div>
+
+                    <div class="field">
+                        @Html.LabelFor(m => m.ArrivalAirportID)
+                        @Html.DropDownListFor(m => m.ArrivalAirportID,
+                                 Model.AirportOptions,
+                                 "-- Chọn sân bay đến --")
+                        @Html.ValidationMessageFor(m => m.ArrivalAirportID,
+                                 "", new { @class = "validation" })
+                    </div>
+
+                </div>
+
+                <h3 class="section-title">
+                    <i class="fa-regular fa-clock"></i>
+                    Lịch trình chuyến bay
+                </h3>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        @Html.LabelFor(m => m.DepartureTime)
+                        @Html.TextBoxFor(m => m.DepartureTime,
+                                 "{0:yyyy-MM-ddTHH:mm}",
+                                 new { type = "datetime-local" })
+                        @Html.ValidationMessageFor(m => m.DepartureTime,
+                                 "", new { @class = "validation" })
+                    </div>
+
+                    <div class="field">
+                        @Html.LabelFor(m => m.ArrivalTime)
+                        @Html.TextBoxFor(m => m.ArrivalTime,
+                                 "{0:yyyy-MM-ddTHH:mm}",
+                                 new { type = "datetime-local" })
+                        @Html.ValidationMessageFor(m => m.ArrivalTime,
+                                 "", new { @class = "validation" })
+                    </div>
+
+                </div>
+
+                <h3 class="section-title">
+                    <i class="fa-solid fa-ticket"></i>
+                    Giá vé và số lượng ghế
+                </h3>
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        @Html.LabelFor(m => m.Price)
+                        @Html.TextBoxFor(m => m.Price,
+                                 new
+                                 {
+                                     type = "number",
+                                     min = "0",
+                                     step = "0.01"
+                                 })
+                        @Html.ValidationMessageFor(m => m.Price,
+                                 "", new { @class = "validation" })
+                    </div>
+
+                    <div class="field">
+                        @Html.LabelFor(m => m.TotalSeats)
+                        @Html.TextBoxFor(m => m.TotalSeats,
+                                 new { type = "number", min = "1" })
+                        @Html.ValidationMessageFor(m => m.TotalSeats,
+                                 "", new { @class = "validation" })
+                    </div>
+
+                    <div class="field">
+                        @Html.LabelFor(m => m.AvailableSeats)
+                        @Html.TextBoxFor(m => m.AvailableSeats,
+                                 new { type = "number", min = "0" })
+                        @Html.ValidationMessageFor(m => m.AvailableSeats,
+                                 "", new { @class = "validation" })
+                    </div>
+
+                    <div class="field">
+                        @Html.LabelFor(m => m.Status)
+                        @Html.DropDownListFor(m => m.Status,
+                                 Model.StatusOptions)
+                        @Html.ValidationMessageFor(m => m.Status,
+                                 "", new { @class = "validation" })
+                    </div>
+
+                </div>
+
+                <div class="actions">
+
+                    <a href="@Url.Action("Index", "AdminFlight")"
+                       class="btn btn-dark">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Quay lại
+                    </a>
+
+                    <button type="submit" class="btn btn-gold">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Cập nhật chuyến bay
+                    </button>
+
+                </div>
+            }
+
+        </div>
+    </div>
+</body>
+</html>

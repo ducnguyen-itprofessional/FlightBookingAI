@@ -1,0 +1,548 @@
+﻿
+@model FlightBookingAI.Web.Models.AdminReportViewModel
+@using System.Linq
+@using System.Globalization
+
+@{
+    Layout = null;
+    ViewBag.Title = "Báo cáo & Thống kê | AER Aviation";
+
+    decimal maxRevenue = Model.MonthlyRevenues.Any()
+        ? Model.MonthlyRevenues.Max(x => x.Revenue)
+        : 1;
+
+    int totalBookingStatus = Model.PendingBookings
+        + Model.ConfirmedBookings
+        + Model.CancelledBookings
+        + Model.CompletedBookings;
+
+    double pendingPercent = totalBookingStatus == 0 ? 0 :
+        (double)Model.PendingBookings / totalBookingStatus * 100;
+
+    double confirmedPercent = totalBookingStatus == 0 ? 0 :
+        (double)Model.ConfirmedBookings / totalBookingStatus * 100;
+
+    double cancelledPercent = totalBookingStatus == 0 ? 0 :
+        (double)Model.CancelledBookings / totalBookingStatus * 100;
+
+    double completedPercent = totalBookingStatus == 0 ? 0 :
+        (double)Model.CompletedBookings / totalBookingStatus * 100;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Báo cáo & Thống kê | AER Aviation</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <link rel="stylesheet"
+          href="@Url.Content("~/Content/AdminReport.css")" />
+</head>
+
+<body>
+
+    <div class="admin-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-plane"></i>
+                </div>
+
+                <div>
+                    <h2>AER AVIATION</h2>
+                    <span>ADMINISTRATION</span>
+                </div>
+            </div>
+
+            <div class="sidebar-label">QUẢN LÝ</div>
+
+            <nav class="sidebar-nav">
+
+                <a href="@Url.Action("AdminDashboard", "AdminAccount")">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Tổng quan</span>
+                </a>
+
+                <a href="@Url.Action("Index", "AdminFlight")">
+                    <i class="fa-solid fa-plane-departure"></i>
+                    <span>Quản lý chuyến bay</span>
+                </a>
+
+                <a href="@Url.Action("Index", "AdminBooking")">
+                    <i class="fa-solid fa-ticket"></i>
+                    <span>Quản lý đặt vé</span>
+                </a>
+
+                <a href="@Url.Action("Index", "AdminCustomer")">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Quản lý khách hàng</span>
+                </a>
+
+                <a href="@Url.Action("Index", "AdminPayment")">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Quản lý thanh toán</span>
+                </a>
+
+                <a class="active"
+                   href="@Url.Action("Index", "AdminReport")">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Báo cáo & Thống kê</span>
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+                <a href="@Url.Action("AdminLogout", "AdminAccount")">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Đăng xuất</span>
+                </a>
+            </div>
+
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <header class="topbar">
+
+                <div>
+                    <h1>Báo cáo & Thống kê</h1>
+                    <p>Theo dõi doanh thu và tình hình hoạt động hệ thống</p>
+                </div>
+
+                <div class="admin-profile">
+                    <div class="profile-icon">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+
+                    <div>
+                        <strong>Quản trị viên</strong>
+                        <span>Administrator</span>
+                    </div>
+                </div>
+
+            </header>
+
+            <section class="report-content">
+
+                @if (ViewBag.ReportError != null)
+                {
+                    <div class="error-message">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        @ViewBag.ReportError
+                    </div>
+                }
+
+                <!-- DATE FILTER -->
+                <div class="filter-panel">
+
+                    <div class="section-heading">
+                        <div>
+                            <h2>Bộ lọc báo cáo</h2>
+                            <p>Chọn khoảng thời gian muốn thống kê</p>
+                        </div>
+                    </div>
+
+                    @using (Html.BeginForm("Index", "AdminReport", FormMethod.Get))
+                    {
+                        <div class="filter-form">
+
+                            <div class="date-field">
+                                <label for="fromDate">Từ ngày</label>
+
+                                <input type="date"
+                                       id="fromDate"
+                                       name="fromDate"
+                                       value="@Model.FromDate.ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="date-field">
+                                <label for="toDate">Đến ngày</label>
+
+                                <input type="date"
+                                       id="toDate"
+                                       name="toDate"
+                                       value="@Model.ToDate.ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <button type="submit" class="filter-button">
+                                <i class="fa-solid fa-filter"></i>
+                                Lọc dữ liệu
+                            </button>
+
+                            <a href="@Url.Action("Index", "AdminReport")"
+                               class="reset-button">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                Đặt lại
+                            </a>
+
+                        </div>
+                    }
+
+                </div>
+
+                <!-- OVERVIEW -->
+                <div class="section-heading overview-heading">
+
+                    <div>
+                        <h2>Tổng quan hệ thống</h2>
+
+                        <p>
+                            Dữ liệu từ @Model.FromDate.ToString("dd/MM/yyyy")
+                            đến @Model.ToDate.ToString("dd/MM/yyyy")
+                        </p>
+                    </div>
+
+                    <span class="data-tag">
+                        <i class="fa-solid fa-database"></i>
+                        DỮ LIỆU HỆ THỐNG
+                    </span>
+
+                </div>
+
+                <div class="summary-grid">
+
+                    <!-- TOTAL REVENUE -->
+                    <div class="summary-card">
+
+                        <div class="summary-top">
+                            <span>Tổng doanh thu</span>
+
+                            <div class="summary-icon gold">
+                                <i class="fa-solid fa-sack-dollar"></i>
+                            </div>
+                        </div>
+
+                        <h3>
+                            @Model.TotalRevenue.ToString("N0")
+                            <small>VNĐ</small>
+                        </h3>
+
+                        <p>Giao dịch đã thanh toán thành công</p>
+
+                        <a href="@Url.Action("RevenueDetails", "AdminReport",
+                                new { fromDate = Model.FromDate.ToString("yyyy-MM-dd"),
+                                      toDate = Model.ToDate.ToString("yyyy-MM-dd") })"
+                           class="detail-link">
+                            <i class="fa-solid fa-arrow-right"></i>
+                            Xem chi tiết doanh thu
+                        </a>
+                    </div>
+
+                    <!-- TOTAL BOOKINGS -->
+                    <div class="summary-card">
+
+                        <div class="summary-top">
+                            <span>Tổng lượt đặt vé</span>
+
+                            <div class="summary-icon blue">
+                                <i class="fa-solid fa-ticket"></i>
+                            </div>
+                        </div>
+
+                        <h3>@Model.TotalBookings.ToString("N0")</h3>
+
+                        <p>Lượt đặt vé trong khoảng thời gian</p>
+
+                    </div>
+
+                    <!-- SUCCESSFUL PAYMENTS -->
+                    <div class="summary-card">
+
+                        <div class="summary-top">
+                            <span>Thanh toán thành công</span>
+
+                            <div class="summary-icon green">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                        </div>
+
+                        <h3>@Model.TotalSuccessfulPayments.ToString("N0")</h3>
+
+                        <p>Số giao dịch thành công</p>
+
+                    </div>
+
+                    <!-- NEW CUSTOMERS -->
+                    <div class="summary-card">
+
+                        <div class="summary-top">
+                            <span>Khách hàng mới</span>
+
+                            <div class="summary-icon purple">
+                                <i class="fa-solid fa-user-plus"></i>
+                            </div>
+                        </div>
+
+                        <h3>@Model.TotalNewCustomers.ToString("N0")</h3>
+
+                        <p>Tài khoản khách hàng mới</p>
+
+                    </div>
+
+                </div>
+
+                <!-- BOOKING STATUS -->
+                <div class="section-heading">
+
+                    <div>
+                        <h2>Thống kê trạng thái đặt vé</h2>
+                        <p>Phân loại các lượt đặt vé theo trạng thái</p>
+                    </div>
+
+                </div>
+
+                <div class="content-card">
+
+                    <div class="status-grid">
+
+                        <!-- PENDING -->
+                        <div class="status-item">
+
+                            <div class="status-title">
+                                <span class="status-dot pending"></span>
+                                Chờ xử lý
+                            </div>
+
+                            <strong>@Model.PendingBookings</strong>
+
+                            <div class="progress-track">
+                                <div class="progress-fill pending-fill"
+                                     data-percent="@(pendingPercent.ToString("0.##", CultureInfo.InvariantCulture))">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- CONFIRMED -->
+                        <div class="status-item">
+
+                            <div class="status-title">
+                                <span class="status-dot confirmed"></span>
+                                Đã xác nhận
+                            </div>
+
+                            <strong>@Model.ConfirmedBookings</strong>
+
+                            <div class="progress-track">
+                                <div class="progress-fill confirmed-fill"
+                                     data-percent="@(confirmedPercent.ToString("0.##", CultureInfo.InvariantCulture))">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- CANCELLED -->
+                        <div class="status-item">
+
+                            <div class="status-title">
+                                <span class="status-dot cancelled"></span>
+                                Đã hủy
+                            </div>
+
+                            <strong>@Model.CancelledBookings</strong>
+
+                            <div class="progress-track">
+                                <div class="progress-fill cancelled-fill"
+                                     data-percent="@(cancelledPercent.ToString("0.##", CultureInfo.InvariantCulture))">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- COMPLETED -->
+                        <div class="status-item">
+
+                            <div class="status-title">
+                                <span class="status-dot completed"></span>
+                                Hoàn thành
+                            </div>
+
+                            <strong>@Model.CompletedBookings</strong>
+
+                            <div class="progress-track">
+                                <div class="progress-fill completed-fill"
+                                     data-percent="@(completedPercent.ToString("0.##", CultureInfo.InvariantCulture))">
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- MONTHLY REVENUE -->
+                <div class="section-heading">
+
+                    <div>
+                        <h2>Doanh thu theo tháng</h2>
+                        <p>Thống kê doanh thu từ các giao dịch thành công</p>
+                    </div>
+
+                </div>
+
+                <div class="content-card">
+
+                    @if (Model.MonthlyRevenues.Any())
+                    {
+                        <div class="revenue-chart">
+
+                            @foreach (var item in Model.MonthlyRevenues)
+                            {
+                                double barHeight = maxRevenue > 0
+                                    ? (double)(item.Revenue / maxRevenue) * 100
+                                    : 0;
+
+                                <div class="revenue-column">
+
+                                    <div class="revenue-value">
+                                        @item.Revenue.ToString("N0")
+                                    </div>
+
+                                    <div class="bar-area">
+
+                                        <div class="revenue-bar"
+                                             data-height="@(barHeight.ToString("0.##", CultureInfo.InvariantCulture))">
+                                        </div>
+
+                                    </div>
+
+                                    <div class="month-label">
+                                        Tháng @item.Month/@item.Year
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-data">
+                            <i class="fa-solid fa-chart-column"></i>
+                            <p>Chưa có dữ liệu doanh thu trong khoảng thời gian này.</p>
+                        </div>
+                    }
+
+                </div>
+
+                <!-- PAYMENT METHODS -->
+                <div class="section-heading">
+
+                    <div>
+                        <h2>Thống kê phương thức thanh toán</h2>
+                        <p>Số lượng giao dịch và tổng tiền thanh toán thành công</p>
+                    </div>
+
+                </div>
+
+                <div class="content-card table-card">
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Phương thức thanh toán</th>
+                                    <th>Số giao dịch</th>
+                                    <th>Tổng tiền thành công</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @if (Model.PaymentMethods.Any())
+                                {
+                                    int index = 1;
+
+                                    foreach (var item in Model.PaymentMethods)
+                                    {
+                                        <tr>
+
+                                            <td>@index</td>
+
+                                            <td>
+                                                <span class="method-name">
+                                                    @item.PaymentMethod
+                                                </span>
+                                            </td>
+
+                                            <td>@item.TransactionCount</td>
+
+                                            <td class="amount-cell">
+                                                @item.TotalAmount.ToString("N0") VNĐ
+                                            </td>
+
+                                        </tr>
+
+                                        index++;
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="empty-table">
+                                            Chưa có dữ liệu thanh toán trong khoảng thời gian này.
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+                <!-- FOOTER -->
+                <footer class="page-footer">
+                    © @DateTime.Now.Year AER Aviation - Hệ thống quản trị
+                </footer>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- DYNAMIC CHART WIDTHS -->
+    <script>document.addEventListener("DOMContentLoaded", function () {
+
+            // Thanh trạng thái đặt vé
+            document.querySelectorAll(".progress-fill[data-percent]")
+                .forEach(function (element) {
+
+                    var percent = parseFloat(element.getAttribute("data-percent")) || 0;
+
+                    percent = Math.max(0, Math.min(100, percent));
+
+                    element.style.width = percent + "%";
+                });
+
+            // Thanh biểu đồ doanh thu
+            document.querySelectorAll(".revenue-bar[data-height]")
+                .forEach(function (element) {
+
+                    var height = parseFloat(element.getAttribute("data-height")) || 0;
+
+                    height = Math.max(0, Math.min(100, height));
+
+                    element.style.height = height + "%";
+                });
+
+        });</script>
+
+</body>
+</html>

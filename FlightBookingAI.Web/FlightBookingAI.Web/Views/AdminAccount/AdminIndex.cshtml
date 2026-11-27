@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewBag.Title = "Trang chủ Admin";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Admin Portal | FlightBookingAI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet" />
+    <link rel="stylesheet"
+          href="@Url.Content("~/Content/AdminAccount.css")" />
+</head>
+
+<body>
+
+    <main class="admin-home-page">
+
+
+
+
+        <section class="admin-welcome">
+
+            <div class="welcome-label">
+                WELCOME TO ADMINISTRATION
+            </div>
+
+            <div class="welcome-icon">
+                ✈︎
+            </div>
+
+            <h1>
+                ADMIN PORTAL
+            </h1>
+
+            <h2>
+                Hệ thống quản trị FlightBookingAI
+            </h2>
+
+            <p class="welcome-description">
+                Chào mừng bạn đến với khu vực quản trị hệ thống.
+                Vui lòng lựa chọn chức năng để tiếp tục.
+            </p>
+
+            <div class="admin-actions">
+
+                <a href="@Url.Action("AdminLogin", "AdminAccount")"
+                   class="admin-action login-action">
+
+                    <span class="action-icon">↪</span>
+
+                    <span class="action-content">
+                        <strong>ĐĂNG NHẬP ADMIN</strong>
+                        <small>
+                            Truy cập hệ thống quản trị
+                        </small>
+                    </span>
+
+                    <span class="action-arrow">→</span>
+
+                </a>
+
+                <a href="@Url.Action("AdminRegister", "AdminAccount")"
+                   class="admin-action register-action">
+
+                    <span class="action-icon">＋</span>
+
+                    <span class="action-content">
+                        <strong>ĐĂNG KÝ ADMIN</strong>
+                        <small>
+                            Tạo tài khoản quản trị mới
+                        </small>
+                    </span>
+
+                    <span class="action-arrow">→</span>
+
+                </a>
+
+            </div>
+
+            <div class="admin-security">
+                KHU VỰC DÀNH RIÊNG CHO QUẢN TRỊ VIÊN
+            </div>
+
+        </section>
+
+        <footer class="admin-footer">
+            © 2026 FlightBookingAI. All rights reserved.
+        </footer>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,581 @@
+﻿
+@model FlightBookingAI.Web.Models.AdminBookingDetailViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Chi tiết đặt vé";
+
+    var booking = Model.Booking;
+
+    string bookingLabel = booking.BookingStatus;
+    switch (booking.BookingStatus)
+    {
+        case "Pending":
+            bookingLabel = "Chờ xử lý";
+            break;
+        case "Confirmed":
+            bookingLabel = "Đã xác nhận";
+            break;
+        case "Cancelled":
+            bookingLabel = "Đã hủy";
+            break;
+        case "Completed":
+            bookingLabel = "Đã hoàn thành";
+            break;
+    }
+
+    string paymentLabel = booking.PaymentStatus;
+    switch (booking.PaymentStatus)
+    {
+        case "Paid":
+            paymentLabel = "Đã thanh toán";
+            break;
+        case "Pending":
+            paymentLabel = "Chờ thanh toán";
+            break;
+        case "Unpaid":
+            paymentLabel = "Chưa thanh toán";
+            break;
+        case "Failed":
+            paymentLabel = "Thất bại";
+            break;
+        case "Chưa có thanh toán":
+            paymentLabel = "Chưa có thanh toán";
+            break;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Chi tiết đặt vé - AER Aviation</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #101010;
+            color: #f5f5f5;
+            padding: 35px;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+            .header h1 {
+                color: #e0ad45;
+                font-size: 29px;
+                margin-bottom: 9px;
+            }
+
+            .header p {
+                color: #aaa;
+                font-size: 14px;
+            }
+
+        .back-btn {
+            display: inline-block;
+            padding: 11px 18px;
+            background: #252525;
+            color: #e0ad45;
+            border: 1px solid #e0ad45;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+            .back-btn:hover {
+                background: #e0ad45;
+                color: #111;
+            }
+
+        .booking-banner {
+            background: linear-gradient(120deg, #292219, #1b1b1b);
+            border: 1px solid #8d6a2c;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 22px;
+        }
+
+            .booking-banner h2 {
+                color: #e0ad45;
+                font-size: 23px;
+                margin-bottom: 12px;
+            }
+
+            .booking-banner p {
+                color: #ccc;
+                margin-top: 8px;
+            }
+
+        .section {
+            background: #1b1b1b;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 23px;
+            margin-bottom: 22px;
+        }
+
+        .section-title {
+            color: #e0ad45;
+            font-size: 18px;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #383838;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .info-item label {
+            display: block;
+            color: #999;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .info-item p {
+            color: #f5f5f5;
+            font-size: 15px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .highlight {
+            color: #e0ad45 !important;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #5b481d;
+            color: #ffd76a;
+        }
+
+        .status-confirmed,
+        .status-paid {
+            background: #174d31;
+            color: #75e6a3;
+        }
+
+        .status-cancelled,
+        .status-failed {
+            background: #592626;
+            color: #ff9999;
+        }
+
+        .status-completed {
+            background: #24445c;
+            color: #9bd4ff;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 650px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #292929;
+            color: #e0ad45;
+            padding: 14px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 14px;
+            border-bottom: 1px solid #333;
+            color: #ddd;
+            font-size: 13px;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 25px;
+            color: #999;
+        }
+
+        .total-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            padding: 18px;
+            margin-top: 20px;
+            background: #292219;
+            border-radius: 7px;
+        }
+
+            .total-box span {
+                color: #ccc;
+            }
+
+            .total-box strong {
+                color: #e0ad45;
+                font-size: 22px;
+            }
+
+        @@media (max-width: 650px) {
+            body {
+                padding: 16px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div>
+                <h1>
+                    <i class="fa-solid fa-ticket"></i>
+                    Chi tiết đặt vé
+                </h1>
+                <p>Xem đầy đủ thông tin đơn đặt vé của khách hàng</p>
+            </div>
+
+            <a href="@Url.Action("Index", "AdminBooking")"
+               class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+                Quay lại danh sách
+            </a>
+        </div>
+
+        <!-- THÔNG TIN TỔNG QUAN -->
+        <div class="booking-banner">
+            <h2>
+                <i class="fa-solid fa-receipt"></i>
+                Đơn đặt vé: @booking.BookingCode
+            </h2>
+
+            <p>
+                <i class="fa-regular fa-calendar"></i>
+                Ngày đặt:
+                @booking.BookingDate.ToString("dd/MM/yyyy HH:mm")
+            </p>
+
+            <p>
+                <i class="fa-solid fa-circle-info"></i>
+                Trạng thái:
+                <strong style="color:#e0ad45;">
+                    @bookingLabel
+                </strong>
+            </p>
+        </div>
+
+        <!-- THÔNG TIN KHÁCH HÀNG -->
+        <div class="section">
+            <h3 class="section-title">
+                <i class="fa-solid fa-user"></i>
+                THÔNG TIN KHÁCH HÀNG
+            </h3>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Mã khách hàng</label>
+                    <p>@booking.UserID</p>
+                </div>
+
+                <div class="info-item">
+                    <label>Họ và tên</label>
+                    <p>@booking.CustomerName</p>
+                </div>
+
+                <div class="info-item">
+                    <label>Email</label>
+                    <p>@booking.CustomerEmail</p>
+                </div>
+
+                <div class="info-item">
+                    <label>Số điện thoại</label>
+                    <p>
+                        @(string.IsNullOrWhiteSpace(booking.CustomerPhone)
+                            ? "Chưa cập nhật"
+                            : booking.CustomerPhone)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- THÔNG TIN CHUYẾN BAY -->
+        <div class="section">
+            <h3 class="section-title">
+                <i class="fa-solid fa-plane"></i>
+                THÔNG TIN CHUYẾN BAY
+            </h3>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Mã chuyến bay</label>
+                    <p class="highlight">@booking.FlightNumber</p>
+                </div>
+
+                <div class="info-item">
+                    <label>Mã chuyến bay trong hệ thống</label>
+                    <p>@booking.FlightID</p>
+                </div>
+
+                <div class="info-item">
+                    <label>Thời gian khởi hành</label>
+                    <p>@booking.DepartureTime.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+
+                <div class="info-item">
+                    <label>Thời gian đến</label>
+                    <p>@booking.ArrivalTime.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+
+                <div class="info-item">
+                    <label>Số lượng hành khách</label>
+                    <p>@booking.PassengerCount người</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DANH SÁCH HÀNH KHÁCH -->
+        <div class="section">
+            <h3 class="section-title">
+                <i class="fa-solid fa-users"></i>
+                DANH SÁCH HÀNH KHÁCH
+            </h3>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>HỌ VÀ TÊN</th>
+                            <th>NGÀY SINH</th>
+                            <th>GIỚI TÍNH</th>
+                            <th>SỐ GIẤY TỜ</th>
+                            <th>ĐỐI TƯỢNG</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Passengers != null && Model.Passengers.Count > 0)
+                        {
+                            int index = 1;
+
+                            foreach (var passenger in Model.Passengers)
+                            {
+                                <tr>
+                                    <td>@index</td>
+                                    <td>@passenger.FullName</td>
+                                    <td>@passenger.DateOfBirth.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @{
+                                            string gender = passenger.Gender;
+
+                                            if (gender == "Male")
+                                            {
+                                                gender = "Nam";
+                                            }
+                                            else if (gender == "Female")
+                                            {
+                                                gender = "Nữ";
+                                            }
+                                        }
+                                        @(string.IsNullOrWhiteSpace(gender) ? "Chưa cập nhật" : gender)
+                                    </td>
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(passenger.IdentityNumber)
+                                            ? "Chưa cập nhật"
+                                            : passenger.IdentityNumber)
+                                    </td>
+                                    <td>
+                                        @{
+                                            string passengerType = passenger.PassengerType;
+
+                                            if (passengerType == "Adult")
+                                            {
+                                                passengerType = "Người lớn";
+                                            }
+                                            else if (passengerType == "Child")
+                                            {
+                                                passengerType = "Trẻ em";
+                                            }
+                                            else if (passengerType == "Infant")
+                                            {
+                                                passengerType = "Trẻ sơ sinh";
+                                            }
+                                        }
+                                        @passengerType
+                                    </td>
+                                </tr>
+
+                                index++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="empty-message">
+                                    Chưa có thông tin hành khách.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- THÔNG TIN THANH TOÁN -->
+        <div class="section">
+            <h3 class="section-title">
+                <i class="fa-solid fa-credit-card"></i>
+                THÔNG TIN THANH TOÁN
+            </h3>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Phương thức thanh toán</label>
+                    <p>
+                        @(string.IsNullOrWhiteSpace(booking.PaymentMethod)
+                            ? "Chưa có thanh toán"
+                            : booking.PaymentMethod)
+                    </p>
+                </div>
+
+                <div class="info-item">
+                    <label>Trạng thái thanh toán</label>
+                    <p>
+                        @paymentLabel
+                    </p>
+                </div>
+            </div>
+
+            <div class="total-box">
+                <span>TỔNG GIÁ TRỊ ĐƠN ĐẶT VÉ</span>
+
+                <strong>
+                    @booking.TotalAmount.ToString("N0") VNĐ
+                </strong>
+            </div>
+        </div>
+
+        <!-- CẬP NHẬT TRẠNG THÁI ĐẶT VÉ -->
+        <div class="section">
+            <h3 class="section-title">
+                <i class="fa-solid fa-rotate"></i>
+                CẬP NHẬT TRẠNG THÁI ĐẶT VÉ
+            </h3>
+
+            @if (TempData["BookingSuccess"] != null)
+            {
+                <div style="background:#174d31;color:#75e6a3;padding:14px;border-radius:6px;margin-bottom:18px;">
+                    <i class="fa-solid fa-circle-check"></i>
+                    @TempData["BookingSuccess"]
+                </div>
+            }
+
+            @if (TempData["BookingError"] != null)
+            {
+                <div style="background:#592626;color:#ff9999;padding:14px;border-radius:6px;margin-bottom:18px;">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    @TempData["BookingError"]
+                </div>
+            }
+
+            @if (booking.BookingStatus == "Pending" ||
+                 booking.BookingStatus == "Confirmed")
+            {
+                using (Html.BeginForm("UpdateStatus", "AdminBooking",
+                    FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden"
+                           name="id"
+                           value="@booking.BookingID" />
+
+                    <div style="margin-bottom:18px;">
+                        <label style="display:block;color:#aaa;margin-bottom:10px;">
+                            Chọn trạng thái mới
+                        </label>
+
+                        <select name="newStatus"
+                                required
+                                style="width:100%;max-width:400px;padding:13px;background:#111;color:white;border:1px solid #555;border-radius:6px;">
+
+                            <option value="">-- Chọn trạng thái --</option>
+
+                            @if (booking.BookingStatus == "Pending")
+                            {
+                                <option value="Confirmed">Đã xác nhận</option>
+                                <option value="Cancelled">Đã hủy</option>
+                            }
+                            else if (booking.BookingStatus == "Confirmed")
+                            {
+                                <option value="Completed">Đã hoàn thành</option>
+                                <option value="Cancelled">Đã hủy</option>
+                            }
+                        </select>
+                    </div>
+
+                    <button type="submit"
+                            onclick="return confirm('Bạn có chắc chắn muốn cập nhật trạng thái đơn đặt vé này?');"
+                            style="padding:12px 20px;background:#e0ad45;color:#111;border:none;border-radius:6px;font-weight:bold;cursor:pointer;">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Cập nhật trạng thái
+                    </button>
+                }
+            }
+            else
+            {
+                <p style="color:#aaa;">
+                    Đơn đặt vé đã kết thúc trạng thái xử lý. Không thể cập nhật thêm.
+                </p>
+            }
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,431 @@
+﻿
+@model FlightBookingAI.Web.Models.AdminPaymentDetailViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Chi tiết thanh toán";
+
+    string statusLabel = "Không xác định";
+    string statusClass = "status-pending";
+
+    switch (Model.PaymentStatus)
+    {
+        case "Success":
+        case "Completed":
+            statusLabel = "Đã thanh toán";
+            statusClass = "status-success";
+            break;
+        case "Pending":
+            statusLabel = "Chờ thanh toán";
+            statusClass = "status-pending";
+            break;
+        case "Failed":
+            statusLabel = "Thất bại";
+            statusClass = "status-failed";
+            break;
+        case "Refunded":
+            statusLabel = "Đã hoàn tiền";
+            statusClass = "status-refunded";
+            break;
+    }
+
+    string bookingLabel = Model.BookingStatus ?? "Không xác định";
+    string bookingClass = "status-pending";
+
+    switch (Model.BookingStatus)
+    {
+        case "Confirmed":
+            bookingLabel = "Đã xác nhận";
+            bookingClass = "status-success";
+            break;
+        case "Pending":
+            bookingLabel = "Chờ xác nhận";
+            bookingClass = "status-pending";
+            break;
+        case "Cancelled":
+            bookingLabel = "Đã hủy";
+            bookingClass = "status-failed";
+            break;
+        case "Completed":
+            bookingLabel = "Hoàn thành";
+            bookingClass = "status-success";
+            break;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chi tiết thanh toán - AER Aviation</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #101010;
+            color: #f5f5f5;
+            padding: 35px;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 28px;
+        }
+
+        h1 {
+            color: #e0ad45;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .back-btn {
+            padding: 11px 17px;
+            background: #252525;
+            color: #e0ad45;
+            border: 1px solid #e0ad45;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .summary {
+            background: linear-gradient(135deg, #302719, #1b1b1b);
+            border: 1px solid #725a2c;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .summary-icon {
+            color: #e0ad45;
+            font-size: 35px;
+            margin-bottom: 15px;
+        }
+
+        .summary-label {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .amount {
+            color: #e0ad45;
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 18px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-success {
+            background: #174d31;
+            color: #75e6a3;
+            border: 1px solid #287a4d;
+        }
+
+        .status-pending {
+            background: #5b481d;
+            color: #ffd76a;
+        }
+
+        .status-failed {
+            background: #592626;
+            color: #ff9999;
+        }
+
+        .status-refunded {
+            background: #24445c;
+            color: #9bd4ff;
+        }
+
+        .section {
+            background: #1b1b1b;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 22px;
+        }
+
+            .section h3 {
+                color: #e0ad45;
+                font-size: 17px;
+                padding-bottom: 15px;
+                margin-bottom: 22px;
+                border-bottom: 1px solid #383838;
+            }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 24px 35px;
+        }
+
+        .info-label {
+            display: block;
+            color: #999;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            color: #f2f2f2;
+            font-size: 14px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .highlight {
+            color: #e0ad45;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+            .actions a {
+                display: inline-block;
+                padding: 12px 20px;
+                background: #e0ad45;
+                color: #111;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+        @@media (max-width: 650px) {
+            body {
+                padding: 18px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .amount {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div>
+                <h1>
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    Chi tiết giao dịch
+                </h1>
+                <p class="subtitle">
+                    Thông tin chi tiết giao dịch thanh toán của khách hàng
+                </p>
+            </div>
+
+            <a href="@Url.Action("Index", "AdminPayment")"
+               class="back-btn">
+                <i class="fa-solid fa-arrow-left"></i>
+                Quay lại
+            </a>
+        </div>
+
+        <!-- TỔNG QUAN -->
+        <div class="summary">
+            <div class="summary-icon">
+                <i class="fa-solid fa-credit-card"></i>
+            </div>
+
+            <div class="summary-label">TỔNG TIỀN THANH TOÁN</div>
+
+            <div class="amount">
+                @Model.Amount.ToString("N0") VNĐ
+            </div>
+
+            <span class="status @statusClass">
+                @statusLabel
+            </span>
+        </div>
+
+        <!-- THANH TOÁN -->
+        <div class="section">
+            <h3>
+                <i class="fa-solid fa-money-bill-transfer"></i>
+                THÔNG TIN THANH TOÁN
+            </h3>
+
+            <div class="info-grid">
+                <div>
+                    <span class="info-label">Mã thanh toán</span>
+                    <div class="info-value highlight">#@Model.PaymentID</div>
+                </div>
+
+                <div>
+                    <span class="info-label">Mã giao dịch</span>
+                    <div class="info-value highlight">
+                        @(string.IsNullOrWhiteSpace(Model.TransactionCode)
+                            ? "Chưa có"
+                            : Model.TransactionCode)
+                    </div>
+                </div>
+
+                <div>
+                    <span class="info-label">Phương thức thanh toán</span>
+                    <div class="info-value">
+                        @(string.IsNullOrWhiteSpace(Model.PaymentMethod)
+                            ? "Chưa xác định"
+                            : Model.PaymentMethod)
+                    </div>
+                </div>
+
+                <div>
+                    <span class="info-label">Trạng thái thanh toán</span>
+                    <div class="info-value">
+                        <span class="status @statusClass">@statusLabel</span>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="info-label">Ngày thanh toán</span>
+                    <div class="info-value">
+                        @(Model.PaymentDate.HasValue
+                            ? Model.PaymentDate.Value.ToString("dd/MM/yyyy HH:mm:ss")
+                            : "Chưa thanh toán")
+                    </div>
+                </div>
+
+                <div>
+                    <span class="info-label">Ngày tạo giao dịch</span>
+                    <div class="info-value">
+                        @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ĐẶT VÉ -->
+        <div class="section">
+            <h3>
+                <i class="fa-solid fa-ticket"></i>
+                THÔNG TIN ĐẶT VÉ
+            </h3>
+
+            <div class="info-grid">
+                <div>
+                    <span class="info-label">Mã đặt vé</span>
+                    <div class="info-value highlight">
+                        @(Model.BookingCode ?? "Không có")
+                    </div>
+                </div>
+
+                <div>
+                    <span class="info-label">ID đặt vé</span>
+                    <div class="info-value">#@Model.BookingID</div>
+                </div>
+
+                <div>
+                    <span class="info-label">Ngày đặt vé</span>
+                    <div class="info-value">
+                        @Model.BookingDate.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                </div>
+
+                <div>
+                    <span class="info-label">Số hành khách</span>
+                    <div class="info-value">
+                        @Model.PassengerCount người
+                    </div>
+                </div>
+
+                <div>
+                    <span class="info-label">Tổng tiền đặt vé</span>
+                    <div class="info-value highlight">
+                        @Model.BookingTotalAmount.ToString("N0") VNĐ
+                    </div>
+                </div>
+
+                <div>
+                    <span class="info-label">Trạng thái đặt vé</span>
+                    <div class="info-value">
+                        <span class="status @bookingClass">
+                            @bookingLabel
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KHÁCH HÀNG -->
+        <div class="section">
+            <h3>
+                <i class="fa-solid fa-user"></i>
+                THÔNG TIN KHÁCH HÀNG
+            </h3>
+
+            <div class="info-grid">
+                <div>
+                    <span class="info-label">Họ và tên</span>
+                    <div class="info-value">
+                        @(Model.CustomerName ?? "Chưa có thông tin")
+                    </div>
+                </div>
+
+                <div>
+                    <span class="info-label">Email</span>
+                    <div class="info-value">
+                        @(Model.CustomerEmail ?? "Chưa có thông tin")
+                    </div>
+                </div>
+
+                <div>
+                    <span class="info-label">Số điện thoại</span>
+                    <div class="info-value">
+                        @(Model.CustomerPhone ?? "Chưa có thông tin")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <a href="@Url.Action("Index", "AdminPayment")">
+                <i class="fa-solid fa-arrow-left"></i>
+                Quay lại danh sách thanh toán
+            </a>
+        </div>
+
+    </div>
+</body>
+</html>

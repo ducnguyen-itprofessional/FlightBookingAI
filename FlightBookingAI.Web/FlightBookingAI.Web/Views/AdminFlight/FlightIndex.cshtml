@@ -1,0 +1,424 @@
+﻿
+@model FlightBookingAI.Web.Models.AdminFlightListViewModel
+
+@{
+    Layout = null;
+    ViewBag.Title = "Quản lý chuyến bay";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý chuyến bay | AER Aviation</title>
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #101319;
+            color: #f5f5f5;
+            padding: 35px;
+        }
+
+        .container {
+            max-width: 1500px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+            .header h1 {
+                color: #d9ad55;
+                font-size: 28px;
+                margin-bottom: 8px;
+            }
+
+            .header p {
+                color: #a6a6a6;
+            }
+
+        .btn {
+            display: inline-block;
+            border: none;
+            padding: 11px 17px;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .btn-gold {
+            background: #d9ad55;
+            color: #151515;
+        }
+
+        .btn-dark {
+            background: #30343d;
+            color: white;
+        }
+
+        .filter-box {
+            background: #1b2029;
+            border: 1px solid #30343d;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 22px;
+        }
+
+        .filter-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto auto;
+            gap: 12px;
+            align-items: end;
+        }
+
+        .field label {
+            display: block;
+            color: #c8c8c8;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #414752;
+            border-radius: 6px;
+            background: #11151c;
+            color: white;
+            outline: none;
+        }
+
+        .table-box {
+            background: #1b2029;
+            border: 1px solid #30343d;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #252b36;
+            color: #d9ad55;
+            text-align: left;
+            padding: 16px 12px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 15px 12px;
+            border-top: 1px solid #30343d;
+            font-size: 13px;
+            color: #e0e0e0;
+            white-space: nowrap;
+        }
+
+        tr:hover td {
+            background: #242a35;
+        }
+
+        .flight-number {
+            color: #e6bd6a;
+            font-weight: bold;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            background: #30343d;
+        }
+
+        .status-scheduled {
+            color: #83c9ff;
+            background: #18344a;
+        }
+
+        .status-completed {
+            color: #7ce0a0;
+            background: #193c2a;
+        }
+
+        .status-cancelled {
+            color: #ff9292;
+            background: #492323;
+        }
+
+        .status-delayed {
+            color: #ffd477;
+            background: #493919;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+        }
+
+        .count {
+            color: #aaa;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        @@media(max-width: 900px) {
+            body {
+                padding: 15px;
+            }
+
+            .filter-form {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @@media(max-width: 550px) {
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div>
+                <h1><i class="fa-solid fa-plane"></i> Quản lý chuyến bay</h1>
+                <p>Quản lý thông tin và lịch trình các chuyến bay</p>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                <a href="@Url.Action("Create", "AdminFlight")"
+                   class="btn btn-gold">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm chuyến bay
+                </a>
+
+                <a href="@Url.Action("AdminDashboard", "AdminAccount")"
+                   class="btn btn-dark">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Trang quản trị
+                </a>
+            </div>
+        </div>
+        @if (TempData["FlightMessage"] != null)
+        {
+            <div style="background:#193c2a;
+                color:#7ce0a0;
+                padding:15px;
+                border-radius:7px;
+                margin-bottom:20px;">
+                <i class="fa-solid fa-circle-check"></i>
+                @TempData["FlightMessage"]
+            </div>
+        }
+
+        <div class="filter-box">
+            @using (Html.BeginForm("Index", "AdminFlight", FormMethod.Get,
+                new { @class = "filter-form" }))
+            {
+                <div class="field">
+                    <label>Tìm kiếm chuyến bay</label>
+                    <input type="text"
+                           name="keyword"
+                           value="@Model.Keyword"
+                           placeholder="Mã chuyến bay, hãng bay, thành phố..." />
+                </div>
+
+                <div class="field">
+                    <label>Hãng hàng không</label>
+                    @Html.DropDownListFor(
+                                  m => m.AirlineID,
+                                  new SelectList(Model.Airlines, "Value", "Text", Model.AirlineID),
+                                  "Tất cả hãng bay",
+                                  new { @class = "" })
+                </div>
+
+                <div class="field">
+                    <label>Trạng thái</label>
+                    <select name="status">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="Scheduled"
+                                @(Model.Status == "Scheduled" ? "selected" : "")>
+                            Scheduled
+                        </option>
+                        <option value="Delayed"
+                                @(Model.Status == "Delayed" ? "selected" : "")>
+                            Delayed
+                        </option>
+                        <option value="Completed"
+                                @(Model.Status == "Completed" ? "selected" : "")>
+                            Completed
+                        </option>
+                        <option value="Cancelled"
+                                @(Model.Status == "Cancelled" ? "selected" : "")>
+                            Cancelled
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-gold">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    Tìm kiếm
+                </button>
+
+                <a href="@Url.Action("Index", "AdminFlight")"
+                   class="btn btn-dark">
+                    Làm mới
+                </a>
+            }
+        </div>
+
+        <div class="count">
+            Tổng số chuyến bay tìm thấy:
+            <strong>@Model.Flights.Count</strong>
+        </div>
+
+        <div class="table-box">
+            <table>
+                <thead>
+                    <tr>
+                        <th>MÃ CHUYẾN BAY</th>
+                        <th>HÃNG HÀNG KHÔNG</th>
+                        <th>SÂN BAY ĐI</th>
+                        <th>SÂN BAY ĐẾN</th>
+                        <th>KHỞI HÀNH</th>
+                        <th>ĐẾN NƠI</th>
+                        <th>GIÁ VÉ</th>
+                        <th>GHẾ TRỐNG</th>
+                        <th>TRẠNG THÁI</th>
+                        <th>THAO TÁC</th>
+                    </tr>
+                </thead>
+
+
+                <tbody>
+                    @if (Model.Flights != null && Model.Flights.Any())
+                    {
+                        foreach (var flight in Model.Flights)
+                        {
+                            string statusClass = "status-scheduled";
+
+                            if (flight.Status == "Completed")
+                            {
+                                statusClass = "status-completed";
+                            }
+                            else if (flight.Status == "Cancelled")
+                            {
+                                statusClass = "status-cancelled";
+                            }
+                            else if (flight.Status == "Delayed")
+                            {
+                                statusClass = "status-delayed";
+                            }
+
+                            <tr>
+                                <td class="flight-number">
+                                    @flight.FlightNumber
+                                </td>
+
+                                <td>
+                                    @flight.AirlineName (@flight.AirlineCode)
+                                </td>
+
+                                <td>
+                                    @flight.DepartureAirportCode - @flight.DepartureCity
+                                </td>
+
+                                <td>
+                                    @flight.ArrivalAirportCode - @flight.ArrivalCity
+                                </td>
+
+                                <td>
+                                    @flight.DepartureTime.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    @flight.ArrivalTime.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    @flight.Price.ToString("N0") VNĐ
+                                </td>
+
+                                <td>
+                                    @flight.AvailableSeats / @flight.TotalSeats
+                                </td>
+
+                                <td>
+                                    <span class="status @statusClass">
+                                        @flight.Status
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <a href="@Url.Action("Edit", "AdminFlight", new { id = flight.FlightID })"
+                                       style="display:inline-block; padding:8px 12px; background:#e0ad45; color:#111; border-radius:6px; text-decoration:none; font-weight:bold;">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        Chỉnh sửa
+                                    </a>
+                                    @using (Html.BeginForm("Delete", "AdminFlight",
+                                        new { id = flight.FlightID },
+                                        FormMethod.Post,
+                                        new
+                                    {
+                                            onsubmit = "return confirm('Bạn có chắc chắn muốn xóa chuyến bay này không?');",
+                                            style = "display:inline;"
+                                        }))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                style="padding:8px 12px; background:#dc3545; color:white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">
+                                            <i class="fa-solid fa-trash"></i>
+                                            Xóa
+                                        </button>
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="10" class="empty">
+                                <i class="fa-solid fa-plane-slash"></i>
+                                <p>Không tìm thấy chuyến bay nào.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>
