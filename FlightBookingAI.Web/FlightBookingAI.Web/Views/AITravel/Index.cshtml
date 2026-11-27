@@ -4,6 +4,12 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<!-- Leaflet CSS -->
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoRZjZqv8v+v+0="
+      crossorigin="" />
+
 <section class="ai-travel-page">
     <div class="container">
 
@@ -77,6 +83,7 @@
                     </div>
 
                     <button type="button"
+                            id="aiGenerateTripButton"
                             class="btn btn-primary w-100">
                         ✨ Tạo lịch trình AI
                     </button>
@@ -89,32 +96,40 @@
 
                 <div class="ai-chat-header">
                     <h3>🤖 Trợ lý du lịch AI</h3>
-                    <span>Giao diện thử nghiệm</span>
+                    <span>Được hỗ trợ bởi Gemini + RAG</span>
                 </div>
 
-                <div class="ai-chat-messages">
+                <div class="ai-chat-messages" id="aiChatMessages">
                     <div class="ai-message ai-message-bot">
                         Xin chào! 👋
                         Tôi là trợ lý du lịch của FlightBookingAI.
-                        Hãy cho tôi biết bạn muốn đi đâu
-                        và ngân sách dự kiến nhé!
+                        Tôi có thể tư vấn về Đà Nẵng, Đà Lạt,
+                        Hạ Long, Phú Quốc và Hội An.
+                        Bạn muốn tìm hiểu điểm đến nào?
                     </div>
                 </div>
 
                 <div class="ai-chat-input">
+
+                    @Html.AntiForgeryToken()
+
                     <input type="text"
                            id="aiChatInput"
                            class="form-control"
+                           maxlength="1000"
                            placeholder="Nhập câu hỏi của bạn..."
                            aria-label="Nhập câu hỏi cho trợ lý AI" />
 
                     <button type="button"
+                            id="aiSendButton"
                             class="btn btn-primary">
                         Gửi
                     </button>
+
                 </div>
 
             </div>
+
 
         </div>
 
@@ -132,48 +147,47 @@
             <div class="ai-itinerary-layout">
 
                 <!-- LỊCH TRÌNH -->
-                <div class="ai-itinerary-card">
+                <div class="ai-itinerary-card" id="aiItineraryCard">
 
-                    <h3>📅 Lịch trình gợi ý</h3>
-
-                    <p class="ai-demo-label">
-                        Ví dụ minh họa: Đà Nẵng 3 ngày 2 đêm
-                    </p>
-
-                    <div class="ai-day-item">
-                        <span class="ai-day-number">1</span>
-                        <div>
-                            <h4>Ngày 1 – Khám phá Đà Nẵng</h4>
-                            <p>
-                                Tham quan biển Mỹ Khê,
-                                cầu Rồng và thưởng thức
-                                ẩm thực địa phương.
-                            </p>
-                        </div>
+                    <div class="ai-itinerary-card-header">
+                        <h3>📅 Lịch trình gợi ý</h3>
+                        <p>
+                            Khám phá các điểm tham quan và
+                            ẩm thực đặc trưng trong hành trình.
+                        </p>
                     </div>
 
-                    <div class="ai-day-item">
-                        <span class="ai-day-number">2</span>
-                        <div>
-                            <h4>Ngày 2 – Bà Nà Hills</h4>
-                            <p>
-                                Khám phá Cầu Vàng,
-                                làng Pháp và các điểm
-                                tham quan tại Bà Nà Hills.
-                            </p>
-                        </div>
+                    <!-- Trạng thái chưa có lịch trình -->
+                    <div id="aiItineraryEmpty" class="ai-itinerary-empty">
+
+                        <div class="ai-itinerary-empty-icon">🗺️</div>
+
+                        <h4>Chưa có lịch trình du lịch</h4>
+
+                        <p>
+                            Nhập thông tin chuyến đi phía trên
+                            và nhấn <strong>✨ Tạo lịch trình AI</strong>
+                            để bắt đầu khám phá.
+                        </p>
+
                     </div>
 
-                    <div class="ai-day-item">
-                        <span class="ai-day-number">3</span>
-                        <div>
-                            <h4>Ngày 3 – Ngũ Hành Sơn</h4>
-                            <p>
-                                Tham quan Ngũ Hành Sơn,
-                                mua quà lưu niệm và
-                                kết thúc hành trình.
-                            </p>
+                    <!-- Kết quả lịch trình AI -->
+                    <div id="aiItineraryResult"
+                         class="ai-itinerary-result"
+                         style="display: none;">
+
+                        <!-- Tiêu đề hành trình -->
+                        <div class="ai-trip-summary" id="aiTripSummary">
+                            <h4 id="aiTripTitle"></h4>
                         </div>
+
+                        <!-- Các thẻ ngày được tạo bằng JavaScript -->
+                        <div id="aiItineraryTimeline"
+                             class="ai-itinerary-timeline">
+
+                        </div>
+
                     </div>
 
                 </div>
@@ -181,21 +195,17 @@
                 <!-- MAP AND WEATHER -->
                 <div class="ai-travel-widgets">
 
+
                     <!-- BẢN ĐỒ -->
                     <div class="ai-map-card">
 
                         <h3>📍 Bản đồ hành trình</h3>
 
-                        <div class="ai-map-placeholder">
-                            <span>🗺️</span>
-                            <h4>Bản đồ tương tác</h4>
-                            <p>
-                                Vị trí các điểm tham quan
-                                sẽ được hiển thị tại đây.
-                            </p>
-                        </div>
+                        <!-- Leaflet sẽ hiển thị bản đồ tại đây -->
+                        <div id="aiTravelMap" class="ai-travel-map"></div>
 
                     </div>
+
 
                     <!-- THỜI TIẾT -->
                     <div class="ai-weather-card">
@@ -203,13 +213,8 @@
                         <h3>🌤️ Thời tiết điểm đến</h3>
 
                         <div class="ai-weather-placeholder">
-                            <span>☀️</span>
-                            <div>
-                                <h4>Thông tin thời tiết</h4>
-                                <p>
-                                    Dữ liệu dự báo sẽ được
-                                    cập nhật khi tích hợp API.
-                                </p>
+                            <div id="aiWeatherContent" class="ai-weather-content">
+                                <p>Thời tiết sẽ hiển thị sau khi tạo lịch trình.</p>
                             </div>
                         </div>
 
@@ -223,3 +228,776 @@
 
     </div>
 </section>
+
+@section scripts {
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const chatInput = document.getElementById("aiChatInput");
+    const sendButton = document.getElementById("aiSendButton");
+    const chatMessages = document.getElementById("aiChatMessages");
+    const generateTripButton =
+        document.getElementById("aiGenerateTripButton");
+    const itineraryEmpty =
+        document.getElementById("aiItineraryEmpty");
+
+    const itineraryResult =
+        document.getElementById("aiItineraryResult");
+
+    // Đánh dấu yêu cầu đang tạo lịch trình
+
+const askUrl = '@Url.Action("Ask", "AItravel")';
+
+const generateItineraryUrl =
+    '@Url.Action("GenerateItinerary", "AItravel")';
+
+const tripTitle = document.getElementById("aiTripTitle");
+const tripSummary = document.getElementById("aiTripSummary");
+const itineraryTimeline =
+    document.getElementById("aiItineraryTimeline");
+
+    /* Khởi tạo bản đồ Leaflet */
+
+    const mapElement = document.getElementById("aiTravelMap");
+
+    let aiMap = null;
+
+    /* Tọa độ trung tâm các điểm đến */
+
+    const destinationCoordinates = {
+        "Đà Nẵng": [16.0544, 108.2022],
+        "Đà Lạt": [11.9404, 108.4583],
+        "Hạ Long": [20.9517, 107.0734],
+        "Phú Quốc": [10.2899, 103.9840],
+        "Hội An": [15.8801, 108.3380]
+    };
+
+    /* ==========================================
+       OPEN-METEO - WEATHER DESCRIPTION
+       ========================================== */
+
+    function getWeatherInfo(code) {
+        if (code === 0) {
+            return { icon: "☀️", description: "Trời quang" };
+        }
+
+        if ([1, 2, 3].includes(code)) {
+            return { icon: "⛅", description: "Có mây" };
+        }
+
+        if ([45, 48].includes(code)) {
+            return { icon: "🌫️", description: "Có sương mù" };
+        }
+
+        if ([51, 53, 55, 56, 57].includes(code)) {
+            return { icon: "🌦️", description: "Mưa phùn" };
+        }
+
+        if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) {
+            return { icon: "🌧️", description: "Có mưa" };
+        }
+
+        if ([71, 73, 75, 77, 85, 86].includes(code)) {
+            return { icon: "❄️", description: "Có tuyết" };
+        }
+
+        if ([95, 96, 99].includes(code)) {
+            return { icon: "⛈️", description: "Có giông" };
+        }
+
+        return { icon: "🌤️", description: "Thời tiết thay đổi" };
+    }
+
+    /* ==========================================
+       OPEN-METEO - LOAD CURRENT WEATHER
+       ========================================== */
+
+    let weatherRequestId = 0;
+
+    async function updateWeather(destination) {
+
+        const weatherContent =
+            document.getElementById("aiWeatherContent");
+
+        if (!weatherContent) {
+            return;
+        }
+
+        const requestId = ++weatherRequestId;
+
+        const coordinates = destinationCoordinates[destination];
+
+        if (!coordinates) {
+            weatherContent.textContent =
+                "Chưa hỗ trợ thời tiết cho địa điểm này.";
+            return;
+        }
+
+        weatherContent.textContent = "Đang tải thời tiết...";
+
+        try {
+            const latitude = coordinates[0];
+            const longitude = coordinates[1];
+
+            const url = new URL(
+                "https://api.open-meteo.com/v1/forecast"
+            );
+
+            url.searchParams.set("latitude", latitude);
+            url.searchParams.set("longitude", longitude);
+            url.searchParams.set(
+                "current",
+                "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m"
+            );
+            url.searchParams.set("timezone", "Asia/Ho_Chi_Minh");
+
+            const response = await fetch(url.toString());
+
+            if (!response.ok) {
+                throw new Error("Không thể lấy dữ liệu thời tiết.");
+            }
+
+            const data = await response.json();
+
+            // Tránh hiển thị dữ liệu cũ khi đổi điểm đến
+            if (requestId !== weatherRequestId) {
+                return;
+            }
+
+            const current = data.current;
+
+            if (!current) {
+                throw new Error("API không trả về thời tiết hiện tại.");
+            }
+
+            const info = getWeatherInfo(current.weather_code);
+
+            // Xóa nội dung cũ
+            weatherContent.replaceChildren();
+
+            const location = document.createElement("div");
+            location.className = "ai-weather-location";
+            location.textContent = destination;
+
+            const main = document.createElement("div");
+            main.className = "ai-weather-main";
+
+            const icon = document.createElement("div");
+            icon.className = "ai-weather-icon";
+            icon.textContent = info.icon;
+
+            const temperature = document.createElement("div");
+            temperature.className = "ai-weather-temperature";
+            temperature.textContent =
+                Math.round(current.temperature_2m) + "°C";
+
+            main.append(icon, temperature);
+
+            const description = document.createElement("div");
+            description.className = "ai-weather-description";
+            description.textContent = info.description;
+
+            const details = document.createElement("div");
+            details.className = "ai-weather-details";
+
+            function addWeatherDetail(label, value) {
+                const item = document.createElement("div");
+                item.className = "ai-weather-detail";
+
+                const labelElement = document.createElement("span");
+                labelElement.textContent = label;
+
+                const valueElement = document.createElement("strong");
+                valueElement.textContent = value;
+
+                item.append(labelElement, valueElement);
+                details.appendChild(item);
+            }
+
+            addWeatherDetail(
+                "💧 Độ ẩm",
+                current.relative_humidity_2m + "%"
+            );
+
+            addWeatherDetail(
+                "💨 Gió",
+                Math.round(current.wind_speed_10m) + " km/h"
+            );
+
+            addWeatherDetail(
+                "🌡️ Cảm giác",
+                Math.round(current.apparent_temperature) + "°C"
+            );
+
+            weatherContent.append(
+                location,
+                main,
+                description,
+                details
+            );
+
+        } catch (error) {
+
+            if (requestId !== weatherRequestId) {
+                return;
+            }
+
+            console.error("Weather API error:", error);
+
+            weatherContent.textContent =
+                "Không thể tải thời tiết. Vui lòng thử lại sau.";
+        }
+    }
+
+    /* ==========================================
+       TỌA ĐỘ CÁC ĐIỂM THAM QUAN
+       ========================================== */
+
+    const attractionCoordinates = {
+        "Đà Nẵng": {
+            "my khe": [16.0611, 108.2450],
+            "ban dao son tra": [16.1167, 108.2833],
+            "song han": [16.0660, 108.2240],
+            "ngu hanh son": [15.9950, 108.2630],
+            "bao tang dieu khac cham": [16.0605, 108.2230],
+            "ba na hills": [15.9977, 107.9880],
+            "cau vang": [15.9950, 107.9960]
+        },
+        "Đà Lạt": {
+            "ho xuan huong": [11.9416, 108.4465],
+            "quang truong lam vien": [11.9405, 108.4451],
+            "thung lung tinh yeu": [11.9780, 108.4490],
+            "dinh bao dai": [11.9313, 108.4312],
+            "thac datanla": [11.9039, 108.4490]
+        },
+        "Hạ Long": {
+            "vinh ha long": [20.9101, 107.1839],
+            "dao titop": [20.8586, 107.0813],
+            "hang sung sot": [20.8448, 107.0892],
+            "bao tang quang ninh": [20.9515, 107.1184]
+        },
+        "Phú Quốc": {
+            "bai sao": [10.0550, 104.0370],
+            "bai dai": [10.3350, 103.8520],
+            "dinh cau": [10.2170, 103.9590],
+            "hon thom": [9.9550, 104.0150],
+            "suoi tranh": [10.1910, 104.0290]
+        },
+        "Hội An": {
+            "chua cau": [15.8770, 108.3260],
+            "pho co hoi an": [15.8800, 108.3280],
+            "hoi quan phuc kien": [15.8765, 108.3300],
+            "bien an bang": [15.9120, 108.3390],
+            "lang rau tra que": [15.8960, 108.3310]
+        }
+    };
+
+    function normalizePlaceName(name) {
+        return String(name || "")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D")
+            .toLowerCase()
+            .trim();
+    }
+
+    let attractionMarkers = null;
+
+    function updateMapMarkers(destination, days) {
+
+        if (!aiMap) {
+            return;
+        }
+
+        // Xóa marker của lịch trình trước
+        if (attractionMarkers) {
+            aiMap.removeLayer(attractionMarkers);
+        }
+
+        attractionMarkers = L.featureGroup().addTo(aiMap);
+
+        const locations = attractionCoordinates[destination];
+
+        if (!locations) {
+            return;
+        }
+
+        days.forEach(function (day, index) {
+
+            const places = day.Places || day.places || [];
+
+            places.forEach(function (place) {
+
+                const normalized = normalizePlaceName(place);
+
+                const matchedKey = Object.keys(locations).find(
+                    function (key) {
+                        return normalized.includes(key);
+                    }
+                );
+                console.log("Địa điểm Gemini:", place);
+                console.log("Tên chuẩn hóa:", normalized);
+                console.log("Tọa độ khớp:", matchedKey || "CHƯA CÓ");
+
+                if (!matchedKey) {
+                    return;
+                }
+
+                const coordinates = locations[matchedKey];
+
+                const marker = L.marker(coordinates);
+
+                // Popup tạo bằng DOM để giữ an toàn dữ liệu AI
+                const popup = document.createElement("div");
+
+                const heading = document.createElement("strong");
+                heading.textContent = "Ngày " + (day.Day || day.day || index + 1);
+
+                const placeText = document.createElement("div");
+                placeText.textContent = place;
+
+                popup.appendChild(heading);
+                popup.appendChild(placeText);
+
+                marker.bindPopup(popup);
+
+                attractionMarkers.addLayer(marker);
+            });
+        });
+
+        // Tự điều chỉnh bản đồ để thấy tất cả địa điểm
+        if (attractionMarkers.getLayers().length > 0) {
+            aiMap.fitBounds(
+                attractionMarkers.getBounds(),
+                {
+                    padding: [30, 30],
+                    maxZoom: 13
+                }
+            );
+        }
+    }
+
+
+    /* Chuyển bản đồ đến điểm đến được chọn */
+    function updateMapDestination(destination) {
+
+        if (!aiMap) {
+            return;
+        }
+
+        const coordinates = destinationCoordinates[destination];
+
+        if (!coordinates) {
+            return;
+        }
+
+        aiMap.setView(coordinates, 12);
+
+        aiMap.invalidateSize();
+    }
+
+
+    if (mapElement && typeof L !== "undefined") {
+
+        aiMap = L.map("aiTravelMap").setView(
+            [16.0544, 108.2022],
+            12
+        );
+        aiMap.attributionControl.setPrefix(false);
+
+        L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+                attribution:
+                    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }
+        ).addTo(aiMap);
+
+
+        /* Cập nhật kích thước bản đồ sau khi giao diện ổn định */
+        requestAnimationFrame(function () {
+            aiMap.invalidateSize();
+        });
+
+        setTimeout(function () {
+            aiMap.invalidateSize();
+        }, 500);
+
+        /* Tự cập nhật khi kích thước khung thay đổi */
+        if (typeof ResizeObserver !== "undefined") {
+            const mapResizeObserver = new ResizeObserver(function () {
+                if (aiMap) {
+                    aiMap.invalidateSize({
+                        pan: false,
+                        debounceMoveend: true
+                    });
+                }
+            });
+
+            mapResizeObserver.observe(mapElement);
+        }
+
+    }
+
+
+    // Thêm tin nhắn vào khung chat
+    function addMessage(text, sender) {
+        const message = document.createElement("div");
+
+        message.className = "ai-message " +
+            (sender === "user"
+                ? "ai-message-user"
+                : "ai-message-bot");
+
+        // Dùng textContent để tránh chèn HTML không an toàn
+        message.textContent = text;
+
+        chatMessages.appendChild(message);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        return message;
+    }
+
+    // Gửi câu hỏi đến Controller
+    async function sendMessage() {
+        const question = chatInput.value.trim();
+
+        if (!question || sendButton.disabled) {
+            return;
+        }
+
+        const token = document.querySelector(
+            'input[name="__RequestVerificationToken"]'
+        ).value;
+
+        addMessage(question, "user");
+
+        chatInput.value = "";
+        chatInput.disabled = true;
+        sendButton.disabled = true;
+        sendButton.textContent = "Đang trả lời...";
+
+        const loadingMessage = addMessage(
+            "🤖 Đang tìm thông tin trong tài liệu...",
+            "bot"
+        );
+
+        try {
+            const body = new URLSearchParams();
+
+            body.append("question", question);
+            body.append("__RequestVerificationToken", token);
+
+            const response = await fetch(askUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/x-www-form-urlencoded; charset=UTF-8"
+                },
+                body: body.toString()
+            });
+
+            if (!response.ok) {
+                throw new Error("HTTP " + response.status);
+            }
+
+            const data = await response.json();
+
+
+            if (data.success) {
+                if (typeof marked !== "undefined" &&
+                    typeof DOMPurify !== "undefined") {
+
+                    // Chuyển Markdown thành HTML an toàn
+                    const html = marked.parse(data.answer || "", {
+                        breaks: false,
+                        gfm: true
+                    });
+
+                    loadingMessage.innerHTML =
+                        DOMPurify.sanitize(html);
+
+                    loadingMessage.classList.add("ai-markdown");
+
+                } else {
+                    // Dự phòng khi thư viện chưa tải được
+                    loadingMessage.textContent = data.answer;
+                }
+
+            } else {
+                loadingMessage.textContent =
+                    data.message || "Không thể nhận câu trả lời.";
+            }
+
+
+        } catch (error) {
+            loadingMessage.textContent =
+                "Không thể kết nối đến trợ lý AI. " +
+                "Vui lòng thử lại sau.";
+            console.error("AI Chat Error:", error);
+
+        } finally {
+            chatInput.disabled = false;
+            sendButton.disabled = false;
+            sendButton.textContent = "Gửi";
+
+            chatInput.focus();
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }
+
+    function renderItinerary(itinerary) {
+
+        const destination =
+            itinerary.Destination || itinerary.destination || "";
+
+        const days =
+            itinerary.Days || itinerary.days || [];
+
+        // Xóa kết quả cũ trước khi hiển thị
+        itineraryTimeline.replaceChildren();
+
+tripTitle.textContent =
+    `${destination}: ${days.length} ngày ${Math.max(0, days.length - 1)} đêm`;
+
+const destinationImages = {
+    "Đà Nẵng": '@Url.Content("~/Images/Destinations/danang.jpg")',
+    "Đà Lạt": '@Url.Content("~/Images/Destinations/dalat.jpg")',
+    "Hạ Long": '@Url.Content("~/Images/Destinations/halong.jpg")',
+    "Phú Quốc": '@Url.Content("~/Images/Destinations/phuquoc.jpg")',
+    "Hội An": '@Url.Content("~/Images/Destinations/hoian.jpg")'
+};
+
+const imageUrl = destinationImages[destination];
+
+        tripSummary.style.backgroundImage = imageUrl
+          ? `url("${imageUrl}")`
+          : "none";
+
+        // Đồng bộ bản đồ và thời tiết theo lịch trình Gemini
+        updateMapDestination(destination);
+        updateMapMarkers(destination, days);
+        updateWeather(destination);
+
+        days.forEach(function (day) {
+
+            const dayNumber = day.Day ?? day.day;
+            const title = day.Title ?? day.title ?? "";
+            const places = day.Places ?? day.places ?? [];
+            const food = day.Food ?? day.food ?? "";
+
+            const dayItem = document.createElement("div");
+            dayItem.className = "ai-timeline-item";
+
+            const dayMarker = document.createElement("div");
+            dayMarker.className = "ai-timeline-marker";
+            dayMarker.textContent = dayNumber;
+
+            const dayCard = document.createElement("div");
+            dayCard.className = "ai-day-card";
+
+            const dayHeading = document.createElement("div");
+            dayHeading.className = "ai-day-heading";
+
+            const dayLabel = document.createElement("span");
+            dayLabel.className = "ai-day-label";
+            dayLabel.textContent = "Ngày " + dayNumber;
+
+            const dayTitle = document.createElement("h4");
+            dayTitle.textContent = title;
+
+            dayHeading.appendChild(dayLabel);
+            dayHeading.appendChild(dayTitle);
+            dayCard.appendChild(dayHeading);
+
+            // Danh sách địa điểm tham quan
+            const placesList = document.createElement("ul");
+            placesList.className = "ai-day-places";
+
+            places.forEach(function (place) {
+                const item = document.createElement("li");
+                item.textContent = place;
+                placesList.appendChild(item);
+            });
+
+            dayCard.appendChild(placesList);
+
+            // Ẩm thực là thông tin bổ sung
+            if (food && food.trim()) {
+
+                const foodBox = document.createElement("div");
+                foodBox.className = "ai-day-food";
+
+                const foodLabel = document.createElement("strong");
+                foodLabel.textContent = "🍴 Ẩm thực gợi ý: ";
+
+                const foodText = document.createElement("span");
+                foodText.textContent = food;
+
+                foodBox.appendChild(foodLabel);
+                foodBox.appendChild(foodText);
+
+                dayCard.appendChild(foodBox);
+            }
+
+            dayItem.appendChild(dayMarker);
+            dayItem.appendChild(dayCard);
+
+            itineraryTimeline.appendChild(dayItem);
+        });
+
+        itineraryEmpty.style.display = "none";
+        itineraryResult.style.display = "block";
+    }
+
+    async function generateItinerary() {
+
+        if (generateTripButton.disabled) {
+            return;
+        }
+
+        const destinationInput =
+            document.getElementById("aiDestination");
+
+        const daysInput =
+            document.getElementById("aiDays");
+
+        const budgetInput =
+            document.getElementById("aiBudget");
+
+        const interestsSelect =
+            document.getElementById("aiInterests");
+
+        const destination = destinationInput.value.trim();
+        const days = Number(daysInput.value);
+        const budget = budgetInput.value.trim();
+
+        const interests = interestsSelect.value
+            ? interestsSelect.options[
+                interestsSelect.selectedIndex
+            ].text
+            : "";
+
+        if (!destination) {
+            alert("Vui lòng nhập điểm đến.");
+            destinationInput.focus();
+            return;
+        }
+
+        if (!Number.isInteger(days) || days < 1 || days > 30) {
+            alert("Số ngày du lịch phải từ 1 đến 30.");
+            daysInput.focus();
+            return;
+        }
+
+        if (budget !== "" &&
+            (!Number.isFinite(Number(budget)) ||
+                Number(budget) < 0)) {
+
+            alert("Ngân sách không hợp lệ.");
+            return;
+        }
+
+        const tokenInput = document.querySelector(
+            'input[name="__RequestVerificationToken"]'
+        );
+
+        if (!tokenInput) {
+            alert("Không tìm thấy mã xác thực biểu mẫu.");
+            return;
+        }
+
+        generateTripButton.disabled = true;
+        generateTripButton.textContent = "⏳ Đang tạo lịch trình...";
+
+        try {
+            const body = new URLSearchParams();
+
+            body.append("destination", destination);
+            body.append("days", days.toString());
+            body.append("budget", budget);
+            body.append("interests", interests);
+
+            body.append(
+                "__RequestVerificationToken",
+                tokenInput.value
+            );
+
+            const response = await fetch(generateItineraryUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type":
+                        "application/x-www-form-urlencoded; charset=UTF-8"
+                },
+                body: body.toString()
+            });
+
+            if (!response.ok) {
+                throw new Error("HTTP " + response.status);
+            }
+
+            const data = await response.json();
+
+            if (!data.success) {
+                throw new Error(
+                    data.message || "Không thể tạo lịch trình."
+                );
+            }
+
+            if (!data.itinerary) {
+                throw new Error("Không nhận được dữ liệu lịch trình.");
+            }
+
+            renderItinerary(data.itinerary);
+
+            document.querySelector(".ai-itinerary-section")
+                .scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+        } catch (error) {
+
+            console.error("Generate Itinerary Error:", error);
+
+            alert(
+                "Không thể tạo lịch trình: " + error.message
+            );
+
+        } finally {
+
+            generateTripButton.disabled = false;
+            generateTripButton.textContent = "✨ Tạo lịch trình AI";
+        }
+    }
+
+    // Nhấn nút Tạo lịch trình AI
+    generateTripButton.addEventListener(
+        "click",
+        generateItinerary
+    );
+
+    // Nhấn nút Gửi
+    sendButton.addEventListener("click", sendMessage);
+
+    // Nhấn Enter để gửi
+    chatInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && !event.isComposing) {
+            event.preventDefault();
+            sendMessage();
+        }
+    });
+
+});
+    </script>
+}
+

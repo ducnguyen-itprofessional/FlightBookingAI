@@ -953,11 +953,6 @@ footer a {
     border-radius: 14px;
 }
 
-    .ai-weather-placeholder > span {
-        font-size: 40px;
-        flex-shrink: 0;
-    }
-
     .ai-weather-placeholder h4 {
         font-size: 16px;
         font-weight: 700;
@@ -965,12 +960,24 @@ footer a {
         margin-bottom: 8px;
     }
 
+
+/* Căn giữa nội dung trong khung thời tiết */
+.ai-weather-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+    /* Định dạng chữ thông báo thời tiết */
     .ai-weather-placeholder p {
-        font-size: 13px;
+        font-size: 18px;
+        font-weight: 500;
+        color: #475569;
         line-height: 1.6;
-        color: #64748B;
-        margin-bottom: 0;
+        margin: 0;
     }
+
 
 /* Tablet */
 @media (max-width: 991px) {
@@ -1003,3 +1010,835 @@ footer a {
             font-size: 15px;
         }
 }
+
+/* ==========================================
+   AI TRAVEL ASSISTANT - MARKDOWN RESPONSE
+   ========================================== */
+
+.ai-chat-messages .ai-message-bot.ai-markdown {
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.85;
+    color: #17324f;
+    letter-spacing: 0.1px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    padding: 22px 24px;
+    border-radius: 20px 20px 20px 6px;
+    background: #eaf4ff;
+    max-width: 100%;
+}
+
+/* Khoảng cách giữa các đoạn văn */
+.ai-markdown p {
+    margin: 0 0 14px;
+}
+
+    .ai-markdown p:last-child {
+        margin-bottom: 0;
+    }
+
+/* Tiêu đề */
+.ai-markdown h1,
+.ai-markdown h2,
+.ai-markdown h3,
+.ai-markdown h4 {
+    color: #075c99;
+    font-weight: 700;
+    line-height: 1.45;
+    margin: 20px 0 10px;
+}
+
+.ai-markdown h1 {
+    font-size: 21px;
+}
+
+.ai-markdown h2 {
+    font-size: 19px;
+}
+
+.ai-markdown h3,
+.ai-markdown h4 {
+    font-size: 16px;
+}
+
+/* Chữ in đậm */
+.ai-markdown strong {
+    font-weight: 700;
+    color: #064b83;
+}
+
+/* Danh sách */
+.ai-markdown ul,
+.ai-markdown ol {
+    padding-left: 24px;
+    margin: 10px 0 16px;
+}
+
+.ai-markdown li {
+    margin-bottom: 9px;
+    padding-left: 3px;
+}
+
+    .ai-markdown li::marker {
+        color: #1684cf;
+    }
+
+/* Bảng chi phí */
+.ai-markdown table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.ai-markdown th,
+.ai-markdown td {
+    border: 1px solid #dce8f4;
+    padding: 10px 12px;
+    text-align: left;
+}
+
+.ai-markdown th {
+    background: #d9edff;
+    font-weight: 700;
+}
+
+/* Đường phân cách */
+.ai-markdown hr {
+    border: 0;
+    border-top: 1px solid #c9dff2;
+    margin: 20px 0;
+}
+
+/* Ghi chú */
+.ai-markdown blockquote {
+    margin: 16px 0;
+    padding: 12px 16px;
+    border-left: 4px solid #1594d0;
+    background: #f5fbff;
+    border-radius: 0 10px 10px 0;
+}
+
+/* Tối ưu màn hình nhỏ */
+@media (max-width: 768px) {
+    .ai-chat-messages .ai-message-bot.ai-markdown {
+        padding: 16px;
+        font-size: 14px;
+        line-height: 1.75;
+    }
+
+    .ai-markdown table {
+        font-size: 12px;
+    }
+
+    .ai-markdown th,
+    .ai-markdown td {
+        padding: 8px;
+    }
+}
+
+/* ==========================================
+   AI CHAT - FIX SPACING AND LINE BREAKS
+   ========================================== */
+
+/* Khung tin nhắn AI */
+.ai-chat-messages .ai-message-bot.ai-markdown {
+    white-space: normal;
+    line-height: 1.7;
+    font-size: 15px;
+    word-break: normal;
+    overflow-wrap: break-word;
+}
+
+/* Đoạn văn */
+.ai-chat-messages .ai-markdown p {
+    margin: 0 0 10px;
+    line-height: 1.7;
+}
+
+/* Danh sách */
+.ai-chat-messages .ai-markdown ul,
+.ai-chat-messages .ai-markdown ol {
+    margin: 8px 0 14px;
+    padding-left: 25px;
+}
+
+/* Mỗi mục danh sách */
+.ai-chat-messages .ai-markdown li {
+    margin: 0 0 6px;
+    padding-left: 2px;
+    line-height: 1.65;
+}
+
+    /* Tránh khoảng cách thừa trong danh sách */
+    .ai-chat-messages .ai-markdown li p {
+        margin: 0;
+    }
+
+/* Chữ in đậm */
+.ai-chat-messages .ai-markdown strong {
+    font-weight: 700;
+}
+
+/* Các đoạn ghi chú */
+.ai-chat-messages .ai-markdown blockquote {
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   AI TRAVEL - ITINERARY RESULT
+   ========================================== */
+
+.ai-itinerary-empty {
+    text-align: center;
+    padding: 35px 20px;
+    color: #64748b;
+}
+
+.ai-itinerary-empty-icon {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.ai-itinerary-empty h4 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e3a5f;
+    margin-bottom: 10px;
+}
+
+.ai-itinerary-empty p {
+    font-size: 14px;
+    line-height: 1.8;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.ai-itinerary-result {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #17324f;
+    font-size: 15px;
+    line-height: 1.75;
+    overflow-wrap: break-word;
+}
+
+    .ai-itinerary-result h2,
+    .ai-itinerary-result h3 {
+        color: #086ba8;
+        font-weight: 700;
+        margin: 22px 0 12px;
+    }
+
+    .ai-itinerary-result p {
+        margin-bottom: 12px;
+    }
+
+    .ai-itinerary-result ul,
+    .ai-itinerary-result ol {
+        padding-left: 24px;
+        margin: 12px 0;
+    }
+
+    .ai-itinerary-result li {
+        margin-bottom: 8px;
+    }
+
+    .ai-itinerary-result strong {
+        color: #075985;
+        font-weight: 700;
+    }
+
+    .ai-itinerary-result table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+    }
+
+    .ai-itinerary-result th,
+    .ai-itinerary-result td {
+        border: 1px solid #dbeafe;
+        padding: 10px;
+    }
+
+    .ai-itinerary-result th {
+        background: #e0f2fe;
+    }
+
+/* ==========================================
+   AI TRAVEL - ITINERARY TIMELINE
+   ========================================== */
+
+.ai-itinerary-card-header {
+    margin-bottom: 24px;
+}
+
+    .ai-itinerary-card-header h3 {
+        color: #12365b;
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .ai-itinerary-card-header p {
+        color: #64748b;
+        font-size: 14px;
+        margin: 0;
+    }
+
+.ai-trip-summary {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 180px;
+    padding: 22px;
+    margin-bottom: 22px;
+    background-color: #174b70;
+    background-size: cover;
+    background-position: center;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+    /* Lớp phủ giúp chữ dễ đọc */
+    .ai-trip-summary::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( to top, rgba(4, 23, 43, 0.85), rgba(4, 23, 43, 0.08) );
+    }
+
+    .ai-trip-summary h4 {
+        position: relative;
+        z-index: 1;
+        margin: 0;
+        padding: 0;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+@media (max-width: 767px) {
+    .ai-trip-summary {
+        min-height: 140px;
+        padding: 16px;
+    }
+
+        .ai-trip-summary h4 {
+            font-size: 20px;
+        }
+}
+
+/* Thẻ từng ngày */
+.ai-day-card {
+    padding: 20px 22px;
+    background: #ffffff;
+    border: 1px solid #e1eaf2;
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(25, 65, 105, 0.05);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+    .ai-day-card:hover {
+        border-color: #b9dcef;
+        box-shadow: 0 7px 22px rgba(25, 65, 105, 0.10);
+    }
+
+.ai-day-heading {
+    margin-bottom: 16px;
+}
+
+.ai-day-label {
+    display: inline-block;
+    padding: 5px 12px;
+    margin-bottom: 9px;
+    background: #eaf4ff;
+    color: #0875c8;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.ai-day-heading h4 {
+    color: #12365b;
+    font-size: 18px;
+    line-height: 1.45;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Danh sách điểm tham quan */
+.ai-day-places {
+    padding-left: 21px;
+    margin: 0 0 17px;
+}
+
+    .ai-day-places li {
+        color: #334155;
+        font-size: 14px;
+        line-height: 1.7;
+        padding: 3px 0;
+    }
+
+        .ai-day-places li::marker {
+            color: #0d91cf;
+        }
+
+/* Ẩm thực - thông tin phụ */
+.ai-day-food {
+    padding: 12px 14px;
+    background: #effaf6;
+    border-left: 3px solid #38b99d;
+    border-radius: 8px;
+    color: #47645d;
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+    .ai-day-food strong {
+        color: #167c69;
+    }
+
+/* Responsive */
+@media (max-width: 767px)
+{
+    .ai-day-card {
+        padding: 16px;
+    }
+
+    .ai-day-heading h4 {
+        font-size: 16px;
+    }
+
+    .ai-trip-summary {
+        padding: 14px;
+    }
+}
+
+/* ==========================================
+   AI TRAVEL - FINAL COMPACT TIMELINE
+   ========================================== */
+
+/* Khung timeline */
+.ai-itinerary-timeline {
+    position: relative;
+    padding-left: 70px;
+}
+
+    /* Đường nối dọc giữa các hình tròn */
+    .ai-itinerary-timeline::before {
+        content: "";
+        position: absolute;
+        left: 22px;
+        top: var(--timeline-start, 0px);
+        height: var(--timeline-height, 0px);
+        width: 3px;
+        background: #a8d3f0;
+        border-radius: 3px;
+        z-index: 0;
+    }
+
+/* Mỗi ngày */
+.ai-timeline-item {
+    position: relative;
+    margin-bottom: 18px;
+}
+
+    .ai-timeline-item:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Đường nối ngang từ hình tròn đến thẻ */
+    .ai-timeline-item::before {
+        content: "";
+        position: absolute;
+        left: -46px;
+        top: 50%;
+        width: 46px;
+        height: 3px;
+        background: #a8d3f0;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+
+/* Hình tròn đánh số ngày */
+.ai-timeline-marker {
+    position: absolute;
+    left: -70px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1683db;
+    color: #ffffff;
+    border: 4px solid #ffffff;
+    border-radius: 50%;
+    font-size: 17px;
+    font-weight: 700;
+    box-shadow: 0 3px 12px rgba(22, 131, 219, 0.2);
+    z-index: 2;
+}
+
+/* Thẻ ngày gọn gàng */
+.ai-day-card {
+    padding: 15px 18px;
+}
+
+/* Tiêu đề lớn hơn */
+.ai-day-heading {
+    margin-bottom: 10px;
+}
+
+    .ai-day-heading h4 {
+        font-size: 20px;
+        line-height: 1.35;
+    }
+
+.ai-day-label {
+    margin-bottom: 6px;
+}
+
+/* Địa điểm có icon */
+.ai-day-places {
+    list-style: none;
+    padding-left: 0;
+    margin: 8px 0 12px;
+}
+
+    .ai-day-places li {
+        position: relative;
+        padding: 5px 0 5px 28px;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+        .ai-day-places li::before {
+            content: "📍";
+            position: absolute;
+            left: 0;
+            top: 5px;
+            font-size: 16px;
+        }
+
+/* Ẩm thực nhỏ gọn */
+.ai-day-food {
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
+/* Responsive điện thoại */
+@media (max-width: 767px) {
+
+    .ai-itinerary-timeline {
+        padding-left: 52px;
+    }
+
+        .ai-itinerary-timeline::before {
+            left: 16px;
+        }
+
+    .ai-timeline-marker {
+        left: -52px;
+        width: 34px;
+        height: 34px;
+        font-size: 13px;
+        border-width: 3px;
+    }
+
+    .ai-timeline-item::before {
+        left: -35px;
+        width: 35px;
+    }
+
+    .ai-day-heading h4 {
+        font-size: 18px;
+    }
+
+    .ai-day-places li {
+        font-size: 15px;
+    }
+}
+
+/* ==========================================
+   AI TRAVEL - LEAFLET MAP
+   ========================================== */
+
+.ai-travel-map {
+    width: 100%;
+    height: 340px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #edf5fa;
+    z-index: 0;
+}
+
+.ai-map-card {
+    overflow: hidden;
+}
+
+@media (max-width: 767px) {
+    .ai-travel-map {
+        height: 280px;
+    }
+}
+
+/* ==========================================
+   FIX LEAFLET MAP DISPLAY
+   ========================================== */
+
+/* Đảm bảo khung bản đồ có kích thước cố định */
+#aiTravelMap {
+    position: relative;
+    width: 100%;
+    height: 340px;
+    min-height: 340px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #edf5fa;
+}
+
+    /* Ngăn CSS toàn website làm biến dạng map tiles */
+    #aiTravelMap .leaflet-tile {
+        max-width: none !important;
+        max-height: none !important;
+    }
+
+    /* Không để ảnh bản đồ bị áp dụng width: 100% */
+    #aiTravelMap img {
+        max-width: none !important;
+    }
+
+    /* Đảm bảo các lớp Leaflet được bố trí đúng */
+    #aiTravelMap .leaflet-pane,
+    #aiTravelMap .leaflet-map-pane,
+    #aiTravelMap .leaflet-tile-pane {
+        position: absolute;
+    }
+
+@media (max-width: 767px) {
+    #aiTravelMap {
+        height: 280px;
+        min-height: 280px;
+    }
+}
+
+/* ==========================================
+   AI TRAVEL - WEATHER
+   ========================================== */
+
+.ai-weather-content {
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+    /* Khi chưa có dữ liệu, không chiếm diện tích */
+    .ai-weather-content:empty {
+        display: none;
+    }
+
+.ai-weather-location {
+    font-size: 19px;
+    font-weight: 700;
+    color: #12365b;
+    margin-bottom: 6px;
+}
+
+.ai-weather-main {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 14px 0;
+}
+
+.ai-weather-icon {
+    font-size: 42px;
+}
+
+.ai-weather-temperature {
+    font-size: 32px;
+    font-weight: 700;
+    color: #0875c8;
+}
+
+.ai-weather-description {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.ai-weather-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    width: 100%;
+    max-width: none;
+    margin: 18px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid #d5e9f5;
+}
+
+.ai-weather-detail {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 16px 8px;
+    background: #ffffff;
+    border-radius: 12px;
+    text-align: center;
+}
+
+    .ai-weather-detail span {
+        display: block;
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 8px;
+    }
+
+    .ai-weather-detail strong {
+        display: block;
+        font-size: 17px;
+        font-weight: 700;
+        color: #12365b;
+    }
+
+/* Responsive */
+@media (max-width: 767px) {
+    .ai-weather-details {
+        gap: 6px;
+    }
+
+    .ai-weather-detail {
+        padding: 12px 4px;
+    }
+
+        .ai-weather-detail span {
+            font-size: 11px;
+        }
+
+        .ai-weather-detail strong {
+            font-size: 14px;
+        }
+}
+/* Cho nội dung thời tiết sử dụng toàn bộ chiều ngang */
+.ai-weather-content {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+    .ai-weather-content .ai-weather-details {
+        width: 100%;
+        max-width: none;
+        justify-content: stretch;
+    }
+/* ==========================================
+   AI WEATHER - COMPACT DASHBOARD
+   ========================================== */
+
+.ai-weather-content {
+    padding: 20px;
+    border-radius: 16px;
+}
+
+/* Tên thành phố */
+.ai-weather-location {
+    font-size: 21px;
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 4px;
+}
+
+/* Gom biểu tượng và nhiệt độ */
+.ai-weather-main {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+    margin: 14px 0 4px;
+}
+
+.ai-weather-icon {
+    font-size: 48px;
+    line-height: 1;
+}
+
+.ai-weather-temperature {
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+/* Mô tả thời tiết */
+.ai-weather-description {
+    font-size: 15px;
+    text-align: left;
+    margin: 0 0 18px 64px;
+}
+
+/* Ba ô thông tin */
+.ai-weather-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding-top: 14px;
+    border-top: 1px solid #d5e9f5;
+}
+
+.ai-weather-detail {
+    min-width: 0;
+    padding: 14px 6px;
+    border-radius: 12px;
+}
+
+    .ai-weather-detail span {
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .ai-weather-detail strong {
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+/* Điện thoại */
+@media (max-width: 767px) {
+    .ai-weather-content {
+        padding: 15px;
+    }
+
+    .ai-weather-temperature {
+        font-size: 32px;
+    }
+
+    .ai-weather-icon {
+        font-size: 40px;
+    }
+
+    .ai-weather-description {
+        margin-left: 56px;
+    }
+
+    .ai-weather-details {
+        gap: 6px;
+    }
+
+    .ai-weather-detail {
+        padding: 12px 4px;
+    }
+
+        .ai-weather-detail span {
+            font-size: 11px;
+        }
+
+        .ai-weather-detail strong {
+            font-size: 13px;
+        }
+}
+
